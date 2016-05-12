@@ -3,14 +3,37 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>9</version>
+    <relativePath />
+  </parent>
+
   <groupId>ca.islandora.camel</groupId>
   <artifactId>islandora-parent</artifactId>
   <packaging>pom</packaging>
   <version>0.0.1-SNAPSHOT</version>
+  <url>http://islandora.ca/CLAW</url>
 
   <name>Islandora :: Parent POM</name>
 
+  <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <properties>
+    <project_name>Alpaca</project_name>
+    <project_organization>Islandora-CLAW</project_organization>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
@@ -259,8 +282,126 @@
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>${build.helper.plugin.version}</version>
         </plugin>
+        <plugin>
+          <groupId>com.github.github</groupId>
+          <artifactId>site-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+        </plugin>
+       <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <artifactId>maven-changelog-plugin</artifactId>
+        </plugin>
+          <plugin>
+            <artifactId>maven-site-plugin</artifactId>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <useAgent>true</useAgent>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+
+    <pluginRepository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+ 
+  <developers>
+    <developer>
+      <id>daniel-dgi</id>
+      <name>Daniel Lamb</name>
+      <email>daniel @ (domain of organization url)</email>
+      <organization>discoverygarden inc.</organization>
+      <organizationUrl>http://discoverygarden.ca</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-4</timezone>
+    </developer>
+    <developer>
+      <id>ruebot</id>
+      <name>Nick Ruest</name>
+      <email>ruestn @ (domain of organization url)</email>
+      <organization>York University</organization>
+      <organizationUrl>http://yorku.ca/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/${project_organization}/${project_name}.git</connection>
+    <developerConnection>scm:git:git@github.com:${project_organization}/${project_name}.git</developerConnection>
+    <url>https://github.com/${project_organization}/${project_name}</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Islandora-CLAW/CLAW/issues</url>
+  </issueManagement>
 
 </project>
