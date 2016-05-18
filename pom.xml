@@ -10,7 +10,7 @@
     <relativePath />
   </parent>
 
-  <groupId>ca.islandora.camel</groupId>
+  <groupId>ca.islandora</groupId>
   <artifactId>islandora-parent</artifactId>
   <packaging>pom</packaging>
   <version>0.0.1-SNAPSHOT</version>
@@ -55,7 +55,7 @@
     <bundle.plugin.version>2.3.7</bundle.plugin.version>
     <build.helper.plugin.version>1.9.1</build.helper.plugin.version>
     <!-- OSGi -->
-    <islandora.osgi.export.pkg>ca.islandora.camel.component;version="${project.version}"</islandora.osgi.export.pkg>
+    <islandora.osgi.export.pkg>ca.islandora.component;version="${project.version}"</islandora.osgi.export.pkg>
     <islandora.osgi.import.pkg/>
     <islandora.osgi.private.pkg/>
   </properties>
@@ -171,7 +171,7 @@
       </dependency>
 
       <dependency>
-        <groupId>ca.islandora.camel.component</groupId>
+        <groupId>ca.islandora.component</groupId>
         <artifactId>islandora-camel-component</artifactId>
         <version>${project.version}</version>
       </dependency>

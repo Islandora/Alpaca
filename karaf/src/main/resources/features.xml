@@ -15,7 +15,7 @@
     <feature version="${camel.version}">camel</feature>
     <feature version="${camel.version}">camel-exec</feature>
 
-    <bundle>mvn:ca.islandora.camel.component/islandora-camel-component/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.component/islandora-camel-component/${project.version}</bundle>
 
   </feature>
 
@@ -39,9 +39,9 @@
     <feature version="${project.version}">islandora-camel-component</feature>
 
     <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustache.version}</bundle>
-    <bundle>mvn:ca.islandora.camel.sync/islandora-sync-gateway/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.sync/islandora-sync-gateway/${project.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.camel.sync.cfg">mvn:ca.islandora.camel.sync/islandora-sync-gateway/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.sync.cfg">mvn:ca.islandora.sync/islandora-sync-gateway/${project.version}/cfg/configuration</configfile>
   </feature>
 
   <feature name="islandora-basic-image-service" version="${project.version}" start-level="80">
@@ -61,10 +61,10 @@
     <feature version="${fcrepo.camel.version}">fcrepo-indexing-triplestore</feature>
     <feature prerequisite="true" version="${project.version}">islandora-camel-component</feature>
 
-    <bundle>mvn:ca.islandora.camel.services/islandora-basic-image-service/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.services/islandora-basic-image-service/${project.version}</bundle>
     <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustache.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.camel.services.basic.image.cfg">mvn:ca.islandora.camel.services/islandora-basic-image-service/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.services.basic.image.cfg">mvn:ca.islandora.services/islandora-basic-image-service/${project.version}/cfg/configuration</configfile>
   </feature>
 
   <feature name="islandora-collection-service" version="${project.version}" start-level="80">
@@ -84,10 +84,10 @@
     <feature version="${fcrepo.camel.version}">fcrepo-indexing-triplestore</feature>
     <feature version="${project.version}">islandora-camel-component</feature>
 
-    <bundle>mvn:ca.islandora.camel.services/islandora-collection-service/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.services/islandora-collection-service/${project.version}</bundle>
     <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustache.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.services.collection.cfg">mvn:ca.islandora.camel.services/islandora-collection-service/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.services.collection.cfg">mvn:ca.islandora.services/islandora-collection-service/${project.version}/cfg/configuration</configfile>
   </feature>
 
   <feature name="islandora-indexing-triplestore" version="${project.version}" start-level="80">
@@ -97,9 +97,9 @@
     <feature version="${activemq.version}">activemq-camel</feature>
     <feature version="${project.version}">islandora-camel-component</feature>
 
-    <bundle>mvn:ca.islandora.camel.indexing/islandora-indexing-triplestore/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.camel.indexing.triplestore.cfg">mvn:ca.islandora.camel.indexing/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.indexing.triplestore.cfg">mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
 
   </feature>
 </features>
