@@ -1,4 +1,4 @@
-package ca.islandora.camel.indexing.triplestore;
+package ca.islandora.indexing.triplestore;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;

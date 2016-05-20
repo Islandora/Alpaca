@@ -4,19 +4,19 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>ca.islandora.camel</groupId>
+    <groupId>ca.islandora</groupId>
     <artifactId>islandora-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>ca.islandora.camel.sync</groupId>
+  <groupId>ca.islandora.sync</groupId>
   <artifactId>islandora-sync-gateway</artifactId>
   <packaging>bundle</packaging>
 
   <name>Islandora Sync Gateway</name>
 
   <properties>
-    <islandora.osgi.export.pkg>ca.islandora.camel.sync.islandora-sync-gateway</islandora.osgi.export.pkg>
+    <islandora.osgi.export.pkg>ca.islandora.sync.islandora-sync-gateway</islandora.osgi.export.pkg>
   </properties>
 
   <dependencies>
@@ -41,7 +41,7 @@
       <artifactId>fcrepo-camel</artifactId>
     </dependency>
     <dependency>
-      <groupId>ca.islandora.camel.component</groupId>
+      <groupId>ca.islandora.component</groupId>
       <artifactId>islandora-camel-component</artifactId>
       <version>${project.version}</version>
     </dependency>

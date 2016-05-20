@@ -1,4 +1,4 @@
-package ca.islandora.camel.component;
+package ca.islandora.component;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;

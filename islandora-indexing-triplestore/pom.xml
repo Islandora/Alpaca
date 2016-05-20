@@ -4,20 +4,20 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>ca.islandora.camel</groupId>
+    <groupId>ca.islandora</groupId>
     <artifactId>islandora-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <groupId>ca.islandora.camel.indexing</groupId>
+  <groupId>ca.islandora.indexing</groupId>
   <artifactId>islandora-indexing-triplestore</artifactId>
   <packaging>bundle</packaging>
 
   <name>Islandora Triplestore Indexer</name>
 
   <properties>
-    <islandora.osgi.export.pkg>ca.islandora.camel.indexing.triplestore</islandora.osgi.export.pkg>
+    <islandora.osgi.export.pkg>ca.islandora.indexing.triplestore</islandora.osgi.export.pkg>
   </properties>
 
   <dependencies>
@@ -34,7 +34,7 @@
       <artifactId>activemq-camel</artifactId>
     </dependency>
     <dependency>
-      <groupId>ca.islandora.camel.component</groupId>
+      <groupId>ca.islandora.component</groupId>
       <artifactId>islandora-camel-component</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -96,7 +96,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>src/main/cfg/ca.islandora.camel.indexing.triplestore.cfg</file>
+                  <file>src/main/cfg/ca.islandora.indexing.triplestore.cfg</file>
                   <type>cfg</type>
                   <classifier>configuration</classifier>
                 </artifact>

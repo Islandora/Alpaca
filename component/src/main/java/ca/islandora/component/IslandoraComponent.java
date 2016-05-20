@@ -1,4 +1,4 @@
-package ca.islandora.camel.component;
+package ca.islandora.component;
 
 import java.net.URLDecoder;
 import java.util.Map;

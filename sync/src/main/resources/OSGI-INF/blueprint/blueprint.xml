@@ -23,7 +23,7 @@
   <bean id="http" class="org.apache.camel.component.http.HttpComponent"/>
 
   <!-- Islandora Component Configuration -->
-  <bean id="islandora" class="ca.islandora.camel.component.IslandoraComponent">
+  <bean id="islandora" class="ca.islandora.component.IslandoraComponent">
     <argument value="${islandora.php.workingDir}"/>
   </bean>
 
