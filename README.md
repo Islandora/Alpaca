@@ -1,4 +1,5 @@
-# Alpaca: Islandora CLAW Apache Camel Services [![Build Status](https://travis-ci.org/Islandora-CLAW/Alpaca.svg?branch=master)](https://travis-ci.org/Islandora-CLAW/Alpaca)
+# ![Alpaca](https://cloud.githubusercontent.com/assets/2371345/15409648/16c140b4-1dec-11e6-81d9-41929bc83b1f.png) Alpaca
+[![Build Status](https://travis-ci.org/Islandora-CLAW/Alpaca.svg?branch=master)](https://travis-ci.org/Islandora-CLAW/Alpaca)
 
 ## Description
 
