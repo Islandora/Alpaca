@@ -370,11 +370,11 @@
  
   <developers>
     <developer>
-      <id>daniel-dgi</id>
+      <id>dannylamb</id>
       <name>Daniel Lamb</name>
-      <email>daniel @ (domain of organization url)</email>
-      <organization>discoverygarden inc.</organization>
-      <organizationUrl>http://discoverygarden.ca</organizationUrl>
+      <email>dlamb @ (domain of organization url)</email>
+      <organization>islandora.ca</organization>
+      <organizationUrl>http://islandora.ca</organizationUrl>
       <roles>
         <role>developer</role>
       </roles>
