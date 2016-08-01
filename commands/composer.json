@@ -5,6 +5,25 @@
         "hanneskod/classtools": "1.0.0",
         "easyrdf/easyrdf": "0.9.1"
     },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Islandora Foundation",
+            "email": "community@islandora.ca",
+            "role": "Owner"
+
+        },
+        {
+            "name": "Daniel Lamb",
+            "email": "dlamb@islandora.ca",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Nick Ruest",
+            "email": "ruestn@gmail.com",
+            "role": "Maintainer"
+        }
+		],
     "autoload": {
         "psr-4": {"Islandora\\": "src/"}
     }
