@@ -35,7 +35,7 @@ After successful compilation, copy the resulting war from the target directory t
 ## Maintainers
 
 * [Nick Ruest](https://github.com/ruebot)
-* [Daniel Lamb](https://github.com/daniel-dgi/)
+* [Daniel Lamb](https://github.com/dannylamb/)
 
 ## Development
 

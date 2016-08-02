@@ -22,7 +22,7 @@ Event driven middleware based on [Apache Camel](http://camel.apache.org/) that s
 ## Maintainers
 
 * [Nick Ruest](https://github.com/ruebot)
-* [Daniel Lamb](https://github.com/daniel-dgi/)
+* [Daniel Lamb](https://github.com/dannylamb/)
 
 ## Development
 
