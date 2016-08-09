@@ -13,7 +13,7 @@
   <artifactId>islandora-karaf</artifactId>
   <packaging>pom</packaging>
 
-  <name>Karaf Provisioning Features for Islandora</name>
+  <name>Karaf Provisioning Features for Islandora CLAW</name>
 
   <build>
     <defaultGoal>install</defaultGoal>

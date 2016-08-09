@@ -13,7 +13,7 @@
   <artifactId>islandora-sync-gateway</artifactId>
   <packaging>bundle</packaging>
 
-  <name>Islandora Sync Gateway</name>
+  <name>Islandora CLAW Sync Gateway</name>
 
   <properties>
     <islandora.osgi.export.pkg>ca.islandora.sync.islandora-sync-gateway</islandora.osgi.export.pkg>

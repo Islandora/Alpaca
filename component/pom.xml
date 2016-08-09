@@ -11,7 +11,7 @@
   <artifactId>islandora-camel-component</artifactId>
   <packaging>bundle</packaging>
 
-  <name>Islandora Camel Component</name>
+  <name>Islandora CLAW Camel Component</name>
 
   <properties>
     <islandora.osgi.export.pkg>ca.islandora.component*</islandora.osgi.export.pkg>

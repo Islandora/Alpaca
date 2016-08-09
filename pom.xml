@@ -16,7 +16,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <url>http://islandora.ca/CLAW</url>
 
-  <name>Islandora :: Parent POM</name>
+  <name>Islandora CLAW :: Parent POM</name>
 
   <repositories>
     <repository>
@@ -169,13 +169,11 @@
         <artifactId>compiler</artifactId>
         <version>${mustache.version}</version>
       </dependency>
-
       <dependency>
         <groupId>ca.islandora.component</groupId>
         <artifactId>islandora-camel-component</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <!-- logging -->
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -192,7 +190,6 @@
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
       </dependency>
-
       <!-- Testing & Camel Plugin -->
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -205,7 +202,6 @@
 
   <build>
     <defaultGoal>install</defaultGoal>
-
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -310,6 +306,11 @@
       </plugins>
     </pluginManagement>
   </build>
+  
+  <prerequisites>
+    <maven>3.0.0</maven>
+  </prerequisites>
+
   <profiles>
     <profile>
       <id>release-sign-artifacts</id>
@@ -403,5 +404,31 @@
     <system>GitHub</system>
     <url>https://github.com/Islandora-CLAW/CLAW/issues</url>
   </issueManagement>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <comments>Copyright (c) 2015 Islandora Foundation</comments>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <site>
+      <id>gh-pages</id>
+      <name>Deployment through GitHub's site deployment plugin</name>
+      <url>site/${project.version}</url>
+    </site>
+  </distributionManagement>
+
+  <mailingLists>
+    <mailingList>
+      <name>islandora-dev</name>
+      <subscribe>islandora-dev+subscribe@googlegroups.com</subscribe>
+      <unsubscribe>islandora-dev+unsubscribe@googlegroups.com</unsubscribe>
+      <post>islandora-dev@googlegroups.com</post>
+      <archive>https://groups.google.com/d/forum/islandora-dev</archive>
+    </mailingList>
+  </mailingLists>
 
 </project>
