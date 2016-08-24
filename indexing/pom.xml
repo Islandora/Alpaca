@@ -13,7 +13,7 @@
   <artifactId>islandora-indexing</artifactId>
   <packaging>pom</packaging>
 
-  <name>Islandora :: Indexing</name>
+  <name>Islandora CLAW :: Indexing</name>
 
   <modules>
     <module>islandora-indexing-triplestore</module>

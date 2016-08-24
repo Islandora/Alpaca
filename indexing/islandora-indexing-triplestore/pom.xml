@@ -14,8 +14,7 @@
   <artifactId>islandora-indexing-triplestore</artifactId>
   <packaging>bundle</packaging>
 
-  <name>Islandora Triplestore Indexer</name>
-
+  <name>Islandora CLAW Triplestore Indexer</name>
   <properties>
     <islandora.osgi.export.pkg>ca.islandora.indexing.triplestore</islandora.osgi.export.pkg>
   </properties>
