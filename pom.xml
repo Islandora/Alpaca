@@ -248,8 +248,12 @@
            </execution>
          </executions>
         </plugin>
-
-        <!-- to generate the MANIFEST-FILE of the bundle -->
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        
+        <!-- MANIFEST-FILE of the bundle -->
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
@@ -286,23 +290,57 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
         </plugin>
-       <plugin>
+        <plugin>
           <artifactId>maven-release-plugin</artifactId>
-        </plugin>
+          <version>2.5.1</version>
+          <configuration>
+            <!-- see http://jira.codehaus.org/browse/MRELEASE-424 -->
+            <mavenExecutorId>forked-path</mavenExecutorId>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.scm</groupId>
+              <artifactId>maven-scm-provider-gitexe</artifactId>
+              <version>1.8.1</version>
+            </dependency>
+          </dependencies>
+				</plugin> 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
         </plugin>
         <plugin>
           <artifactId>maven-changelog-plugin</artifactId>
         </plugin>
           <plugin>
             <artifactId>maven-site-plugin</artifactId>
-        </plugin>
+          </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.3</version>
+          <configuration>
+            <linksource>true</linksource>
+            <quiet>true</quiet>
+          </configuration>
+          <executions>
+            <execution>
+              <id>verify-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+                <goal>javadoc</goal>
+              </goals>
+              <phase>site</phase>
+            </execution>
+          </executions>
+				</plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -394,9 +432,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/${project_organization}/${project_name}.git</connection>
-    <developerConnection>scm:git:git@github.com:${project_organization}/${project_name}.git</developerConnection>
-    <url>https://github.com/${project_organization}/${project_name}</url>
+    <connection>scm:git:git@github.com:Islandora-CLAW/Alpaca.git</connection>
+    <developerConnection>scm:git:git@github.com:Islandora-CLAW/Alpaca.git</developerConnection>
+    <url>https://github.com/islandora-claw/Alpaca</url>
     <tag>HEAD</tag>
   </scm>
 
