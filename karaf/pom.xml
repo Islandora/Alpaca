@@ -5,7 +5,7 @@
 
   <parent>
     <groupId>ca.islandora</groupId>
-    <artifactId>islandora-parent</artifactId>
+    <artifactId>islandora</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 

@@ -5,9 +5,8 @@
 
   <parent>
     <groupId>ca.islandora</groupId>
-    <artifactId>islandora-parent</artifactId>
+    <artifactId>islandora-indexing</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <groupId>ca.islandora.indexing</groupId>
