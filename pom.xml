@@ -13,7 +13,7 @@
   <groupId>ca.islandora</groupId>
   <artifactId>islandora-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.1</version>
+  <version>0.1.0-SNAPSHOT</version>
   <url>http://islandora.ca/CLAW</url>
 
   <name>Islandora CLAW :: Parent POM</name>
@@ -435,7 +435,7 @@
     <connection>scm:git:git@github.com:Islandora-CLAW/Alpaca.git</connection>
     <developerConnection>scm:git:git@github.com:Islandora-CLAW/Alpaca.git</developerConnection>
     <url>https://github.com/islandora-claw/Alpaca</url>
-    <tag>islandora-parent-0.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
