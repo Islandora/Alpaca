@@ -1,0 +1,9 @@
+include ':islandora-camel-component'
+include ':islandora-karaf'
+include ':islandora-indexing-triplestore'
+include ':islandora-indexing'
+
+project(':islandora-camel-component').projectDir = "$rootDir/component" as File
+project(':islandora-karaf').projectDir = "$rootDir/karaf" as File
+project(':islandora-indexing-triplestore').projectDir = "$rootDir/indexing/islandora-indexing-triplestore" as File
+project(':islandora-indexing').projectDir = "$rootDir/indexing" as File

@@ -1,0 +1,163 @@
+plugins {
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'net.researchgate.release' version '2.4.0'
+    id 'org.ajoberstar.github-pages' version '1.5.1'
+}
+
+allprojects  {
+    apply plugin: 'maven'
+
+    group = 'ca.islandora'
+    version = '0.1.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.hierynomus.license'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    ext {
+        camelVersion = '2.17.1'
+        slf4jVersion = '1.7.12'
+        fcrepoCamelVersion = '4.4.3'
+        fcrepoCamelToolboxVersion = '4.6.0'
+        activemqVersion = '5.13.2'
+        commonsioVersion = '2.4'
+        cxfVersion = '3.1.4'
+        mustacheVersion = '0.9.0'
+
+        camelVersionRange = '[2.17, 3)'
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    javadoc {
+      classpath += sourceSets.test.compileClasspath
+      source += sourceSets.test.allJava
+    }
+
+    checkstyle {
+        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+        showViolations true
+        /* eventually, we should change this to fail builds on errors */
+        ignoreFailures true
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    license {
+        include "**/*.java"
+        header rootProject.file('config/license/header.txt')
+        sourceSets = project.sourceSets
+        ignoreFailures false
+        strictCheck true
+        mapping {
+            java = 'SLASHSTAR_STYLE'
+        }
+    }
+
+    signing {
+        required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+
+    uploadArchives {
+        repositories.mavenDeployer {
+            def sonatypeUsername = project.hasProperty('ossrhUsername') ? ossrhUsername : ""
+            def sonatypePassword = project.hasProperty('ossrhPassword') ? ossrhPassword : ""
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                packaging 'jar'
+                url 'http://islandora.ca'
+                inceptionYear '2015'
+
+                scm {
+                    connection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
+                    developerConnection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
+                    url 'https://github.com/islandora-CLAW/Salmon'
+                    tag 'HEAD'
+                }
+
+                mailingLists {
+                    mailingList {
+                        name 'islandora-dev'
+                        subscribe 'islandora-dev+subscribe@googlegroups.com'
+                        unsubscribe 'islandora-dev+unsubscribe@googlegroups.com'
+                        post 'islandora-dev@googlegroups.com'
+                        archive 'https://groups.google.com/d/forum/islandora-dev'
+                    }
+                }
+
+                issueManagement {
+                    system 'GitHub'
+                    url 'https://github.com/Islandora-CLAW/CLAW/issues'
+                }
+
+                distributionManagement {
+                    site {
+                        id 'gh-pages'
+                        name "Deployment through GitHub's site deployment plugin"
+                        url 'http://islandora-claw.github.io/Alpaca/site/' + project.version
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'dannylamb'
+                        name 'Daniel Lamb'
+                        email 'dlamb @ (domain of organization url)'
+                        organization 'Islandora Foundation'
+                        organizationUrl 'http://islandora.ca'
+                        roles {
+                            role 'developer'
+                        }
+                        timezone '-4'
+                    }
+                    developer {
+                        id 'ruebot'
+                        name 'Nick Ruest'
+                        email 'ruestn @ (domain of organization url)'
+                        organization 'York University'
+                        organizationUrl 'http://yorku.ca'
+                        roles {
+                            role 'developer'
+                        }
+                        timezone '-5'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://opensource.org/licenses/MIT'
+                        comments 'Copyright (c) 2015 Islandora Foundation'
+                    }
+                }
+            }
+        }
+    }
+}

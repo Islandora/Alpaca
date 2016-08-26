@@ -1,0 +1,40 @@
+apply plugin: 'osgi'
+
+group = 'ca.islandora.indexing'
+description = 'Islandora CLAW Triplestore Indexer'
+
+dependencies {
+    compile project(':islandora-camel-component')
+    compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-blueprint', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
+    compile group: 'org.apache.activemq', name: 'activemq-camel', version: activemqVersion
+    compile group: 'org.fcrepo.camel', name: 'fcrepo-camel', version: fcrepoCamelVersion
+    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    testCompile group: 'org.apache.camel', name: 'camel-test-blueprint', version: camelVersion
+}
+
+jar {
+    manifest {
+      version = version
+      symbolicName = 'ca.islandora.islandora-indexing-triplestore'
+      instruction 'Import-Package', 'org.apache.camel.component.http4,' +
+                            'org.apache.activemq.camel.component,' +
+                            "org.apache.camel;version=\"${camelVersionRange}\"," +
+                            '*'
+      instruction 'Bundle-Vendor', 'Islandora-CLAW'
+      instruction 'Bundle-Description', 'Islandora CLAW Triplestore Indexer'
+      instruction 'Bundle-DocURL', 'http://islandora.ca'
+      instruction 'Bundle-Name', 'Alpaca Triplestore Indexer'
+      instruction 'Export-Package', 'ca.islandora.indexing.triplestore'
+    }
+}
+
+artifacts {
+    archives (file('src/main/cfg/ca.islandora.indexing.triplestore.cfg')) {
+        name 'islandora-indexing-triplestore'
+        version project.version
+        classifier 'configuration'
+        type 'cfg'
+    }
+}
