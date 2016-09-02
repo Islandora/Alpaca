@@ -13,7 +13,7 @@
   <groupId>ca.islandora</groupId>
   <artifactId>islandora-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.0.2</version>
   <url>http://islandora.ca/CLAW</url>
 
   <name>Islandora CLAW :: Parent POM</name>
@@ -354,4 +354,8 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <scm>
+    <tag>islandora-0.0.2</tag>
+  </scm>
 </project>
