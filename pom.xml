@@ -5,16 +5,21 @@
 
   <parent>
     <groupId>ca.islandora</groupId>
-    <artifactId>islandora-parent</artifactId>
+    <artifactId>alpaca-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <relativePath>./parent</relativePath>
   </parent>
 
   <groupId>ca.islandora</groupId>
-  <artifactId>islandora</artifactId>
+  <artifactId>alpaca</artifactId>
   <packaging>pom</packaging>
   <version>0.1.0-SNAPSHOT</version>
   <url>http://islandora.ca/CLAW</url>
+
+  <organization>
+    <name>Islandora Foundation</name>
+    <url>http://islandora.ca/</url>
+  </organization>
 
   <name>Islandora CLAW :: Alpaca</name>
 

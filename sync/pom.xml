@@ -5,12 +5,12 @@
 
   <parent>
     <groupId>ca.islandora</groupId>
-    <artifactId>islandora</artifactId>
+    <artifactId>alpaca</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>ca.islandora.sync</groupId>
-  <artifactId>islandora-sync-gateway</artifactId>
+  <artifactId>salmon-sync-gateway</artifactId>
   <packaging>bundle</packaging>
 
   <name>Islandora CLAW Sync Gateway</name>

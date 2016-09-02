@@ -5,12 +5,12 @@
 
   <parent>
       <groupId>ca.islandora</groupId>
-      <artifactId>islandora</artifactId>
+      <artifactId>alpaca</artifactId>
       <version>0.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>ca.islandora</groupId>
-  <artifactId>islandora-indexing</artifactId>
+  <artifactId>alpaca-indexing</artifactId>
   <packaging>pom</packaging>
 
   <name>Islandora CLAW :: Indexing</name>
