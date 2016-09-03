@@ -44,7 +44,6 @@
   </properties>
 
   <modules>
-    <module>sync</module>
     <module>component</module>
     <module>karaf</module>
     <module>indexing</module>
