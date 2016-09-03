@@ -15,6 +15,9 @@
     <property name="brokerURL" value="${jms.brokerUrl}"/>
   </bean>
 
+  <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
+  <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
+
   <camelContext id="IslandoraTriplestoreIndexer" xmlns="http://camel.apache.org/schema/blueprint">
     <package>ca.islandora.indexing.triplestore</package>
   </camelContext>
