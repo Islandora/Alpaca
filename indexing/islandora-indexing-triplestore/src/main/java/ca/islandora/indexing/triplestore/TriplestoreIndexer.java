@@ -54,12 +54,12 @@ public class TriplestoreIndexer extends RouteBuilder {
         from("direct:triplestoreUpsert")
             .routeId("islandoraTripelstoreIndexerUpsert")
             .process(new SparqlUpdateProcessor())
-            .to("http4://{{triplestore.baseUrl}}");
+            .to("{{triplestore.baseUrl}}");
 
         from("direct:triplestoreDelete")
             .routeId("islandoraTripelstoreIndexerDelete")
             .process(new SparqlDeleteProcessor())
-            .to("http4://{{triplestore.baseUrl}}");
+            .to("{{triplestore.baseUrl}}");
 
     }
 }

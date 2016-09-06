@@ -15,6 +15,10 @@
 
   <name>Islandora CLAW Triplestore Indexer</name>
   <properties>
+    <islandora.osgi.import.pkg>
+      org.apache.camel.component.http4,
+      org.apache.activemq.camel.component
+    </islandora.osgi.import.pkg>
     <islandora.osgi.export.pkg>ca.islandora.indexing.triplestore</islandora.osgi.export.pkg>
   </properties>
 
