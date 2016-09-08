@@ -2,29 +2,10 @@
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
-<!--
-  
-  Checkstyle configuration that checks the Fedora coding conventions from:
-  
-    - the Fedora FcRepo4 Code Style Guide
-      https://wiki.duraspace.org/display/FF/Code+Style+Guide
-      
-    - some best practices
-    
-  Checkstyle is very configurable. Be sure to read the documentation at
-  http://checkstyle.sf.net (or in your downloaded distribution).
-  
-  Most Checks are configurable, be sure to consult the documentation.
-  
-  To completely disable a check, just comment it out or delete it from the file.
-  
-  Finally, it is worth reading the documentation.
-  
--->
 <module name="Checker">
   <!-- Suppress -->
   <module name="SuppressionFilter">
-    <property name="file" value="config/checkstyle/checkstyle-suppressions.xml"/>
+    <property name="file" value="${checkstyleConfigDir}/suppressions.xml"/>
   </module>
   <!-- Checks that there are no tab characters ('\t') in the source code. -->
   <module name="FileTabCharacter">

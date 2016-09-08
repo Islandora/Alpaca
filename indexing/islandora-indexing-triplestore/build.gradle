@@ -16,24 +16,21 @@ dependencies {
 
 jar {
     manifest {
-      version = version
-      symbolicName = 'ca.islandora.islandora-indexing-triplestore'
+      description project.description
+      docURL project.docURL
+      vendor project.vendor
+      license project.license
+
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             'org.apache.activemq.camel.component,' +
                             "org.apache.camel;version=\"${camelVersionRange}\"," +
-                            '*'
-      instruction 'Bundle-Vendor', 'Islandora-CLAW'
-      instruction 'Bundle-Description', 'Islandora CLAW Triplestore Indexer'
-      instruction 'Bundle-DocURL', 'http://islandora.ca'
-      instruction 'Bundle-Name', 'Alpaca Triplestore Indexer'
+                            defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.indexing.triplestore'
     }
 }
 
 artifacts {
-    archives (file('src/main/cfg/ca.islandora.indexing.triplestore.cfg')) {
-        name 'islandora-indexing-triplestore'
-        version project.version
+    archives (file('build/cfg/main/ca.islandora.indexing.triplestore.cfg')) {
         classifier 'configuration'
         type 'cfg'
     }

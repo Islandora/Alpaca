@@ -10,7 +10,7 @@
   <feature name="islandora-camel-component" version="${project.version}" start-level="50">
     <details>Installs the Islandora camel component</details>
 
-    <bundle dependency="true">mvn:commons-io/commons-io/${commonsioVersion}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
 
     <feature version="${camelVersion}">camel</feature>
     <feature version="${camelVersion}">camel-exec</feature>

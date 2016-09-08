@@ -6,19 +6,19 @@ description = 'Islandora CLAW Camel Component'
 dependencies {
     compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-exec', version: camelVersion
-    compile group: 'commons-io', name: 'commons-io', version: commonsioVersion
+    compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
 }
 
 jar {
     manifest {
-      version = version
-      symbolicName = 'ca.islandora.islandora-camel-component'
-      instruction 'Import-Package', "org.apache.camel;version=\"${camelVersionRange}\",*"
-      instruction 'Bundle-Vendor', 'Islandora-CLAW'
-      instruction 'Bundle-Description', 'Islandora CLAW Camel Component'
-      instruction 'Bundle-DocURL', 'http://islandora.ca'
-      instruction 'Bundle-Name', 'Alpaca Camel Component'
-      instruction 'Export-Package', 'ca.islandora.component.*'
+      description project.description
+      docURL project.docURL
+      vendor project.vendor
+      license project.license
+
+      instruction 'Import-Package', "org.apache.camel;version=\"${camelVersionRange}\",${defaultOsgiImports}"
+
+      instruction 'Export-Package', "ca.islandora.component.*;version=${projectOsgiVersion}"
     }
 }
 

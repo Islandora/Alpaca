@@ -7,8 +7,6 @@ processResources {
 
 artifacts {
     archives (file('build/resources/main/features.xml')) {
-        name 'islandora-karaf-features'
-        version project.version
         classifier 'features'
         type 'xml'
     }
