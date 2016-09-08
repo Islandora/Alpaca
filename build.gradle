@@ -19,6 +19,8 @@ allprojects  {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         }
     }
+
+    afterReleaseBuild.dependsOn uploadArchives
 }
 
 subprojects {
