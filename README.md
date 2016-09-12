@@ -7,6 +7,10 @@
 
 Event driven middleware based on [Apache Camel](http://camel.apache.org/) that synchronizes a Fedora 4 with a Drupal.
 
+## Building
+
+This project requires Java 8 and can be built with [Gradle](https://gradle.org). To build and test locally, use `./gradlew build`.
+
 ## Sponsors
 
 * Discoverygarden

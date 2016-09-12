@@ -1,0 +1,25 @@
+apply plugin: 'osgi'
+
+group = 'ca.islandora.component'
+description = 'Islandora CLAW Camel Component'
+
+dependencies {
+    compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-exec', version: camelVersion
+    compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
+}
+
+jar {
+    manifest {
+      description project.description
+      docURL project.docURL
+      vendor project.vendor
+      license project.license
+
+      instruction 'Import-Package', "org.apache.camel;version=\"${camelVersionRange}\",${defaultOsgiImports}"
+
+      instruction 'Export-Package', "ca.islandora.component.*;version=${projectOsgiVersion}"
+    }
+}
+
+

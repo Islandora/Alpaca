@@ -1,0 +1,216 @@
+plugins {
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'net.researchgate.release' version '2.4.0'
+    id 'org.ajoberstar.github-pages' version '1.5.1'
+}
+
+allprojects  {
+    apply plugin: 'maven'
+
+    group = 'ca.islandora'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+
+    release {
+        tagTemplate = '$name-$version'
+    }
+
+    afterReleaseBuild.dependsOn uploadArchives
+    afterReleaseBuild.dependsOn publishGhPages
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.hierynomus.license'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    ext {
+        vendor = 'Islandora Foundation'
+        homepage = 'http://islandora.ca'
+        inceptionYear = '2015'
+        docURL = 'http://github.com/Islandora-CLAW/wiki'
+        license = 'MIT'
+
+        camelVersion = '2.17.1'
+        slf4jVersion = '1.7.12'
+        fcrepoCamelVersion = '4.4.3'
+        fcrepoCamelToolboxVersion = '4.6.0'
+        activemqVersion = '5.13.2'
+        commonsIoVersion = '2.4'
+        cxfVersion = '3.1.4'
+        mustacheVersion = '0.9.0'
+
+        camelVersionRange = '[2.17, 3)'
+
+        /* OSGi */
+        defaultOsgiImports = 'org.osgi.service.blueprint;version="[1,2)",*'
+        projectOsgiVersion = project.version.replaceAll("-SNAPSHOT", ".SNAPSHOT")
+    }
+
+    task processConfig(type: Copy) {
+        from('src/main/cfg') {
+            include '**/*.cfg'
+        }
+        into 'build/cfg/main'
+    }
+
+    task sourceJar(type: Jar) {
+        classifier 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar) {
+        classifier 'javadoc'
+        from javadoc
+    }
+
+    artifacts {
+        archives javadocJar
+        archives sourceJar
+    }
+
+    classes {
+        classes.dependsOn processConfig
+    }
+
+    checkstyle {
+        configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
+        configProperties.checkstyleConfigDir = rootProject.file('gradle/checkstyle')
+        /* eventually, we should change this to fail builds on errors */
+        ignoreFailures true
+    }
+
+    license {
+        include "**/*.java"
+        header rootProject.file('gradle/license/header.txt')
+        mapping {
+            java = 'SLASHSTAR_STYLE'
+        }
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    signing {
+        required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    githubPages {
+        pages {
+            from javadoc
+            into "docs/${version}"
+        }
+    }
+
+    uploadArchives {
+        repositories.mavenDeployer {
+            def sonatypeUsername = project.hasProperty('ossrhUsername') ? ossrhUsername : ""
+            def sonatypePassword = project.hasProperty('ossrhPassword') ? ossrhPassword : ""
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                packaging 'jar'
+                url project.homepage
+                inceptionYear project.inceptionYear
+                name 'Islandora CLAW :: Alpaca'
+                description 'Event driven middleware based on Apache Camel that synchronizes a Fedora 4 with Drupal.'
+
+                organization {
+                    name project.vendor
+                    url project.homepage
+                }
+
+                scm {
+                    connection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
+                    developerConnection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
+                    url 'https://github.com/islandora-CLAW/Salmon'
+                    tag 'HEAD'
+                }
+
+                mailingLists {
+                    mailingList {
+                        name 'islandora-dev'
+                        subscribe 'islandora-dev+subscribe@googlegroups.com'
+                        unsubscribe 'islandora-dev+unsubscribe@googlegroups.com'
+                        post 'islandora-dev@googlegroups.com'
+                        archive 'https://groups.google.com/d/forum/islandora-dev'
+                    }
+                }
+
+                issueManagement {
+                    system 'GitHub'
+                    url 'https://github.com/Islandora-CLAW/CLAW/issues'
+                }
+
+                distributionManagement {
+                    site {
+                        id 'gh-pages'
+                        name "Deployment through GitHub's site deployment plugin"
+                        url 'http://islandora-claw.github.io/Alpaca/site/' + project.version
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'dannylamb'
+                        name 'Daniel Lamb'
+                        email 'dlamb @ (domain of organization url)'
+                        organization 'Islandora Foundation'
+                        organizationUrl 'http://islandora.ca'
+                        roles {
+                            role 'developer'
+                        }
+                        timezone '-4'
+                    }
+                    developer {
+                        id 'ruebot'
+                        name 'Nick Ruest'
+                        email 'ruestn @ (domain of organization url)'
+                        organization 'York University'
+                        organizationUrl 'http://yorku.ca'
+                        roles {
+                            role 'developer'
+                        }
+                        timezone '-5'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://opensource.org/licenses/MIT'
+                        comments 'Copyright (c) 2015 Islandora Foundation'
+                    }
+                }
+            }
+        }
+    }
+}
