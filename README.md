@@ -5,7 +5,7 @@
 
 ## Description
 
-Event driven middleware based on [Apache Camel](http://camel.apache.org/) that synchronizes a Fedora 4 with a Drupal.
+Event-driven middleware based on [Apache Camel](http://camel.apache.org/) that synchronizes a Fedora 4 repository with a Drupal instance.
 
 ## Building
 
