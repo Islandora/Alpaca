@@ -7,4 +7,15 @@
   <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
   <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
 
+ <feature name="islandora-indexing-triplestore" version="${project.version}" start-level="80">
+    <details>Indexes the triplestore from Drupal nodes</details>
+
+    <feature version="${camelVersion}">camel</feature>
+    <feature version="${activemqVersion}">activemq-camel</feature>
+
+    <bundle>mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}</bundle>
+
+    <configfile finalname="/etc/ca.islandora.indexing.triplestore.cfg">mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
+
+  </feature>
 </features>
