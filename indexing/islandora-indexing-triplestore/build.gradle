@@ -4,7 +4,6 @@ group = 'ca.islandora.indexing'
 description = 'Islandora CLAW Triplestore Indexer'
 
 dependencies {
-    compile project(':islandora-camel-component')
     compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-blueprint', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
