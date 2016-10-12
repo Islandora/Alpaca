@@ -18,29 +18,35 @@
 
 package ca.islandora.indexing.triplestore;
 
-import org.apache.camel.LoggingLevel;
+import static org.apache.camel.builder.PredicateBuilder.and;
+import static org.apache.camel.builder.PredicateBuilder.or;
+import static org.apache.camel.LoggingLevel.ERROR;
+import static org.fcrepo.camel.FcrepoHeaders.FCREPO_BASE_URL;
+import static org.fcrepo.camel.FcrepoHeaders.FCREPO_IDENTIFIER;
+
 import org.apache.camel.Predicate;
-import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
-import org.fcrepo.camel.FcrepoHeaders;
 import org.fcrepo.camel.processor.SparqlUpdateProcessor;
 import org.fcrepo.camel.processor.SparqlDeleteProcessor;
 
+/**
+ * @author dhlamb
+ */
 public class TriplestoreIndexer extends RouteBuilder {
 
     @Override
     public void configure() {
 
-        Predicate isTriples = header("Content-Type").isEqualTo("application/n-triples");
-        Predicate hasBaseUrl = header(FcrepoHeaders.FCREPO_BASE_URL).isNotNull();
-        Predicate hasIdentifier = header(FcrepoHeaders.FCREPO_IDENTIFIER).isNotNull();
-        Predicate hasFcrepoCamelHeaders = PredicateBuilder.and(hasBaseUrl, hasIdentifier);
-        Predicate hasAction = PredicateBuilder.or(header("action").isEqualTo("delete"), header("action").isEqualTo("upsert"));
-        Predicate isValid = PredicateBuilder.and(isTriples, hasFcrepoCamelHeaders, hasAction);
+        final Predicate isTriples = header("Content-Type").isEqualTo("application/n-triples");
+        final Predicate hasBaseUrl = header(FCREPO_BASE_URL).isNotNull();
+        final Predicate hasIdentifier = header(FCREPO_IDENTIFIER).isNotNull();
+        final Predicate hasFcrepoCamelHeaders = and(hasBaseUrl, hasIdentifier);
+        final Predicate hasAction = or(header("action").isEqualTo("delete"), header("action").isEqualTo("upsert"));
+        final Predicate isValid = and(isTriples, hasFcrepoCamelHeaders, hasAction);
 
         onException(Exception.class)
             .maximumRedeliveries("{{error.maxRedeliveries}}")
-            .log(LoggingLevel.ERROR, "Error Indexing in Triplestore: ${routeId}");
+            .log(ERROR, "Error Indexing in Triplestore: ${routeId}");
 
         from("{{input.stream}}")
             .routeId("IslandoraTriplestoreIndexerRouter")
