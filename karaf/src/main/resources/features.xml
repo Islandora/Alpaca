@@ -7,95 +7,11 @@
   <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
   <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
 
-  <feature name="islandora-camel-component" version="${project.version}" start-level="50">
-    <details>Installs the Islandora camel component</details>
-
-    <bundle dependency="true">mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
-
-    <feature version="${camelVersion}">camel</feature>
-    <feature version="${camelVersion}">camel-exec</feature>
-
-    <bundle>mvn:ca.islandora.component/islandora-camel-component/${project.version}</bundle>
-
-  </feature>
-
-
-  <feature name="islandora-sync-gateway" version="${project.version}" start-level="80">
-    <details>Installs the Islandora synchronization gateway</details>
-
-
-    <feature prerequisite="true">wrap</feature>
-    <feature version="${camelVersion}">camel</feature>
-    <feature version="${camelVersion}">camel-cache</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-script</feature>
-    <feature version="${camelVersion}">camel-script-javascript</feature>
-    <feature version="${camelVersion}">camel-base64</feature>
-    <feature version="${camelVersion}">camel-mustache</feature>
-    <feature version="${activemqVersion}">activemq-camel</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-camel</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-indexing-triplestore</feature>
-    <feature version="${project.version}">islandora-camel-component</feature>
-
-    <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustacheVersion}</bundle>
-    <bundle>mvn:ca.islandora.sync/islandora-sync-gateway/${project.version}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.sync.cfg">mvn:ca.islandora.sync/islandora-sync-gateway/${project.version}/cfg/configuration</configfile>
-  </feature>
-
-  <feature name="islandora-basic-image-service" version="${project.version}" start-level="80">
-    <details>Installs the Islandora basic image service</details>
-
-    <feature prerequisite="true">wrap</feature>
-    <feature version="${cxfVersion}">cxf</feature>
-    <feature version="${camelVersion}">camel</feature>
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-servlet</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
-    <feature version="${camelVersion}">camel-cxf</feature>
-    <feature version="${camelVersion}">camel-script</feature>
-    <feature version="${camelVersion}">camel-script-javascript</feature>
-    <feature version="${camelVersion}">camel-mustache</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-camel</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-indexing-triplestore</feature>
-    <feature prerequisite="true" version="${project.version}">islandora-camel-component</feature>
-
-    <bundle>mvn:ca.islandora.services/islandora-basic-image-service/${project.version}</bundle>
-    <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustacheVersion}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.services.basic.image.cfg">mvn:ca.islandora.services/islandora-basic-image-service/${project.version}/cfg/configuration</configfile>
-  </feature>
-
-  <feature name="islandora-collection-service" version="${project.version}" start-level="80">
-    <details>Installs the Islandora collection service</details>
-
-    <feature prerequisite="true">wrap</feature>
-    <feature version="${cxfVersion}">cxf</feature>
-    <feature version="${camelVersion}">camel</feature>
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-servlet</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
-    <feature version="${camelVersion}">camel-cxf</feature>
-    <feature version="${camelVersion}">camel-script</feature>
-    <feature version="${camelVersion}">camel-script-javascript</feature>
-    <feature version="${camelVersion}">camel-mustache</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-camel</feature>
-    <feature version="${fcrepoCamelVersion}">fcrepo-indexing-triplestore</feature>
-    <feature version="${project.version}">islandora-camel-component</feature>
-
-    <bundle>mvn:ca.islandora.services/islandora-collection-service/${project.version}</bundle>
-    <bundle dependency="true">wrap:mvn:com.github.spullara.mustache.java/compiler/${mustacheVersion}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.services.collection.cfg">mvn:ca.islandora.services/islandora-collection-service/${project.version}/cfg/configuration</configfile>
-  </feature>
-
-  <feature name="islandora-indexing-triplestore" version="${project.version}" start-level="80">
+ <feature name="islandora-indexing-triplestore" version="${project.version}" start-level="80">
     <details>Indexes the triplestore from Drupal nodes</details>
 
     <feature version="${camelVersion}">camel</feature>
     <feature version="${activemqVersion}">activemq-camel</feature>
-    <feature version="${project.version}">islandora-camel-component</feature>
 
     <bundle>mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}</bundle>
 
