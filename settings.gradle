@@ -1,7 +1,5 @@
 include ':islandora-karaf'
 include ':islandora-indexing-triplestore'
-include ':islandora-indexing'
 
 project(':islandora-karaf').projectDir = "$rootDir/karaf" as File
-project(':islandora-indexing-triplestore').projectDir = "$rootDir/indexing/islandora-indexing-triplestore" as File
-project(':islandora-indexing').projectDir = "$rootDir/indexing" as File
+project(':islandora-indexing-triplestore').projectDir = "$rootDir/islandora-indexing-triplestore" as File
