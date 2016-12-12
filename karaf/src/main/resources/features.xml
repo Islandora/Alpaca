@@ -13,9 +13,20 @@
     <feature version="${camelVersion}">camel</feature>
     <feature version="${activemqVersion}">activemq-camel</feature>
 
-    <bundle>mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}</bundle>
+    <bundle>mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.indexing.triplestore.cfg">mvn:ca.islandora.indexing/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.indexing.triplestore.cfg">mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
+
+  </feature>
+
+ <feature name="islandora-connector-broadcast" version="${project.version}" start-level="80">
+    <details>Distributes a message to a list of queues/topics.</details>
+
+    <feature version="${camelVersion}">camel</feature>
+
+    <bundle>mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}</bundle>
+
+    <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
 
   </feature>
 </features>

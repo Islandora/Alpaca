@@ -31,14 +31,22 @@ public class EventRouter extends RouteBuilder {
      */
     public void configure() throws Exception {
 
-        from("timer:foo?period=1000")
+        from("timer:foo?period=10000")
+                .setHeader("ca.islandora.alpaca.connector.broadcast.recipients", constant("activemq:queue:derp,activemq:queue:herp"))
+                .setBody(constant("WHEEEE"))
                 .to("{{input.stream}}");
 
         from("{{input.stream}}")
                 .routeId("MessageBroadcaster")
                 .description("Broadcast messages from one queue/topic to other specified queues/topics.")
-                .log("Distributing message: ${headers}")
+                .log("Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
                 .recipientList(simple("${headers[ca.islandora.alpaca.connector.broadcast.recipients]}"))
                 .ignoreInvalidEndpoints();
+
+        from("activemq:queue:derp")
+                .log("DERP: ${body}");
+
+        from("activemq:queue:herp")
+                .log("HERP: ${body}");
     }
 }
