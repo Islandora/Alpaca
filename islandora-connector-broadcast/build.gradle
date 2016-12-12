@@ -22,7 +22,7 @@ jar {
 }
 
 artifacts {
-    archives (file('build/cfg/main/ca.islandora.alpaca.conector.broadcast.cfg')) {
+    archives (file('build/cfg/main/ca.islandora.alpaca.connector.broadcast.cfg')) {
         classifier 'configuration'
         type 'cfg'
     }
