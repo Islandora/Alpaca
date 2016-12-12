@@ -1,4 +1,3 @@
-group = 'ca.islandora.karaf'
 description = 'Islandora CLAW Karaf Provisioning'
 
 processResources {

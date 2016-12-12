@@ -1,6 +1,5 @@
 apply plugin: 'osgi'
 
-group = 'ca.islandora.indexing'
 description = 'Islandora CLAW Triplestore Indexer'
 
 dependencies {
