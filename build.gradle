@@ -7,7 +7,7 @@ plugins {
 allprojects  {
     apply plugin: 'maven'
 
-    group = 'ca.islandora'
+    group = 'ca.islandora.alpaca'
 
     repositories {
         mavenCentral()
