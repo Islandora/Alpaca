@@ -17,14 +17,20 @@
  */
 package ca.islandora.alpaca.connector.broadcast;
 
+import static org.apache.camel.LoggingLevel.INFO;
+
 import org.apache.camel.builder.RouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A content router distributing messages to multiple endpoints.
  *
  * @author Daniel Lamb
  */
-public class EventRouter extends RouteBuilder {
+public class BroadcastRouter extends RouteBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastRouter.class);
 
     /**
      * Configure the message route workflow.
@@ -35,8 +41,10 @@ public class EventRouter extends RouteBuilder {
         from("{{input.stream}}")
                 .routeId("MessageBroadcaster")
                 .description("Broadcast messages from one queue/topic to other specified queues/topics.")
-                .log("Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
+                .log(INFO, LOGGER,
+                        "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
                 .recipientList(simple("${headers[{{recipients.header}}]}"))
                 .ignoreInvalidEndpoints();
     }
 }
+

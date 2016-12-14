@@ -10,7 +10,7 @@
     <cm:property-placeholder persistent-id="ca.islandora.alpaca.connector.broadcast" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="input.stream" value="broker:queue:islandora-connector-broadcast" />
-            <cm:property name="recipients.header" value="ca.islandora.alpaca.connector.broadcast.recipients" />
+            <cm:property name="recipients.header" value="IslandoraBroadcastRecipients" />
         </cm:default-properties>
     </cm:property-placeholder>
 
