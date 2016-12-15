@@ -43,7 +43,7 @@ public class BroadcastRouter extends RouteBuilder {
                 .description("Broadcast messages from one queue/topic to other specified queues/topics.")
                 .log(INFO, LOGGER,
                         "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
-                .recipientList(simple("${headers[{{recipients.header}}]}"))
+                .recipientList(simple("${headers[IslandoraBroadcastRecipients]}"))
                 .ignoreInvalidEndpoints();
     }
 }
