@@ -1,11 +1,14 @@
 language: java
-sudo: false
+sudo: true
 jdk:
   - oraclejdk8
 
 before_install:  
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
+
+install:
+  - $TRAVIS_BUILD_DIR/.scripts/travis_setup.sh
 
 notifications:
   irc: "irc.freenode.org#islandora"
