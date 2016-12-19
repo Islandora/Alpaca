@@ -11,6 +11,6 @@ install:
   - $TRAVIS_BUILD_DIR/.scripts/travis_setup.sh
 
 script:
-  - ./gradlew build
+  - ./gradlew --stacktrace build
 notifications:
   irc: "irc.freenode.org#islandora"
