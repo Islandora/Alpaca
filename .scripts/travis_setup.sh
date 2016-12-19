@@ -1,5 +1,9 @@
 #!/bin/bash
-sudo apt-get -y -qq install php7.0-gd php7.0-xml php7.0-mysql php7.0-curl php7.0-json php-stomp libwrap0 libterm-readkey-perl mysql-client libdbi-perl libmysqlclient20 mysql-client-core-5.7 mysql-common apache2 mysql-server mysql-server-core-5.7 tcpd libaio1 mysql-server libdbd-mysql-perl libhtml-template-perl php7.0 php7.0-dev php7.0-mbstring php-pear
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
+sudo update-java-alternatives -s java-8-oracle
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 
 mysql -u root -e 'create database drupal;'
 mysql -u root -e "GRANT ALL PRIVILEGES ON drupal.* To 'drupal'@'localhost' IDENTIFIED BY 'drupal';"
