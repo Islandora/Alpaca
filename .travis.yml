@@ -11,6 +11,7 @@ install:
   - $TRAVIS_BUILD_DIR/.scripts/travis_setup.sh
 
 script:
+  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
   - ./gradlew --stacktrace build
 notifications:
   irc: "irc.freenode.org#islandora"
