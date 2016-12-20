@@ -30,7 +30,6 @@ cd $HOME/drupal
 drush si minimal --db-url=mysql://drupal:drupal@localhost/drupal --yes
 drush runserver --php-cgi=$HOME/.phpenv/shims/php-cgi localhost:8081 &>/tmp/drush_webserver.log &
 
-ln -s $ISLANDORA_DIR modules/islandora
 drush en -y rdf
 drush en -y responsive_image
 drush en -y syslog
@@ -69,6 +68,7 @@ cd $HOME/drupal/modules
 git clone https://github.com/DiegoPino/claw-jsonld.git
 drush en -y jsonld
 
+git clone https://github.com/Islandora-CLAW/islandora.git
 drush en -y islandora
 
 drush -y dl bootstrap
