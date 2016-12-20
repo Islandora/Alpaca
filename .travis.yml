@@ -1,11 +1,18 @@
-language: java
-sudo: false
-jdk:
-  - oraclejdk8
+language: php
+sudo: true
+dist: trusty
+php:
+  - 7.0
 
 before_install:  
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
 
+install:
+  - $TRAVIS_BUILD_DIR/.scripts/travis_setup.sh
+
+script:
+  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+  - ./gradlew --stacktrace build
 notifications:
   irc: "irc.freenode.org#islandora"
