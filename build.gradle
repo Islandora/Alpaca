@@ -76,12 +76,12 @@ subprojects {
         classifier 'javadoc'
         from javadoc
     }
-
-		task docs(type: Javadoc) {
-				source subprojects.collect {project -> project.sourceSets.main.allJava }
-				classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
-				destinationDir = new File(projectDir, "docs/${version}")
-		}
+    
+    task docs(type: Javadoc) {
+        source subprojects.collect {project -> project.sourceSets.main.allJava }
+        classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
+        destinationDir = new File(projectDir, "docs/${version}")
+    }
 
     afterReleaseBuild.dependsOn docs
 
@@ -168,14 +168,6 @@ subprojects {
                 issueManagement {
                     system 'GitHub'
                     url 'https://github.com/Islandora-CLAW/CLAW/issues'
-                }
-
-                distributionManagement {
-                    site {
-                        id 'gh-pages'
-                        name "Deployment through GitHub's site deployment plugin"
-                        url 'http://islandora-claw.github.io/Alpaca/site/' + project.version
-                    }
                 }
 
                 developers {
