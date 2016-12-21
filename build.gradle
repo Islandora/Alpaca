@@ -25,7 +25,6 @@ allprojects  {
     }
 
     afterReleaseBuild.dependsOn uploadArchives
-    afterReleaseBuild.dependsOn publishGhPages
 }
 
 subprojects {
@@ -78,6 +77,14 @@ subprojects {
         from javadoc
     }
 
+		task docs(type: Javadoc) {
+				source subprojects.collect {project -> project.sourceSets.main.allJava }
+				classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
+				destinationDir = new File(projectDir, "docs/${version}")
+		}
+
+    afterReleaseBuild.dependsOn docs
+
     artifacts {
         archives javadocJar
         archives sourceJar
@@ -113,13 +120,6 @@ subprojects {
     signing {
         required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
-    }
-
-    githubPages {
-        pages {
-            from javadoc
-            into "docs/${version}"
-        }
     }
 
     uploadArchives {
