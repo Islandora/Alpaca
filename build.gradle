@@ -1,7 +1,6 @@
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
     id 'net.researchgate.release' version '2.4.0'
-    id 'org.ajoberstar.github-pages' version '1.5.1'
 }
 
 allprojects  {
@@ -24,8 +23,8 @@ allprojects  {
         tagTemplate = '$name-$version'
     }
 
+   
     afterReleaseBuild.dependsOn uploadArchives
-    afterReleaseBuild.dependsOn publishGhPages
 }
 
 subprojects {
@@ -77,7 +76,7 @@ subprojects {
         classifier 'javadoc'
         from javadoc
     }
-
+    
     artifacts {
         archives javadocJar
         archives sourceJar
@@ -113,13 +112,6 @@ subprojects {
     signing {
         required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
-    }
-
-    githubPages {
-        pages {
-            from javadoc
-            into "docs/${version}"
-        }
     }
 
     uploadArchives {
@@ -170,14 +162,6 @@ subprojects {
                     url 'https://github.com/Islandora-CLAW/CLAW/issues'
                 }
 
-                distributionManagement {
-                    site {
-                        id 'gh-pages'
-                        name "Deployment through GitHub's site deployment plugin"
-                        url 'http://islandora-claw.github.io/Alpaca/site/' + project.version
-                    }
-                }
-
                 developers {
                     developer {
                         id 'dannylamb'
@@ -214,3 +198,11 @@ subprojects {
         }
     }
 }
+
+task docs(type: Javadoc) {
+  source subprojects.collect {project -> project.sourceSets.main.allJava }
+  classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
+  destinationDir = new File(projectDir, "docs/${version}")
+}
+
+afterReleaseBuild.dependsOn docs

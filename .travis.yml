@@ -14,5 +14,7 @@ install:
 script:
   - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
   - ./gradlew --stacktrace build
+  - ./gradlew --stacktrace docs
+
 notifications:
   irc: "irc.freenode.org#islandora"
