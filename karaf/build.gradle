@@ -1,6 +1,7 @@
 description = 'Islandora CLAW Karaf Provisioning'
 
 processResources {
+    outputs.upToDateWhen { false  }
     expand project.properties
 }
 
