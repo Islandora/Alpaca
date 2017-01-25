@@ -141,9 +141,9 @@ subprojects {
                 }
 
                 scm {
-                    connection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
-                    developerConnection 'scm:git:git@github.com:Islandora-CLAW/Salmon.git'
-                    url 'https://github.com/islandora-CLAW/Salmon'
+                    connection 'scm:git:git@github.com:Islandora-CLAW/Alpaca.git'
+                    developerConnection 'scm:git:git@github.com:Islandora-CLAW/Alpaca.git'
+                    url 'https://github.com/islandora-CLAW/Alpaca'
                     tag 'HEAD'
                 }
 
