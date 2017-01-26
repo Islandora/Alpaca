@@ -13,7 +13,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="broker" interface="org.apache.camel.Component" filter="(osgi.jndi.service.name=acrepo/Broker)"/>
+    <reference id="broker" interface="org.apache.camel.Component" filter="(osgi.jndi.service.name=fcrepo/Broker)"/>
 
     <camelContext id="IslandoraConnectorBroadcast" xmlns="http://camel.apache.org/schema/blueprint">
         <package>ca.islandora.alpaca.connector.broadcast</package>

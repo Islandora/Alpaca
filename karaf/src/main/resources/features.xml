@@ -2,7 +2,7 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="${project.name}-${project.version}">
 
   <repository>mvn:org.fcrepo.camel/fcrepo-camel/${fcrepoCamelVersion}/xml/features</repository>
-  <repository>mvn:org.fcrepo.camel/fcrepo-camel-toolbox/${fcrepoCamelToolboxVersion}/xml/features</repository>
+  <repository>mvn:org.fcrepo.camel/toolbox-features/${fcrepoCamelToolboxVersion}/xml/features</repository>
   <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
   <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
 
@@ -24,7 +24,7 @@
     <feature version="${camelVersion}">camel</feature>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}</bundle>
-
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
     <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
 
   </feature>
