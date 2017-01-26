@@ -46,14 +46,14 @@ subprojects {
 
         camelVersion = '2.17.1'
         slf4jVersion = '1.7.12'
-        fcrepoCamelVersion = '4.4.3'
-        fcrepoCamelToolboxVersion = '4.6.0'
-        activemqVersion = '5.13.2'
+        fcrepoCamelVersion = '4.5.0'
+        fcrepoCamelToolboxVersion = '4.7.0'
+        activemqVersion = '5.14.0'
         commonsIoVersion = '2.4'
         cxfVersion = '3.1.4'
         mustacheVersion = '0.9.0'
 
-        camelVersionRange = '[2.17, 3)'
+        camelVersionRange = '2.18.0'
 
         /* OSGi */
         defaultOsgiImports = 'org.osgi.service.blueprint;version="[1,2)",*'
