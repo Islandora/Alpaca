@@ -18,11 +18,8 @@
 
 package ca.islandora.indexing.triplestore;
 
-import static org.apache.camel.builder.PredicateBuilder.and;
-import static org.apache.camel.builder.PredicateBuilder.or;
 import static org.apache.camel.LoggingLevel.ERROR;
-import static org.fcrepo.camel.FcrepoHeaders.FCREPO_BASE_URL;
-import static org.fcrepo.camel.FcrepoHeaders.FCREPO_IDENTIFIER;
+import static org.fcrepo.camel.FcrepoHeaders.FCREPO_NAMED_GRAPH;
 
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.RouteBuilder;
@@ -37,25 +34,21 @@ public class TriplestoreIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
-        final Predicate isTriples = header("Content-Type").isEqualTo("application/n-triples");
-        final Predicate hasBaseUrl = header(FCREPO_BASE_URL).isNotNull();
-        final Predicate hasIdentifier = header(FCREPO_IDENTIFIER).isNotNull();
-        final Predicate hasFcrepoCamelHeaders = and(hasBaseUrl, hasIdentifier);
-        final Predicate hasAction = or(header("action").isEqualTo("delete"), header("action").isEqualTo("upsert"));
-        final Predicate isValid = and(isTriples, hasFcrepoCamelHeaders, hasAction);
-
         onException(Exception.class)
             .maximumRedeliveries("{{error.maxRedeliveries}}")
             .log(ERROR, "Error Indexing in Triplestore: ${routeId}");
 
         from("{{input.stream}}")
             .routeId("IslandoraTriplestoreIndexerRouter")
-            .filter(isValid)
-                .choice()
-                    .when(header("action").isEqualTo("delete"))
-                        .to("direct:triplestoreDelete")
-                    .otherwise()
-                        .to("direct:triplestoreUpsert");
+              .setProperty("action").jsonpath("$.type")
+              .setProperty("uri").jsonpath("$.object")
+              .toD("${property.uri}")
+              .setHeader(FCREPO_NAMED_GRAPH, exchangeProperty("uri"))
+              .choice()
+                .when(exchangeProperty("action").isEqualTo("delete"))
+                  .to("direct:triplestoreDelete")
+                .otherwise()
+                  .to("direct:triplestoreUpsert");
 
         from("direct:triplestoreUpsert")
             .routeId("islandoraTripelstoreIndexerUpsert")

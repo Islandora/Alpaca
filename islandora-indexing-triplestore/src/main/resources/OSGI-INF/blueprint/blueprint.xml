@@ -10,10 +10,7 @@
   <!-- OSGI blueprint property placeholder -->
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.indexing.triplestore" update-strategy="reload" />
 
-  <!-- configuration of activemq component -->
-  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="brokerURL" value="${jms.brokerUrl}"/>
-  </bean>
+  <reference id="broker" interface="org.apache.camel.Component" filter="(osgi.jndi.service.name=fcrepo/Broker)"/>
 
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>

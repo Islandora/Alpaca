@@ -10,7 +10,11 @@
     <details>Indexes the triplestore from Drupal nodes</details>
 
     <feature version="${camelVersion}">camel</feature>
-    <feature version="${activemqVersion}">activemq-camel</feature>
+    <feature version="${camelVersion}">camel-http4</feature>
+    <feature version="${camelVersion}">camel-jms</feature>
+    <feature version="${camelVersion}">camel-jsonpath</feature>
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-camel</feature>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}</bundle>
 
@@ -22,9 +26,10 @@
     <details>Distributes a message to a list of queues/topics.</details>
 
     <feature version="${camelVersion}">camel</feature>
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}</bundle>
-    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
+
     <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
 
   </feature>
