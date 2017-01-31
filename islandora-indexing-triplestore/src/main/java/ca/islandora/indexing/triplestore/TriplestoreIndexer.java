@@ -19,46 +19,73 @@
 package ca.islandora.indexing.triplestore;
 
 import static org.apache.camel.LoggingLevel.ERROR;
-import static org.fcrepo.camel.FcrepoHeaders.FCREPO_NAMED_GRAPH;
+import static org.apache.camel.LoggingLevel.INFO;
+import static org.fcrepo.camel.FcrepoHeaders.FCREPO_URI;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import org.apache.camel.Predicate;
+import com.jayway.jsonpath.JsonPathException;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.Exchange;
 import org.fcrepo.camel.processor.SparqlUpdateProcessor;
 import org.fcrepo.camel.processor.SparqlDeleteProcessor;
+import org.slf4j.Logger;
 
 /**
  * @author dhlamb
  */
 public class TriplestoreIndexer extends RouteBuilder {
 
+    private static final Logger LOGGER = getLogger(TriplestoreIndexer.class);
+
     @Override
     public void configure() {
 
+        // Global exception handler for the indexer.
+        // Just logs after retrying X number of times.
         onException(Exception.class)
             .maximumRedeliveries("{{error.maxRedeliveries}}")
-            .log(ERROR, "Error Indexing in Triplestore: ${routeId}");
+            .handled(true)
+            .log(ERROR, LOGGER, "Error indexing ${property.uri} in triplestore: ${exception.message}\n\n${exception.stacktrace}");
 
+        // Main router.
         from("{{input.stream}}")
             .routeId("IslandoraTriplestoreIndexerRouter")
-              .setProperty("action").jsonpath("$.type")
-              .setProperty("uri").jsonpath("$.object")
-              .toD("${property.uri}")
-              .setHeader(FCREPO_NAMED_GRAPH, exchangeProperty("uri"))
+              .to("direct:parseEvent")
               .choice()
-                .when(exchangeProperty("action").isEqualTo("delete"))
+                .when(exchangeProperty("action").isEqualTo("Delete"))
                   .to("direct:triplestoreDelete")
                 .otherwise()
-                  .to("direct:triplestoreUpsert");
+                  .to("direct:triplestoreIndex");
 
-        from("direct:triplestoreUpsert")
-            .routeId("islandoraTripelstoreIndexerUpsert")
-            .process(new SparqlUpdateProcessor())
-            .to("{{triplestore.baseUrl}}");
+        // Extracts info using jsonpath and stores it as properties on the exchange.
+        from("direct:parseEvent")
+            .routeId("IslandoraTriplestoreIndexerParseEvent")
+              // Custom exception handler.  Doesn't retry if event is malformed.
+              .onException(JsonPathException.class)
+                .maximumRedeliveries(0)
+                .handled(true)
+                .log(ERROR, LOGGER, "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}")
+                .end()
+              .setProperty("action").jsonpath("$.type")
+              .setProperty("uri").jsonpath("$.object");
 
+        // Issues SPARQL delete query for all triples with subject == uri.
         from("direct:triplestoreDelete")
-            .routeId("islandoraTripelstoreIndexerDelete")
-            .process(new SparqlDeleteProcessor())
-            .to("{{triplestore.baseUrl}}");
+            .routeId("IslandoraTripelstoreIndexerDelete")
+              .setHeader(FCREPO_URI, simple("${property.uri}?_format=jsonld"))
+              .process(new SparqlDeleteProcessor())
+              .log(INFO, LOGGER, "Deleting ${property.uri} in triplestore")
+              .to("{{triplestore.baseUrl}}");
+
+        // Retrieves the resource and converts the RDF to SPARQL update query, issuing it to the triplestore.
+        from("direct:triplestoreIndex")
+            .routeId("IslandoraTripelstoreIndexerIndex")
+              .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+              .toD("${property.uri}?_format=jsonld&authUsername={{drupal.username}}&authPassword={{drupal.password}}")
+              .setHeader(FCREPO_URI, simple("${property.uri}?_format=jsonld"))
+              .process(new SparqlUpdateProcessor())
+              .log(INFO, LOGGER, "Indexing ${property.uri} in triplestore")
+              .to("{{triplestore.baseUrl}}");
 
     }
 }
