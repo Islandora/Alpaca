@@ -18,14 +18,16 @@
 
 package ca.islandora.alpaca.indexing.triplestore;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.camel.*;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -35,7 +37,7 @@ import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 
 /**
- * Created by daniel on 31/01/17.
+ * @author dannylamb
  */
 public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
@@ -69,7 +71,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testRouterWithDeleteEvent() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerRouter").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerRouter";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
@@ -89,7 +92,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testRouterWithNonDeleteEvent() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerRouter").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerRouter";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
@@ -111,7 +115,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testParseEvent() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerParseEvent").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerParseEvent";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
@@ -120,7 +125,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         });
         context.start();
 
-        Exchange exchange = template.send(xchange ->
+        final Exchange exchange = template.send(xchange ->
             xchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"))
         );
 
@@ -138,7 +143,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testTriplestoreDelete() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerDelete").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerDelete";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
@@ -168,7 +174,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testRetrieveResource() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerRetrieveResource").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerRetrieveResource";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
@@ -191,7 +198,8 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
     @Test
     public void testTriplestoreIndex() throws Exception {
-        context.getRouteDefinition("IslandoraTriplestoreIndexerIndex").adviceWith(context, new AdviceWithRouteBuilder() {
+        final String route = "IslandoraTriplestoreIndexerIndex";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
