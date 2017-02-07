@@ -16,7 +16,7 @@
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}</bundle>
 
-    <configfile finalname="/etc/ca.islandora.indexing.triplestore.cfg">mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
+    <configfile finalname="/etc/ca.islandora.alpaca.indexing.triplestore.cfg">mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}/cfg/configuration</configfile>
 
   </feature>
 
