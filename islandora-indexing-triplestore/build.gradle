@@ -33,7 +33,7 @@ jar {
 }
 
 artifacts {
-    archives (file('build/cfg/main/ca.islandora.indexing.triplestore.cfg')) {
+    archives (file('build/cfg/main/ca.islandora.alpaca.indexing.triplestore.cfg')) {
         classifier 'configuration'
         type 'cfg'
     }
