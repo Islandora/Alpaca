@@ -15,10 +15,13 @@
       <cm:property name="triplestore.baseUrl" value="http://localhost:8080/bigdata/namespace/kb/sparql"/>
       <cm:property name="drupal.username" value=""/>
       <cm:property name="drupal.password" value=""/>
+      <cm:property name="jms.brokerUrl" value="tcp://localhost:61616"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <reference id="broker" interface="org.apache.camel.Component" filter="(osgi.jndi.service.name=fcrepo/Broker)"/>
+  <bean id="broker" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="brokerURL" value="${jms.brokerUrl}"/>
+  </bean>
 
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>

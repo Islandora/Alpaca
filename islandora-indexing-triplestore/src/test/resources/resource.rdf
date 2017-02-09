@@ -1,0 +1,27 @@
+{
+    "@graph":[
+        {
+            "@id":"http:\/\/localhost:8000\/fedora_resource\/1?_format=jsonld",
+            "@type":[
+                "http:\/\/schema.org\/Thing",
+                "http:\/\/www.w3.org\/ns\/ldp#RDFSource",
+                "http:\/\/www.w3.org\/ns\/ldp#Container"
+            ],
+            "http:\/\/islandora.ca\/CLAW\/vclock":[
+                {
+                    "@value":"5"
+                }
+            ],
+            "http:\/\/schema.org\/dateCreated":[
+                {
+                    "@value":"2017-01-30T04:36:07+00:00"
+                }
+            ],
+            "http:\/\/schema.org\/dateModified":[
+                {
+                    "@value":"2017-01-30T14:35:57+00:00"
+                }
+            ]
+        }
+    ]
+}

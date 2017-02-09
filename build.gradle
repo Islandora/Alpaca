@@ -48,7 +48,7 @@ subprojects {
         slf4jVersion = '1.7.12'
         fcrepoCamelVersion = '4.5.0'
         fcrepoCamelToolboxVersion = '4.7.0'
-        activemqVersion = '5.14.0'
+        activemqVersion = '5.14.1'
         commonsIoVersion = '2.4'
 
         camelVersionRange = '[2.18.0, 3)'

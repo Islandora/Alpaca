@@ -5,6 +5,7 @@ description = 'Islandora CLAW Broadcaster'
 dependencies {
     compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-blueprint', version: camelVersion
+    compile group: 'org.apache.activemq', name: 'activemq-camel', version: activemqVersion
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     testCompile group: 'org.apache.camel', name: 'camel-test-blueprint', version: camelVersion
 }
@@ -16,7 +17,9 @@ jar {
         vendor project.vendor
         license project.license
 
-        instruction 'Import-Package', "org.apache.camel;version=\"${camelVersionRange}\",${defaultOsgiImports}"
+        instruction 'Import-Package', 'org.apache.activemq.camel.component,' +
+                            "org.apache.camel;version=\"${camelVersionRange}\"," +
+                            defaultOsgiImports
         instruction 'Export-Package', 'ca.islandora.alpaca.connector.broadcast'
     }
 }
