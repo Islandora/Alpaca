@@ -4,7 +4,7 @@ If you are reading this document then you are interested in contributing to the 
 
 ## Workflows
 
-The group meets each Wednesday at 1PM Eastern. Meeting notes and announcements are posted to the [Islandora community list](https://groups.google.com/forum/#!forum/islandora) and the [Islandora developers list](https://groups.google.com/forum/#!forum/islandora-dev). You can view meeting agendas, notes, and call-in information [here](https://github.com/Islandora-CLAW/CLAW/wiki#islandora-7x-2x-tech-calls). Anybody is welcome to join the calls, and add items to the agenda.
+The group meets each Wednesday at 1PM Eastern. Meeting notes and announcements are posted to the [Islandora community list](https://groups.google.com/forum/#!forum/islandora) and the [Islandora developers list](https://groups.google.com/forum/#!forum/islandora-dev). You can view meeting agendas, notes, and call-in information [here](https://github.com/Islandora-CLAW/CLAW/wiki#islandora-claw-tech-calls). Anybody is welcome to join the calls, and add items to the agenda.
 
 ### Use cases
 
@@ -12,12 +12,12 @@ If you would like to submit a use case for the Islandora and Fedora integration 
 
 ### Documentation
 
-You can contribute documentation in two different ways. One way is to create an issue [here](https://github.com/Islandora-CLAW/CLAW/issues/new) assign the "documentation" label to the issue. Another way is to by pull request, same process as [Contribute Code](https://github.com/Islandora-CLAW/CLAW/blob/7.x-2.x/contributing.md#contribute-code). All documentation resides in [`docs`](https://github.com/Islandora-CLAW/CLAW/tree/7.x-2.x/docs).
+You can contribute documentation in two different ways. One way is to create an issue [here](https://github.com/Islandora-CLAW/CLAW/issues/new) assign the "documentation" label to the issue. Another way is to by pull request, same process as [Contribute Code](https://github.com/Islandora-CLAW/CLAW/blob/master/CONTRIBUTING.md#contribute-code). All documentation resides in [`docs`](https://github.com/Islandora-CLAW/CLAW/tree/master/docs).
 
 
 ### Request a new feature
 
-To request a new feature you should [open an issue](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a [use case](https://github.com/Islandora-CLAW/CLAW/blob/7.x-2.x/CONTRIBUTING.md#use-cases) (see _use case_ section above), and summarize the desired functionality. Select the label "enhancement" if creating an issue on the project repo, and "use case" if creating a use case in the interest group repo.
+To request a new feature you should [open an issue](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a [use case](https://github.com/Islandora-CLAW/CLAW/blob/master/CONTRIBUTING.md#use-cases) (see _use case_ section above), and summarize the desired functionality. Select the label "enhancement" if creating an issue on the project repo, and "use case" if creating a use case in the interest group repo.
 
 ### Report a bug
 
@@ -33,7 +33,7 @@ Feel free to search the issue queue for existing issues (aka tickets) that alrea
 
 **If you want to provide a pull along with your bug report:**
 
-That is great! In this case please send us a pull request as described in section _[Create a pull request](https://github.com/Islandora-CLAW/CLAW/blob/7.x-2.x/CONTRIBUTING.md#create-a-pull-request)_ below.
+That is great! In this case please send us a pull request as described in section _[Create a pull request](https://github.com/Islandora-CLAW/CLAW/blob/master/CONTRIBUTING.md#create-a-pull-request)_ below.
 
 ### Contribute code
 
@@ -41,7 +41,7 @@ Before you set out to contribute code you will need to have completed a [Contrib
 
 _If you are interested in contributing code to Islandora but do not know where to begin:_
 
-In this case you should [browse open issues](https://github.com/Islandora-CLAW/CLAW/issues), and or [use cases](https://github.com/Islandora/Islandora-Fedora4-Interest-Group/labels/use%20case).
+In this case you should [browse open issues](https://github.com/Islandora-CLAW/CLAW/issues).
 
 If you are contributing Drupal code, it must adhere to [Drupal Coding Standards](https://www.drupal.org/coding-standards); Travis CI will check for this on pull requests.
 
@@ -59,9 +59,9 @@ Contributions to the Islandora codebase should be sent as GitHub pull requests. 
 
 Take a look at [Creating a pull request](https://help.github.com/articles/creating-a-pull-request). In a nutshell you need to:
 
-1. [Fork](https://help.github.com/articles/fork-a-repo) the Islandora GitHub repository at [https://github.com/Islandora-CLAW/CLAW](https://github.com/Islandora-CLAW/CLAW) to your personal GitHub account. If you already have a fork of [https://github.com/Islandora/islandora](https://github.com/Islandora/islandora) Github will prevent you from creating a new fork; in such a case you can continue to use [https://github.com/Islandora/islandora](https://github.com/Islandora/islandora) to issue pull request, be cautious of which branches you work from though (you'll want to base your work off of 7.x-2.x). Also be cautious of which repository your issuing your Pull Request to (you'll want to issue your pull request to [https://github.com/Islandora-CLAW/CLAW](https://github.com/Islandora-CLAW/CLAW)). See [Fork a repo](https://help.github.com/articles/fork-a-repo) for detailed instructions.
+1. [Fork](https://help.github.com/articles/fork-a-repo) the Islandora GitHub repository at [https://github.com/Islandora-CLAW/CLAW](https://github.com/Islandora-CLAW/CLAW) to your personal GitHub account. If you already have a fork of [https://github.com/Islandora/islandora](https://github.com/Islandora/islandora) Github will prevent you from creating a new fork; in such a case you can continue to use [https://github.com/Islandora/islandora](https://github.com/Islandora/islandora) to issue pull request, be cautious of which branches you work from though (you'll want to base your work off of master). Also be cautious of which repository your issuing your Pull Request to (you'll want to issue your pull request to [https://github.com/Islandora-CLAW/CLAW](https://github.com/Islandora-CLAW/CLAW)). See [Fork a repo](https://help.github.com/articles/fork-a-repo) for detailed instructions.
 2. Commit any changes to your fork.
-3. Send a [pull request](https://help.github.com/articles/creating-a-pull-request) to the Islandora GitHub repository that you forked in step 1.  If your pull request is related to an existing issue -- for instance, because you reported a [bug/issue](https://github.com/Islandora-CLAW/CLAW/issues) earlier -- prefix the title of your pull request with the corresponding issue number (e.g. `issue-123: ...`). Please also include a reference to the issue in the description of the pull. This can be done by using '#' plus the issue number like so '#123', also try to pick an appropriate name for the branch in which you're issuing the pull request from. 
+3. Send a [pull request](https://help.github.com/articles/creating-a-pull-request) to the Islandora GitHub repository that you forked in step 1.  If your pull request is related to an existing issue -- for instance, because you reported a [bug/issue](https://github.com/Islandora-CLAW/CLAW/issues) earlier -- prefix the title of your pull request with the corresponding issue number (e.g. `issue-123: ...`). Please also include a reference to the issue in the description of the pull. This can be done by using '#' plus the issue number like so '#123', also try to pick an appropriate name for the branch in which you're issuing the pull request from.
 
 You may want to read [Syncing a fork](https://help.github.com/articles/syncing-a-fork) for instructions on how to keep your fork up to date with the latest changes of the upstream (official) `islandora` repository.
 
@@ -69,7 +69,7 @@ Please note that TravisCI will test for [PSR-2](http://www.php-fig.org/psr/psr-2
 
 **Note**: Due to differing interpretations of the PSR-2 coding standards do **not** use PHP [Coding Standards Fixer](http://cs.sensiolabs.org/). Coding Standards Fixer may make changes to your code that can cause it to fail our TravisCI tests.
 
-In addition, Islandora 7.x-2.x Committers will review contributions for [PSR-4 ](http://www.php-fig.org/psr/psr-4/) compliance.
+In addition, Islandora CLAW Committers will review contributions for [PSR-4 ](http://www.php-fig.org/psr/psr-4/) compliance.
 
 ## License Agreements
 
