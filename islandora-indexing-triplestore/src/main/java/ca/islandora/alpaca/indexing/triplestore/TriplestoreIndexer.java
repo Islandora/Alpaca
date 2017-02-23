@@ -90,9 +90,8 @@ public class TriplestoreIndexer extends RouteBuilder {
         from("direct:retrieve.resource")
             .routeId("IslandoraTriplestoreIndexerRetrieveResource")
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-                .toD("${property.uri}?_format=jsonld&authUsername={{drupal.username}}" +
-                     "&authPassword={{drupal.password}}"
-                );
+                .setHeader("Authentication", simple("${headers['Authentication']}"))
+                .toD("${property.uri}?_format=jsonld");
 
         // Converts the resource to a SPARQL update query, POSTing it to the triplestore.
         from("direct:triplestore.index")

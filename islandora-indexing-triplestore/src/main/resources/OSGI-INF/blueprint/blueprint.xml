@@ -13,8 +13,6 @@
       <cm:property name="error.maxRedeliveries" value="5"/>
       <cm:property name="input.stream" value="activemq:queue:islandora-indexing-triplestore"/>
       <cm:property name="triplestore.baseUrl" value="http://localhost:8080/bigdata/namespace/kb/sparql"/>
-      <cm:property name="drupal.username" value=""/>
-      <cm:property name="drupal.password" value=""/>
     </cm:default-properties>
   </cm:property-placeholder>
 
