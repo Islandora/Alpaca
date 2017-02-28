@@ -15,6 +15,9 @@ script:
   - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
   - ./gradlew --stacktrace build
   - ./gradlew --stacktrace docs
+  - ./gradlew codeCoverageReport
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
   irc: "irc.freenode.org#islandora"
