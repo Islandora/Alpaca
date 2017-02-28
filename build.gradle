@@ -5,6 +5,7 @@ plugins {
 
 allprojects  {
     apply plugin: 'maven'
+    apply plugin: 'jacoco'
 
     group = 'ca.islandora.alpaca'
 
@@ -23,7 +24,6 @@ allprojects  {
         tagTemplate = '$name-$version'
     }
 
-   
     afterReleaseBuild.dependsOn uploadArchives
 }
 
@@ -74,7 +74,7 @@ subprojects {
         classifier 'javadoc'
         from javadoc
     }
-    
+
     artifacts {
         archives javadocJar
         archives sourceJar
@@ -201,6 +201,26 @@ task docs(type: Javadoc) {
   source subprojects.collect {project -> project.sourceSets.main.allJava }
   classpath = files(subprojects.collect {project -> project.sourceSets.main.compileClasspath})
   destinationDir = new File(projectDir, "docs/${version}")
+}
+
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }
 
 afterReleaseBuild.dependsOn docs
