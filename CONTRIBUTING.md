@@ -16,7 +16,7 @@ You can contribute documentation in two different ways. One way is to create an 
 
 ### Request a new feature
 
-To request a new feature you should [open an issue in the CLAW repository](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a [use case](https://github.com/Islandora-CLAW/CLAW/blob/master/CONTRIBUTING.md#use-cases) (see _use case_ section above), and summarize the desired functionality. Prepend "Enhancement:" if creating an issue on the project repo, and "Use Case:" if creating a use case in the interest group repo.
+To request a new feature you should [open an issue in the CLAW repository](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a use case (see _use case_ section above), and summarize the desired functionality. Prepend "Enhancement:" if creating an issue on the project repo, and "Use Case:" if creating a use case in the interest group repo.
 
 ### Report a bug
 
@@ -24,7 +24,7 @@ To report a bug you should [open an issue in the CLAW repository](https://github
 
 In order to help us understand and fix the bug it would be great if you could provide us with:
 
-1. The steps to reproduce the bug. This includes information about e.g. the Islandora version you were using along with version of stack components.
+1. The steps to reproduce the bug. This includes information about e.g. the Islandora version you were using along with the versions of stack components.
 2. The expected behavior.
 3. The actual, incorrect behavior.
 
@@ -32,7 +32,7 @@ Feel free to search the issue queue for existing issues (aka tickets) that alrea
 
 **If you want to provide a pull along with your bug report:**
 
-That is great! In this case please send us a pull request as described in section _[Create a pull request](https://github.com/Islandora-CLAW/Alpaca/blob/master/CONTRIBUTING.md#create-a-pull-request)_ below.
+That is great! In this case please send us a pull request as described in the section _Create a pull request_  below.
 
 ### Contribute code
 
