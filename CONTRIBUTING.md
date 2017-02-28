@@ -40,7 +40,7 @@ Before you set out to contribute code you will need to have completed a [Contrib
 
 _If you are interested in contributing code to Islandora but do not know where to begin:_
 
-In this case you should [browse open issues](https://github.com/Islandora-CLAW/CLAW/issues).
+In this case you should [browse open issues](https://github.com/Islandora-CLAW/CLAW/issues) and check out [use cases](https://github.com/Islandora-CLAW/CLAW/labels/use%20case).
 
 If you are contributing Drupal code, it must adhere to [Drupal Coding Standards](https://www.drupal.org/coding-standards); Travis CI will check for this on pull requests.
 
