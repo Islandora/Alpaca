@@ -188,9 +188,11 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "GET");
+        endpoint.expectedHeaderReceived("Authentication", "some_nifty_token");
 
         template.send(exchange -> {
             exchange.setProperty("uri", "http://localhost:8000/fedora_resource/1");
+            exchange.getIn().setHeader("Authentication", "some_nifty_token");
         });
 
         assertMockEndpointsSatisfied();
