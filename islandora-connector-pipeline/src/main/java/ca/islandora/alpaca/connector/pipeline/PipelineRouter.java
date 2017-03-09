@@ -37,18 +37,14 @@ public class PipelineRouter extends RouteBuilder {
      * Configure the message route workflow.
      */
     public void configure() throws Exception {
-        from("timer:foo?period=1s")
-        .setHeader("slip", simple("activemq:queue:testA,activemq:queue:testB"))
-        .setExchangePattern(ExchangePattern.InOut)                
-        .routingSlip(header("slip"), ",")
-        .log("FINISHED ${body}");
-        
-        from("activemq:queue:testA")
-        .transform(simple("DREP"));
-        
-        from("activemq:queue:testB")
-        .log("FROM A ${body}")
-        .transform(simple("HREP"));
+        from("{{input.stream}}")
+        	.routeId("Pipleline")
+        	.description("Route incoming messages to queues based on header slip.")
+        	.setHeader("slip", simple("${headers[IslandoraPipelineRecipients]}"))
+            .log(INFO, LOGGER,
+                    "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
+        	.routingSlip(header("slip"), ",")
+        	.ignoreInvalidEndpoints();
         
     }
 }
