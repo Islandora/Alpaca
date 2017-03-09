@@ -19,6 +19,7 @@ package ca.islandora.alpaca.connector.pipeline;
 
 import static org.apache.camel.LoggingLevel.INFO;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,19 @@ public class PipelineRouter extends RouteBuilder {
      * Configure the message route workflow.
      */
     public void configure() throws Exception {
-
-        // Distribute message based on configured header.
-    	from("timer:foo?period=5000").log(INFO, LOGGER, "Hello World222");
+        from("timer:foo?period=1s")
+        .setHeader("slip", simple("activemq:queue:testA,activemq:queue:testB"))
+        .setExchangePattern(ExchangePattern.InOut)                
+        .routingSlip(header("slip"), ",")
+        .log("FINISHED ${body}");
+        
+        from("activemq:queue:testA")
+        .transform(simple("DREP"));
+        
+        from("activemq:queue:testB")
+        .log("FROM A ${body}")
+        .transform(simple("HREP"));
+        
     }
 }
 
