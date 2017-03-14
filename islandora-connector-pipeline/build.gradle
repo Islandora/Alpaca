@@ -1,6 +1,6 @@
 apply plugin: 'osgi'
 
-description = 'Islandora CLAW Broadcaster'
+description = 'Islandora CLAW Pipeline'
 
 dependencies {
     compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
