@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A content router distributing messages to multiple endpoints.
  *
- * @author Daniel Lamb
+ * @author Daniel Lamb / Nat
  */
 public class PipelineRouter extends RouteBuilder {
 
@@ -40,12 +40,10 @@ public class PipelineRouter extends RouteBuilder {
         from("{{input.stream}}")
         	.routeId("Pipleline")
         	.description("Route incoming messages to queues based on header slip.")
-        	.setHeader("slip", simple("${headers[IslandoraPipelineRecipients]}"))
             .log(INFO, LOGGER,
                     "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
-        	.routingSlip(header("slip"), ",")
+        	.routingSlip(header("IslandoraPipelineRecipients"))
         	.ignoreInvalidEndpoints();
-        
     }
 }
 
