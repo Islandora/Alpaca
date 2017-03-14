@@ -30,4 +30,16 @@
     <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
 
   </feature>
+  
+ <feature name="islandora-connector-pipeline" version="${project.version}" start-level="80">
+    <details>Distributes a message to a list of queues/topics sequentially.</details>
+
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
+
+    <bundle>mvn:ca.islandora.alpaca/islandora-connector-pipeline/${project.version}</bundle>
+
+    <configfile finalname="/etc/ca.islandora.alpaca.connector.pipeline.cfg">mvn:ca.islandora.alpaca/islandora-connector-pipeline/${project.version}/cfg/configuration</configfile>
+
+  </feature>
+    
 </features>
