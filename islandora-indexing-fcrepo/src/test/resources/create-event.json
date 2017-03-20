@@ -1,0 +1,9 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "actor": {
+    "type": "Person",
+    "id": "http://localhost:8000/user/1"
+  },
+  "object": "http://localhost:8000/fedora_resource/1"
+}
