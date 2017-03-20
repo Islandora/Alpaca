@@ -16,7 +16,7 @@ You can contribute documentation in two different ways. One way is to create an 
 
 ### Request a new feature
 
-To request a new feature you should [open an issue in the CLAW repository](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a use case (see the _Use cases_ section above), and summarize the desired functionality. Prepend "Enhancement:" if creating an issue on the project repo, and "Use Case:" if creating a use case in the interest group repo.
+To request a new feature you should [open an issue in the CLAW repository](https://github.com/Islandora-CLAW/CLAW/issues/new) or create a use case (see the _Use cases_ section above), and summarize the desired functionality. Prepend "Enhancement:" if creating an issue on the project repo, and "Use Case:" if creating a use case.
 
 ### Report a bug
 
@@ -62,7 +62,7 @@ Take a look at [Creating a pull request](https://help.github.com/articles/creati
 2. Commit any changes to your fork.
 3. Send a [pull request](https://help.github.com/articles/creating-a-pull-request) using the [pull request template](https://github.com/Islandora-CLAW/CLAW/blob/master/.github/PULL_REQUEST_TEMPLATE.md) to the Islandora GitHub repository that you forked in step 1.  If your pull request is related to an existing issue -- for instance, because you reported a [bug/issue](https://github.com/Islandora-CLAW/CLAW/issues) earlier -- prefix the title of your pull request with the corresponding issue number (e.g. `issue-123: ...`). Please also include a reference to the issue in the description of the pull. This can be done by using '#' plus the issue number like so '#123', also try to pick an appropriate name for the branch in which you're issuing the pull request from.
 
-You may want to read [Syncing a fork](https://help.github.com/articles/syncing-a-fork) for instructions on how to keep your fork up to date with the latest changes of the upstream (official) `islandora` repository.
+You may want to read [Syncing a fork](https://help.github.com/articles/syncing-a-fork) for instructions on how to keep your fork up to date with the latest changes of the upstream (official) repository.
 
 ## License Agreements
 
