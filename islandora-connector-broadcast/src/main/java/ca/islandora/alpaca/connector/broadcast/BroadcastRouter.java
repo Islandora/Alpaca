@@ -18,13 +18,9 @@
 package ca.islandora.alpaca.connector.broadcast;
 
 import static org.apache.camel.LoggingLevel.INFO;
-import static org.apache.camel.LoggingLevel.WARN;
 
-<<<<<<< Updated upstream
-=======
 import java.lang.IllegalArgumentException;
 import org.apache.camel.ExchangePattern;
->>>>>>> Stashed changes
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
