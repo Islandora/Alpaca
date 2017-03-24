@@ -18,7 +18,13 @@
 package ca.islandora.alpaca.connector.broadcast;
 
 import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.WARN;
 
+<<<<<<< Updated upstream
+=======
+import java.lang.IllegalArgumentException;
+import org.apache.camel.ExchangePattern;
+>>>>>>> Stashed changes
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +43,24 @@ public class BroadcastRouter extends RouteBuilder {
      */
     public void configure() throws Exception {
 
-        // Distribute message based on configured header.
+        // Distribute message based on headers.
         from("{{input.stream}}")
                 .routeId("MessageBroadcaster")
-                .description("Broadcast messages from one queue/topic to other specified queues/topics.")
+                .description("Broadcast messages from one queue/topic to other queues/topics to be processed sequentially or in parallel.")
                 .log(INFO, LOGGER,
                         "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
-                .recipientList(simple("${headers[IslandoraBroadcastRecipients]}"))
-                .ignoreInvalidEndpoints();
+                .filter(header("IslandoraExchangePattern"))
+                    .process(exchange -> {
+                        String patternName = exchange.getIn().getHeader("IslandoraExchangePattern", String.class);
+                        try {
+                            exchange.setPattern(ExchangePattern.asEnum(patternName));
+                        }
+                        catch (IllegalArgumentException e) {
+                            LOGGER.warn("Ignoring malformed exchange pattern: " + patternName);
+                        }
+                    })
+                    .end()
+                .routingSlip(header("IslandoraBroadcastRecipients")).ignoreInvalidEndpoints();
     }
 }
 
