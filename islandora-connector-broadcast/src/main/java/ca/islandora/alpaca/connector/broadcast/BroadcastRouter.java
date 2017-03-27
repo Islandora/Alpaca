@@ -19,6 +19,7 @@ package ca.islandora.alpaca.connector.broadcast;
 
 import static org.apache.camel.LoggingLevel.INFO;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +38,23 @@ public class BroadcastRouter extends RouteBuilder {
      */
     public void configure() throws Exception {
 
-        // Distribute message based on configured header.
+        // Distribute message based on headers.
         from("{{input.stream}}")
                 .routeId("MessageBroadcaster")
-                .description("Broadcast messages from one queue/topic to other specified queues/topics.")
+                .description("Broadcast messages from one queue/topic to other queues/topics")
                 .log(INFO, LOGGER,
                         "Distributing message: ${headers[JMSMessageID]} with timestamp ${headers[JMSTimestamp]}")
-                .recipientList(simple("${headers[IslandoraBroadcastRecipients]}"))
-                .ignoreInvalidEndpoints();
+                .filter(header("IslandoraExchangePattern"))
+                    .process(exchange -> {
+                        final String patternName = exchange.getIn().getHeader("IslandoraExchangePattern", String.class);
+                        try {
+                            exchange.setPattern(ExchangePattern.asEnum(patternName));
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.warn("Ignoring malformed exchange pattern: " + patternName);
+                        }
+                    })
+                    .end()
+                .routingSlip(header("IslandoraBroadcastRecipients")).ignoreInvalidEndpoints();
     }
 }
 
