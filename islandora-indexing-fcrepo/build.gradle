@@ -25,6 +25,8 @@ jar {
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel;version=\"${camelVersionRange}\"," +
+                            "org.apache.camel.component.jms;version=\"${camelVersionRange}\"," +
+                            "org.apache.activemq.camel.component;version=\"${activemqVersion}\"," +
                             "org.fcrepo.camel.processor," +
                             defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.indexing.fcrepo'

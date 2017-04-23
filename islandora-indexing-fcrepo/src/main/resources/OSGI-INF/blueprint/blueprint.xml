@@ -11,10 +11,14 @@
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.fcrepo" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
-      <cm:property name="input.stream" value="activemq:queue:islandora-indexing-fcrepo"/>
-      <cm:property name="fcrepo.baseUrl" value="localhost:8080/fcrepo/rest"/>
-      <cm:property name="drupal.username" value="admin"/>
-      <cm:property name="drupal.password" value="islandora"/>
+      <cm:property name="create.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
+      <cm:property name="update.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
+      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="create.output.stream" value="mock:result"/>
+      <cm:property name="update.output.stream" value="mock:result"/>
+      <cm:property name="delete.output.stream" value="mock:result"/>
+      <cm:property name="milliner.baseUrl" value="localhost:8000/milliner"/>
+      <cm:property name="drupal.baseUrl" value="localhost:8000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
