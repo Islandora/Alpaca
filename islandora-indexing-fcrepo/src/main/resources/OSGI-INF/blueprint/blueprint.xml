@@ -27,6 +27,8 @@
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
+  <bean id="pathProcessor" class="ca.islandora.alpaca.indexing.fcrepo.PathProcessor"/>
+
   <camelContext id="IslandoraFcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
     <package>ca.islandora.alpaca.indexing.fcrepo</package>
   </camelContext>

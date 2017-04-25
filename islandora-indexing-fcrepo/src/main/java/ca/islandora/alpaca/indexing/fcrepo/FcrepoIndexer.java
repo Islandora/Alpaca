@@ -18,22 +18,14 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
-import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
-import static org.apache.camel.model.dataformat.JsonLibrary.Jackson;
-import static org.fcrepo.camel.FcrepoHeaders.FCREPO_URI;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import com.jayway.jsonpath.JsonPathException;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
-import org.fcrepo.camel.processor.SparqlUpdateProcessor;
-import org.fcrepo.camel.processor.SparqlDeleteProcessor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author dhlamb
@@ -45,22 +37,25 @@ public class FcrepoIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
-        from("timer:foo?period=5000")
-                .log(INFO, LOGGER, "HELLO");
-
-        from("{{delete.input.stream")
-            .routeId("IslandoraFcrepoIndexerDelete")
+        from("{{delete.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerDelete")
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
                 .log(INFO, LOGGER, "DELETE EVENT")
                 .to("{{delete.output.stream}}");
 
         from("{{create.input.stream}}")
-            .routeId("IslandoraFcrepoIndexerCreate")
-                .log(INFO, LOGGER, "CREATE")
+                .routeId("IslandoraFcrepoIndexerCreate")
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+                .to("pathProcessor")
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .toD("${exchangeProperty.destination}")
+                .log(INFO, LOGGER, "GOT ${body} BACK FROM MILLINER")
                 .to("{{create.output.stream}}");
 
         from("{{update.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdate")
-                .log(INFO, LOGGER, "UPDATE")
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+                .log(INFO, LOGGER, "UPDATE EVENT")
                 .to("{{update.output.stream}}");
     }
 }
