@@ -18,6 +18,7 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
+import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.OFF;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -27,7 +28,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 
 /**
- * @author dhlamb
+ * @author Danny Lamb 
  */
 public class FcrepoIndexer extends RouteBuilder {
 
@@ -53,31 +54,13 @@ public class FcrepoIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
-        from("{{delete.input.stream}}")
-                .routeId("IslandoraFcrepoIndexerDelete")
-                .errorHandler(
-                        deadLetterChannel("{{delete.dead.stream}}")
-                                .useOriginalMessage()
-                                .maximumRedeliveries(maxRedeliveries)
-                                .logExhaustedMessageBody(true)
-                                .logExhaustedMessageHistory(true)
-                                .retryAttemptedLogLevel(OFF)
-                )
-                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerDelete")
-                .toD("${exchangeProperty.MillinerUri}")
-                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerDelete")
-                .to("{{unmap.input.stream}}");
-
+        // Route for creating a Fedora resource from a Drupal entity
         from("{{create.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerCreate")
                 .errorHandler(
-                        deadLetterChannel("{{create.dead.stream}}")
+                        deadLetterChannel("direct:create-log-error")
                                 .useOriginalMessage()
                                 .maximumRedeliveries(maxRedeliveries)
-                                .logExhaustedMessageBody(true)
-                                .logExhaustedMessageHistory(true)
-                                .retryAttemptedLogLevel(OFF)
                 )
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
                 .to("bean:fcrepoIndexerBean?method=preprocessForMillinerCreate")
@@ -85,50 +68,78 @@ public class FcrepoIndexer extends RouteBuilder {
                 .to("bean:fcrepoIndexerBean?method=postprocessForMillinerCreate")
                 .to("{{map.input.stream}}");
 
-        from("{{update.input.stream}}")
-                .routeId("IslandoraFcrepoIndexerUpdate")
-                .errorHandler(
-                        deadLetterChannel("{{update.dead.stream}}")
-                                .useOriginalMessage()
-                                .maximumRedeliveries(maxRedeliveries)
-                                .logExhaustedMessageBody(true)
-                                .logExhaustedMessageHistory(true)
-                                .retryAttemptedLogLevel(OFF)
-                )
-                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerUpdate")
-                .toD("${exchangeProperty.MillinerUri}")
-                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerUpdate")
-                .to("{{update.output.stream}}");
+        from("direct:create-log-error")
+                .log(ERROR, LOGGER, "${exception.stacktrace}")
+                .to("{{create.dead.stream}}");
 
+        // Route for mapping a Fedora resource to a Drupal entity
         from("{{map.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerPathMapper")
                 .errorHandler(
-                        deadLetterChannel("{{map.dead.stream}}")
+                        deadLetterChannel("direct:map-log-error")
                                 .useOriginalMessage()
                                 .maximumRedeliveries(maxRedeliveries)
-                                .logExhaustedMessageBody(true)
-                                .logExhaustedMessageHistory(true)
-                                .retryAttemptedLogLevel(OFF)
                 )
                 .to("bean:fcrepoIndexerBean?method=preprocessForGeminiCreate")
                 .toD("${exchangeProperty.GeminiUri}")
                 .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{create.output.stream}}");
 
+        from("direct:map-log-error")
+                .log(ERROR, LOGGER, "${exception.stacktrace}")
+                .to("{{map.dead.stream}}");
+
+        // Route for updating a Fedora resource from a Drupal entity
+        from("{{update.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerUpdate")
+                .errorHandler(
+                        deadLetterChannel("direct:update-log-error")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                )
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerUpdate")
+                .toD("${exchangeProperty.MillinerUri}")
+                .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
+                .to("{{update.output.stream}}");
+
+        from("direct:update-log-error")
+                .log(ERROR, LOGGER, "${exception.stacktrace}")
+                .to("{{update.dead.stream}}");
+
+        // Route for deleting a Fedora resource for a Drupal entity
+        from("{{delete.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerDelete")
+                .errorHandler(
+                        deadLetterChannel("direct:delete-log-error")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                )
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerDelete")
+                .toD("${exchangeProperty.MillinerUri}")
+                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerDelete")
+                .to("{{unmap.input.stream}}");
+
+        from("direct:delete-log-error")
+                .log(ERROR, LOGGER, "${exception.stacktrace}")
+                .to("{{delete.dead.stream}}");
+
+        // Route for unmapping a Fedora resource from a Drupal entity
         from("{{unmap.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerPathUnmapper")
                 .errorHandler(
-                        deadLetterChannel("{{unmap.dead.stream}}")
+                        deadLetterChannel("direct:unmap-log-error")
                                 .useOriginalMessage()
                                 .maximumRedeliveries(maxRedeliveries)
-                                .logExhaustedMessageBody(true)
-                                .logExhaustedMessageHistory(true)
-                                .retryAttemptedLogLevel(OFF)
                 )
                 .to("bean:fcrepoIndexerBean?method=preprocessForGeminiDelete")
                 .toD("${exchangeProperty.GeminiUri}")
                 .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{delete.output.stream}}");
+
+        from("direct:unmap-log-error")
+                .log(ERROR, LOGGER, "${exception.stacktrace}")
+                .to("{{unmap.dead.stream}}");
     }
 }

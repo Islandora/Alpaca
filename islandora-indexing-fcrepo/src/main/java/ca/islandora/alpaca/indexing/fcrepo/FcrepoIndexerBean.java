@@ -18,8 +18,12 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
+import static org.apache.camel.LoggingLevel.INFO;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.PropertyInject;
+import org.slf4j.Logger;
 
 /**
  * Processing functions for FcrepoIndexer routes.
@@ -27,6 +31,8 @@ import org.apache.camel.PropertyInject;
  * @author Danny Lamb
  */
 public class FcrepoIndexerBean {
+
+    private static final Logger LOGGER = getLogger(FcrepoIndexerBean.class);
 
     /**
      * @return  Fedora base url
@@ -105,6 +111,8 @@ public class FcrepoIndexerBean {
     public void preprocessForMillinerCreate(final Exchange exchange) throws Exception {
         preprocessForMilliner(exchange);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+
+        LOGGER.info("Creating Fedora resource for " + exchange.getProperty("DrupalPath"));
     }
 
     /**
@@ -116,6 +124,8 @@ public class FcrepoIndexerBean {
     public void preprocessForMillinerUpdate(final Exchange exchange) throws Exception {
         preprocessForMilliner(exchange);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+
+        LOGGER.info("Updating Fedora resource for " + exchange.getProperty("DrupalPath"));
     }
 
     /**
@@ -127,6 +137,8 @@ public class FcrepoIndexerBean {
     public void preprocessForMillinerDelete(final Exchange exchange) throws Exception {
         preprocessForMilliner(exchange);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "DELETE");
+
+        LOGGER.info("Deleting Fedora resource for " + exchange.getProperty("DrupalPath"));
     }
 
     private void preprocessForMilliner(final Exchange exchange) throws Exception {
@@ -143,7 +155,7 @@ public class FcrepoIndexerBean {
 
         // Cache the drupal path and its corresponding uri in Milliner.
         exchange.setProperty("DrupalPath", path);
-        exchange.setProperty("MillinerUri", millinerBaseUrl + path);
+        exchange.setProperty("MillinerUri", addTrailingSlash(millinerBaseUrl) + path);
 
         // Prepare the message for Milliner.
         exchange.getIn().removeHeaders("*");
@@ -174,16 +186,6 @@ public class FcrepoIndexerBean {
     }
 
     /**
-     * Prepares message to get sent for further processing of the Update event.
-     *
-     * @param exchange
-     * @throws Exception
-     */
-    public void postprocessForMillinerUpdate(final Exchange exchange) throws Exception {
-        resetToOriginalMessage(exchange);
-    }
-
-    /**
      * Prepares message to get sent to queue for Gemini unmapping.
      *
      * @param exchange
@@ -201,28 +203,48 @@ public class FcrepoIndexerBean {
      * @throws Exception
      */
     public void preprocessForGeminiCreate(final Exchange exchange) throws Exception {
+        // Grab JWT token
+        final String token = exchange.getIn().getHeader("Authorization", String.class);
+
+        // Grap the fcrepo and drupal paths
         final String fcrepoPath = getPath(exchange.getIn().getHeader("FcrepoUri", String.class), fcrepoBaseUrl);
         final String drupalPath = exchange.getIn().getHeader("DrupalPath", String.class);
 
-        exchange.getIn().removeHeaders("*");
-        exchange.getIn().setBody("{\"drupal\": \"" + drupalPath + "\", \"fedora\": \"" + fcrepoPath + "\"}");
-        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+        LOGGER.info("Mapping " + drupalPath + " to " + fcrepoPath);
 
+        // Prepare the message
+        exchange.getIn().removeHeaders("*");
+        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+        exchange.getIn().setHeader("Content-Type", "application/json");
+        exchange.getIn().setHeader("Authorization", token);
+        exchange.getIn().setBody("{\"drupal\": \"" + drupalPath + "\", \"fedora\": \"" + fcrepoPath + "\"}");
+
+        // Set the uri to call dynamically
         exchange.setProperty("GeminiUri", addTrailingSlash(geminiBaseUrl));
     }
 
     /**
      * Prepares message for Gemini DELETE.
+     *
      * @param exchange
      * @throws Exception
      */
     public void preprocessForGeminiDelete(final Exchange exchange) throws Exception {
-        exchange.getIn().removeHeaders("*");
-        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "DELETE");
+        // Grab JWT token
+        final String token = exchange.getIn().getHeader("Authorization", String.class);
+
+        // Set the uri to call dynamically
         exchange.setProperty(
                 "GeminiUri",
-                addTrailingSlash(geminiBaseUrl) + exchange.getIn().getHeader("DrupalPath", String.class)
+                addTrailingSlash(geminiBaseUrl) + "drupal/" + exchange.getIn().getHeader("DrupalPath", String.class)
         );
+
+        LOGGER.info("Unmapping " + exchange.getIn().getHeader("DrupalPath", String.class));
+
+        // Prepare the message
+        exchange.getIn().removeHeaders("*");
+        exchange.getIn().setHeader("Authorization", token);
+        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "DELETE");
     }
 
     private String addTrailingSlash(final String str) {
