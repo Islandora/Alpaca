@@ -18,14 +18,13 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
-import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.OFF;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.apache.camel.Exchange;
+import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
-
 
 /**
  * @author dhlamb
@@ -34,28 +33,102 @@ public class FcrepoIndexer extends RouteBuilder {
 
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
+    /**
+     * @return  Number of times to retry
+     */
+    public int getMaxRedeliveries() {
+        return maxRedeliveries;
+    }
+
+    /**
+     * @param   maxRedeliveries Number of times to retry
+     */
+    public void setMaxRedeliveries(final int maxRedeliveries) {
+        this.maxRedeliveries = maxRedeliveries;
+    }
+
+    @PropertyInject("error.maxRedeliveries")
+    private int maxRedeliveries;
+
     @Override
     public void configure() {
 
         from("{{delete.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerDelete")
+                .errorHandler(
+                        deadLetterChannel("{{delete.dead.stream}}")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                                .logExhaustedMessageBody(true)
+                                .logExhaustedMessageHistory(true)
+                                .retryAttemptedLogLevel(OFF)
+                )
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-                .log(INFO, LOGGER, "DELETE EVENT")
-                .to("{{delete.output.stream}}");
+                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerDelete")
+                .toD("${exchangeProperty.MillinerUri}")
+                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerDelete")
+                .to("{{unmap.input.stream}}");
 
         from("{{create.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerCreate")
+                .errorHandler(
+                        deadLetterChannel("{{create.dead.stream}}")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                                .logExhaustedMessageBody(true)
+                                .logExhaustedMessageHistory(true)
+                                .retryAttemptedLogLevel(OFF)
+                )
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-                .to("pathProcessor")
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .toD("${exchangeProperty.destination}")
-                .log(INFO, LOGGER, "GOT ${body} BACK FROM MILLINER")
-                .to("{{create.output.stream}}");
+                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerCreate")
+                .toD("${exchangeProperty.MillinerUri}")
+                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerCreate")
+                .to("{{map.input.stream}}");
 
         from("{{update.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdate")
+                .errorHandler(
+                        deadLetterChannel("{{update.dead.stream}}")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                                .logExhaustedMessageBody(true)
+                                .logExhaustedMessageHistory(true)
+                                .retryAttemptedLogLevel(OFF)
+                )
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-                .log(INFO, LOGGER, "UPDATE EVENT")
+                .to("bean:fcrepoIndexerBean?method=preprocessForMillinerUpdate")
+                .toD("${exchangeProperty.MillinerUri}")
+                .to("bean:fcrepoIndexerBean?method=postprocessForMillinerUpdate")
                 .to("{{update.output.stream}}");
+
+        from("{{map.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerPathMapper")
+                .errorHandler(
+                        deadLetterChannel("{{map.dead.stream}}")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                                .logExhaustedMessageBody(true)
+                                .logExhaustedMessageHistory(true)
+                                .retryAttemptedLogLevel(OFF)
+                )
+                .to("bean:fcrepoIndexerBean?method=preprocessForGeminiCreate")
+                .toD("${exchangeProperty.GeminiUri}")
+                .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
+                .to("{{create.output.stream}}");
+
+        from("{{unmap.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerPathUnmapper")
+                .errorHandler(
+                        deadLetterChannel("{{unmap.dead.stream}}")
+                                .useOriginalMessage()
+                                .maximumRedeliveries(maxRedeliveries)
+                                .logExhaustedMessageBody(true)
+                                .logExhaustedMessageHistory(true)
+                                .retryAttemptedLogLevel(OFF)
+                )
+                .to("bean:fcrepoIndexerBean?method=preprocessForGeminiDelete")
+                .toD("${exchangeProperty.GeminiUri}")
+                .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
+                .to("{{delete.output.stream}}");
     }
 }

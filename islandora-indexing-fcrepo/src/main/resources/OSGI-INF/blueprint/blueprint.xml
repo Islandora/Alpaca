@@ -12,13 +12,22 @@
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
       <cm:property name="create.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
-      <cm:property name="update.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
-      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="create.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-create-dead"/>
       <cm:property name="create.output.stream" value="mock:result"/>
+      <cm:property name="update.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
+      <cm:property name="update.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-update-dead"/>
       <cm:property name="update.output.stream" value="mock:result"/>
+      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="delete.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-delete-dead"/>
       <cm:property name="delete.output.stream" value="mock:result"/>
-      <cm:property name="milliner.baseUrl" value="localhost:8000/milliner"/>
-      <cm:property name="drupal.baseUrl" value="localhost:8000"/>
+      <cm:property name="map.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map"/>
+      <cm:property name="map.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-dead"/>
+      <cm:property name="unmap.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap"/>
+      <cm:property name="unmap.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-dead"/>
+      <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner"/>
+      <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
+      <cm:property name="drupal.baseUrl" value="http://localhost:8000"/>
+      <cm:property name="fcrepo.baseUrl" value="http://localhost:8080/fcrepo/rest"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -27,7 +36,7 @@
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
-  <bean id="pathProcessor" class="ca.islandora.alpaca.indexing.fcrepo.PathProcessor"/>
+  <bean id="fcrepoIndexerBean" class="ca.islandora.alpaca.indexing.fcrepo.FcrepoIndexerBean"/>
 
   <camelContext id="IslandoraFcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
     <package>ca.islandora.alpaca.indexing.fcrepo</package>
