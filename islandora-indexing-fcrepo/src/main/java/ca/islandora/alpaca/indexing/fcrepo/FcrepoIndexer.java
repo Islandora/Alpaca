@@ -19,11 +19,14 @@
 package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.apache.camel.LoggingLevel.ERROR;
-import static org.apache.camel.LoggingLevel.OFF;
+import static org.apache.camel.LoggingLevel.WARN;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.apache.camel.Predicate;
 import org.apache.camel.PropertyInject;
+import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 
@@ -54,6 +57,10 @@ public class FcrepoIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
+        // Predicates 
+        Predicate is404 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 404"));
+        Predicate is409 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 409"));
+
         // Route for creating a Fedora resource from a Drupal entity
         from("{{create.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerCreate")
@@ -62,6 +69,12 @@ public class FcrepoIndexer extends RouteBuilder {
                                 .useOriginalMessage()
                                 .maximumRedeliveries(maxRedeliveries)
                 )
+                .onException(HttpOperationFailedException.class).onWhen(is409)
+                        .useOriginalMessage()
+                        .handled(true)
+                                .log(WARN, LOGGER, "Received 409 from Milliner POST, skipping routing.")
+                                .to("{{create.output.stream}}")
+                .end()
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
                 .to("bean:fcrepoIndexerBean?method=preprocessForMillinerCreate")
                 .toD("${exchangeProperty.MillinerUri}")
@@ -115,6 +128,12 @@ public class FcrepoIndexer extends RouteBuilder {
                                 .useOriginalMessage()
                                 .maximumRedeliveries(maxRedeliveries)
                 )
+                .onException(HttpOperationFailedException.class).onWhen(is404)
+                        .useOriginalMessage()
+                        .handled(true)
+                                .log(WARN, LOGGER, "Received 404 from Milliner DELETE, skipping routing.")
+                                .to("{{delete.output.stream}}")
+                .end()
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
                 .to("bean:fcrepoIndexerBean?method=preprocessForMillinerDelete")
                 .toD("${exchangeProperty.MillinerUri}")
