@@ -62,13 +62,6 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         return "/OSGI-INF/blueprint/blueprint-test.xml";
     }
 
-    @Override
-    protected Properties useOverridePropertiesWithPropertiesComponent() {
-        final Properties props = new Properties();
-        props.put("input.stream", "seda:foo");
-        return props;
-    }
-
     @Test
     public void testRouterWithDeleteEvent() throws Exception {
         final String route = "IslandoraTriplestoreIndexerRouter";
