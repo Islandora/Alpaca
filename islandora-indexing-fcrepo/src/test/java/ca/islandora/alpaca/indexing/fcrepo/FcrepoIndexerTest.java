@@ -75,7 +75,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         // Send an update event instead of a create.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -102,7 +105,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -139,7 +145,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -166,7 +175,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -193,7 +205,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
             exchange.getIn().setHeader("DrupalPath", "fedora_resource/1");
             exchange.getIn().setHeader("FcrepoUri", "http://localhost:8080/fcrepo/rest/foo");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -220,7 +235,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
             exchange.getIn().setHeader("DrupalPath", "fedora_resource/1");
             exchange.getIn().setHeader("FcrepoUri", "http://localhost:8080/fcrepo/rest/foo");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -244,7 +262,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         // Send a delete event instead of an update.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -269,7 +290,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -294,7 +318,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("update-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -319,7 +346,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         // Send a create event instead of a delete.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -346,7 +376,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -383,7 +416,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -410,7 +446,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -436,7 +475,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
             exchange.getIn().setHeader("DrupalPath", "fedora_resource/1");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();
@@ -462,7 +504,10 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "some_nifty_token");
             exchange.getIn().setHeader("DrupalPath", "fedora_resource/1");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"), String.class);
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"),
+                    String.class
+            );
         });
 
         assertMockEndpointsSatisfied();

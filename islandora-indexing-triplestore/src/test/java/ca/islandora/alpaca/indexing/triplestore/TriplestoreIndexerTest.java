@@ -20,7 +20,6 @@ package ca.islandora.alpaca.indexing.triplestore;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;

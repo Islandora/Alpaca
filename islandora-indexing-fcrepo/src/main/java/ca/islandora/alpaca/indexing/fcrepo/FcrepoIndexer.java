@@ -31,7 +31,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 
 /**
- * @author Danny Lamb 
+ * @author Danny Lamb
  */
 public class FcrepoIndexer extends RouteBuilder {
 
@@ -57,9 +57,9 @@ public class FcrepoIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
-        // Predicates 
-        Predicate is404 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 404"));
-        Predicate is409 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 409"));
+        // Predicates
+        final Predicate is404 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 404"));
+        final Predicate is409 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 409"));
 
         // Route for creating a Fedora resource from a Drupal entity
         from("{{create.input.stream}}")

@@ -18,7 +18,6 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
-import static org.apache.camel.LoggingLevel.INFO;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.apache.camel.Exchange;
