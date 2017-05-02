@@ -6,9 +6,7 @@ dependencies {
     compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-blueprint', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
-    compile group: 'org.apache.camel', name: 'camel-jsonpath', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-jackson', version: camelVersion
-    compile group: 'org.fcrepo.camel', name: 'fcrepo-camel', version: fcrepoCamelVersion
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     testCompile group: 'org.apache.camel', name: 'camel-test-blueprint', version: camelVersion
     testCompile group: 'org.apache.activemq', name: 'activemq-camel', version: activemqVersion
@@ -25,9 +23,7 @@ jar {
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel;version=\"${camelVersionRange}\"," +
-                            "org.apache.camel.component.jms;version=\"${camelVersionRange}\"," +
                             "org.apache.activemq.camel.component;version=\"${activemqVersion}\"," +
-                            "org.fcrepo.camel.processor," +
                             defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.indexing.fcrepo'
     }
