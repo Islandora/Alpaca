@@ -17,7 +17,7 @@ jar {
 
       instruction 'Import-Package', 'org.apache.http.client,' +
                             defaultOsgiImports
-      instruction 'Export-Package', 'ca.islandora.indexing.http.client'
+      instruction 'Export-Package', 'ca.islandora.alpaca.http.client'
     }
 }
 

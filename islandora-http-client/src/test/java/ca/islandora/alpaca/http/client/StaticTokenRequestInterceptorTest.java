@@ -40,7 +40,8 @@ public class StaticTokenRequestInterceptorTest extends Assert {
 
 	@Test
 	public void shouldNotInjectHeaderWhenAuthHeadersPresent() {
-		StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor("testToken");
+		StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor();
+		testInterceptor.setToken("testToken");
 		HttpRequest request = new HttpGet();
 		request.addHeader(AUTH_HEADER, "fake header");
 		testInterceptor.process(request, null);
