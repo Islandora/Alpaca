@@ -26,27 +26,31 @@ import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * @author ajs6f
+ *
+ */
 public class StaticTokenRequestInterceptorTest extends Assert {
 
-	@Test
-	public void shouldInjectHeaderWhenNoAuthHeadersPresent() {
-		StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor("testToken");
-		HttpRequest request = new HttpGet();
-		testInterceptor.process(request, null);
-		Header[] authHeaders = request.getHeaders(AUTH_HEADER);
-		assertEquals("Should only be one auth header!", 1, authHeaders.length);
-		assertEquals("Wrong value for header!", "Bearer testToken", authHeaders[0].getValue());
-	}
+    @Test
+    public void shouldInjectHeaderWhenNoAuthHeadersPresent() {
+        final StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor("testToken");
+        final HttpRequest request = new HttpGet();
+        testInterceptor.process(request, null);
+        final Header[] authHeaders = request.getHeaders(AUTH_HEADER);
+        assertEquals("Should only be one auth header!", 1, authHeaders.length);
+        assertEquals("Wrong value for header!", "Bearer testToken", authHeaders[0].getValue());
+    }
 
-	@Test
-	public void shouldNotInjectHeaderWhenAuthHeadersPresent() {
-		StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor();
-		testInterceptor.setToken("testToken");
-		HttpRequest request = new HttpGet();
-		request.addHeader(AUTH_HEADER, "fake header");
-		testInterceptor.process(request, null);
-		Header[] authHeaders = request.getHeaders(AUTH_HEADER);
-		assertEquals("Should only be one auth header!", 1, authHeaders.length);
-		assertEquals("Wrong value for header!", "fake header", authHeaders[0].getValue());
-	}
+    @Test
+    public void shouldNotInjectHeaderWhenAuthHeadersPresent() {
+        final StaticTokenRequestInterceptor testInterceptor = new StaticTokenRequestInterceptor();
+        testInterceptor.setToken("testToken");
+        final HttpRequest request = new HttpGet();
+        request.addHeader(AUTH_HEADER, "fake header");
+        testInterceptor.process(request, null);
+        final Header[] authHeaders = request.getHeaders(AUTH_HEADER);
+        assertEquals("Should only be one auth header!", 1, authHeaders.length);
+        assertEquals("Wrong value for header!", "fake header", authHeaders[0].getValue());
+    }
 }

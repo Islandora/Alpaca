@@ -28,34 +28,58 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * Adds a single authentication header to any request that does not
+ * already have at least one authentication header.
+ * 
+ * @author ajs6f
+ *
+ */
 public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
 
-	public static final String AUTH_HEADER = "Authorization";
+    public static final String AUTH_HEADER = "Authorization";
 
-	private Header header;
+    private Header header;
 
-	public StaticTokenRequestInterceptor() {
-	}
+    /**
+     * Default constructor
+     */
+    public StaticTokenRequestInterceptor() {
+    }
 
-	public StaticTokenRequestInterceptor(String token) {
-		this.header = makeHeader(token);
-	}
+    /**
+     * @param token the authentication token to use
+     */
+    public StaticTokenRequestInterceptor(final String token) {
+        this.header = makeHeader(token);
+    }
 
-	public void setToken(String token) {
-		this.header = makeHeader(token);
-	}
+    /**
+     * @param token the authentication token to use
+     */
+    public void setToken(final String token) {
+        this.header = makeHeader(token);
+    }
 
-	private Header makeHeader(String token) {
-		return new BasicHeader(AUTH_HEADER, "Bearer " + requireNonNull(token, "Token must not be null!"));
-	}
+    private static Header makeHeader(final String token) {
+        return new BasicHeader(AUTH_HEADER, "Bearer " + requireNonNull(token, "Token must not be null!"));
+    }
 
-	@Override
-	public void process(HttpRequest request, HttpContext context) {
-		// we do not inject if auth headers present
-		if (request.getFirstHeader(AUTH_HEADER)== null) request.addHeader(header);
-	}
-	
-	public static HttpClient defaultClient(StaticTokenRequestInterceptor interceptor) {
-		return HttpClientBuilder.create().addInterceptorFirst(interceptor).build();
-	}
+    @Override
+    public void process(final HttpRequest request, final HttpContext context) {
+        // we do not inject if auth headers present
+        if (request.getFirstHeader(AUTH_HEADER) == null) {
+            request.addHeader(header);
+        }
+    }
+
+    /**
+     * Convenience factory method.
+     * 
+     * @param interceptor
+     * @return a default-configuration {@link HttpClient} that is wrapped with this interceptor
+     */
+    public static HttpClient defaultClient(final StaticTokenRequestInterceptor interceptor) {
+        return HttpClientBuilder.create().addInterceptorFirst(interceptor).build();
+    }
 }
