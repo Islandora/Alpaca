@@ -8,6 +8,7 @@ dependencies {
     compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
     compile group: 'org.apache.camel', name: 'camel-jackson', version: camelVersion
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion 
     testCompile group: 'org.apache.camel', name: 'camel-test-blueprint', version: camelVersion
     testCompile group: 'org.apache.activemq', name: 'activemq-camel', version: activemqVersion
     testCompile group: 'org.apache.servicemix.bundles', name: 'org.apache.servicemix.bundles.xerces', version: '2.11.0_1'
