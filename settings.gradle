@@ -1,7 +1,9 @@
 include ':islandora-karaf'
 include ':islandora-indexing-triplestore'
 include ':islandora-connector-broadcast'
+include ':islandora-http-client'
 
 project(':islandora-karaf').projectDir = "$rootDir/karaf" as File
 project(':islandora-indexing-triplestore').projectDir = "$rootDir/islandora-indexing-triplestore" as File
 project(':islandora-connector-broadcast').projectDir = "$rootDir/islandora-connector-broadcast" as File
+project(':islandora-http-client').projectDir = "$rootDir/islandora-http-client" as File

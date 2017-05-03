@@ -7,3 +7,5 @@
 workbench.xmi
 target
 build
+.DS_Store
+bin/
