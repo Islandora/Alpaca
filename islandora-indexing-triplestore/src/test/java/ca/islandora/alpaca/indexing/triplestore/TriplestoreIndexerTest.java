@@ -20,7 +20,6 @@ package ca.islandora.alpaca.indexing.triplestore;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -60,13 +59,6 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
     @Override
     protected String getBlueprintDescriptor() {
         return "/OSGI-INF/blueprint/blueprint-test.xml";
-    }
-
-    @Override
-    protected Properties useOverridePropertiesWithPropertiesComponent() {
-        final Properties props = new Properties();
-        props.put("input.stream", "seda:foo");
-        return props;
     }
 
     @Test

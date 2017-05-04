@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+       xsi:schemaLocation="
+       http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+  <!-- OSGI blueprint property placeholder -->
+  <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.fcrepo" update-strategy="reload" >
+    <cm:default-properties>
+      <cm:property name="error.maxRedeliveries" value="5"/>
+      <cm:property name="create.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
+      <cm:property name="create.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-create-dead"/>
+      <cm:property name="create.output.stream" value="mock:result"/>
+      <cm:property name="update.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
+      <cm:property name="update.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-update-dead"/>
+      <cm:property name="update.output.stream" value="mock:result"/>
+      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="delete.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-delete-dead"/>
+      <cm:property name="delete.output.stream" value="mock:result"/>
+      <cm:property name="map.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map"/>
+      <cm:property name="map.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-dead"/>
+      <cm:property name="unmap.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap"/>
+      <cm:property name="unmap.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-dead"/>
+      <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner/metadata"/>
+      <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
+      <cm:property name="drupal.baseUrl" value="http://localhost:8000"/>
+      <cm:property name="fcrepo.baseUrl" value="http://localhost:8080/fcrepo/rest"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="broker" interface="org.apache.camel.Component" filter="(osgi.jndi.service.name=fcrepo/Broker)"/>
+
+  <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
+  <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
+
+  <bean id="fcrepoIndexerBean" class="ca.islandora.alpaca.indexing.fcrepo.FcrepoIndexerBean"/>
+
+  <camelContext id="IslandoraFcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
+    <package>ca.islandora.alpaca.indexing.fcrepo</package>
+  </camelContext>
+
+</blueprint>

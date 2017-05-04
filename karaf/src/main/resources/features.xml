@@ -20,6 +20,20 @@
 
   </feature>
 
+  <feature name="islandora-indexing-fcrepo" version="${project.version}" start-level="80">
+    <details>Indexes the Fedora repository from Drupal nodes</details>
+
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
+    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-camel</feature>
+    <feature version="${camelVersion}">camel-http4</feature>
+    <feature version="${camelVersion}">camel-jsonpath</feature>
+
+    <bundle>mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}</bundle>
+
+    <configfile finalname="/etc/ca.islandora.alpaca.indexing.fcrepo.cfg">mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}/cfg/configuration</configfile>
+
+  </feature>
+
  <feature name="islandora-connector-broadcast" version="${project.version}" start-level="80">
     <details>Distributes a message to a list of queues/topics.</details>
 
