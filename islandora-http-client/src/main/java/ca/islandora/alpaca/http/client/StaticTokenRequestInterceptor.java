@@ -76,7 +76,7 @@ public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
     /**
      * Convenience factory method.
      * 
-     * @param interceptor
+     * @param interceptor the interceptor to use, presumably an instance of {@link StaticTokenRequestInterceptor}
      * @return a default-configuration {@link HttpClient} that is wrapped with this interceptor
      */
     public static HttpClient defaultClient(final StaticTokenRequestInterceptor interceptor) {

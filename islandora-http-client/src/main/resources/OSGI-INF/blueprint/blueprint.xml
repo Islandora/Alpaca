@@ -13,10 +13,13 @@
     </cm:default-properties>
   </cm:property-placeholder>
   
-  <service id="httpClient" interface="org.apache.http.client.HttpClient" filter="(osgi.jndi.service.name=claw/httpClient)">
-    <bean class="ca.islandora.alpaca.http.client.StaticTokenRequestInterceptor" factory-method=“defaultClient”>
+  <service id="httpClient" interface="org.apache.http.client.HttpClient">
+    <service-properties>
+      <entry key="osgi.jndi.service.name" value="claw/httpClient"/>
+    </service-properties>
+    <bean class="ca.islandora.alpaca.http.client.StaticTokenRequestInterceptor" factory-method="defaultClient">
       <argument>
-        <bean id="interceptor" class="ca.islandora.alpaca.http.client.StaticTokenRequestInterceptor">
+        <bean class="ca.islandora.alpaca.http.client.StaticTokenRequestInterceptor">
   	      <property name="token" value="${token.value}"/>
         </bean>
       </argument>
