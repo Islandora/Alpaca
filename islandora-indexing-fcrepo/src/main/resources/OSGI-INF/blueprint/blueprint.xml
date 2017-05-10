@@ -28,6 +28,10 @@
       <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
       <cm:property name="drupal.baseUrl" value="http://localhost:8000"/>
       <cm:property name="fcrepo.baseUrl" value="http://localhost:8080/fcrepo/rest"/>
+
+      <cm:property name="create.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-create"/>
+      <cm:property name="update.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update"/>
+      <cm:property name="delete.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-delete"/>
     </cm:default-properties>
   </cm:property-placeholder>
 

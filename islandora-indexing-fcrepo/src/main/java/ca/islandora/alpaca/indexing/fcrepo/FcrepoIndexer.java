@@ -163,5 +163,11 @@ public class FcrepoIndexer extends RouteBuilder {
         from("direct:unmap-log-error")
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{unmap.dead.stream}}");
+
+        from("{{create.binary.input.stream}}")
+                .routeId("IslandoraFcrepoIndexerCreateBinary")
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+                .filter(simple("${body.type} == 'Create'"))
+                .to("bean:fcrepoIndexerBean?method=preprocessForBinaryGet");
     }
 }

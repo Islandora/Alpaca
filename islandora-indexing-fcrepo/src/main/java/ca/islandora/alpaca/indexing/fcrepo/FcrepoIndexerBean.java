@@ -258,4 +258,28 @@ public class FcrepoIndexerBean {
         final String sanitized = addTrailingSlash(baseUrl);
         return uri.substring(uri.lastIndexOf(sanitized) + sanitized.length());
     }
+
+    public void preprocessForBinaryGet(final Exchange exchange) throws Exception {
+        // Grab JWT token
+        final String token = exchange.getIn().getHeader("Authorization", String.class);
+
+        // Grab the event message
+        final AS2Event event = exchange.getIn().getBody(AS2Event.class);
+
+        // Grab the uri and break off the path
+        final String uri = event.getObject();
+        final String path = getPath(uri, drupalBaseUrl);
+
+        // Cache the drupal path and its corresponding uri in Milliner.
+        exchange.setProperty("DrupalUri", uri);
+        exchange.setProperty("DrupalPath", path);
+        exchange.setProperty("MillinerUri", addTrailingSlash(millinerBaseUrl) + path);
+
+        LOGGER.info(uri);
+
+        // Prepare the message for Drupal
+        exchange.getIn().removeHeaders("*");
+        exchange.getIn().setHeader("Authorization", token);
+        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+    }
 }
