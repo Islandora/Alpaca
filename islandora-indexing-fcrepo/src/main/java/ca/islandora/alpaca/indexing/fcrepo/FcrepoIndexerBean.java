@@ -20,7 +20,6 @@ package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.lang.RuntimeException;
 import java.net.URI;
 import org.apache.camel.Exchange;
 import org.apache.camel.PropertyInject;
@@ -307,7 +306,7 @@ public class FcrepoIndexerBean {
 
         LOGGER.info("Creating Fedora resource for " + filePath);
 
-        // Prepare the message for Milliner 
+        // Prepare the message for Milliner
         exchange.getIn().removeHeaders("*");
         exchange.getIn().setHeader("Authorization", token);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
@@ -331,7 +330,7 @@ public class FcrepoIndexerBean {
 
         LOGGER.info("Creating Fedora resource for " + filePath);
 
-        // Prepare the message for Milliner 
+        // Prepare the message for Milliner
         exchange.getIn().removeHeaders("*");
         exchange.getIn().setHeader("Authorization", token);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
@@ -351,7 +350,7 @@ public class FcrepoIndexerBean {
 
         final String describedBy = extractLinkHeader(linkHeader, "describedby");
 
-        final String rdfPath = getPath(describedBy, fcrepoBaseUrl); 
+        final String rdfPath = getPath(describedBy, fcrepoBaseUrl);
         final String filePath = getPath(fileUri, fcrepoBaseUrl);
 
         resetToOriginalMessage(exchange);
@@ -374,7 +373,7 @@ public class FcrepoIndexerBean {
 
         final String describedBy = extractLinkHeader(linkHeader, "describedby");
 
-        final String rdfPath = getPath(describedBy, fcrepoBaseUrl); 
+        final String rdfPath = getPath(describedBy, fcrepoBaseUrl);
         final String filePath = getPath(fileUri, fcrepoBaseUrl);
 
         resetToOriginalMessage(exchange);
@@ -384,17 +383,17 @@ public class FcrepoIndexerBean {
 
     private String extractLinkHeader(final String headers, final String rel) throws RuntimeException {
         final String[] links = headers.split(",");
-        
+
         for (String header : links) {
             if (header.contains(rel)) {
                 final String[] parts = header.split(";");
                 String url = parts[0];
-                url = url.replaceAll("<", ""); 
-                return url.replaceAll(">", ""); 
+                url = url.replaceAll("<", "");
+                return url.replaceAll(">", "");
             }
         }
 
-        throw new RuntimeException("Cannot parse link out of header with type " + rel); 
+        throw new RuntimeException("Cannot parse link out of header with type " + rel);
     }
 
     /**
@@ -424,6 +423,11 @@ public class FcrepoIndexerBean {
         exchange.setProperty("GeminiUri", addTrailingSlash(geminiBaseUrl));
     }
 
+    /**
+     * Prepares message for Gemini GET on Rdf to locate File path.
+     * @param exchange
+     * @throws Exception
+     */
     public void preprocessForGeminiGetRdf(final Exchange exchange) throws Exception {
         // Grab JWT token
         final String token = exchange.getIn().getHeader("Authorization", String.class);
@@ -449,6 +453,11 @@ public class FcrepoIndexerBean {
         exchange.getIn().setBody(null);
     }
 
+    /**
+     * Prepares message for Fcrepo HEAD to get Link headers.
+     * @param exchange
+     * @throws Exception
+     */
     public void preprocessForFcrepoHead(final Exchange exchange) throws Exception {
         // Grab JWT token
         final String token = exchange.getProperty("Authorization", String.class);
@@ -464,6 +473,11 @@ public class FcrepoIndexerBean {
         exchange.getIn().setBody(null);
     }
 
+    /**
+     * Extracts link header for file path in Fedora.
+     * @param exchange
+     * @throws Exception
+     */
     public void postprocessForFcrepoHead(final Exchange exchange) throws Exception {
         // Grab JWT token
         final String token = exchange.getProperty("Authorization", String.class);
@@ -475,6 +489,11 @@ public class FcrepoIndexerBean {
         exchange.setProperty("FcrepoFilePath", fcrepoPath);
     }
 
+    /**
+     * Prepares message for Gemini GET on Fedora file path to find Drupal path.
+     * @param exchange
+     * @throws Exception
+     */
     public void preprocessForGeminiGetFile(final Exchange exchange) throws Exception {
         // Grab JWT token
         final String token = exchange.getProperty("Authorization", String.class);
@@ -494,6 +513,11 @@ public class FcrepoIndexerBean {
         exchange.getIn().setBody(null);
     }
 
+    /**
+     * Prepares message for rest of Update workflow.
+     * @param exchange
+     * @throws Exception
+     */
     public void postprocessForGeminiGetFile(final Exchange exchange) throws Exception {
         final String body = exchange.getIn().getBody(String.class);
         final String combined = addTrailingSlash(drupalBaseUrl) + body;
@@ -535,7 +559,7 @@ public class FcrepoIndexerBean {
 
         LOGGER.info("Deleting Fedora resource for " + filePath);
 
-        // Prepare the message for Milliner 
+        // Prepare the message for Milliner
         exchange.getIn().removeHeaders("*");
         exchange.getIn().setHeader("Authorization", token);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "DELETE");
@@ -552,14 +576,14 @@ public class FcrepoIndexerBean {
         // Grab JWT token
         final String token = exchange.getIn().getHeader("Authorization", String.class);
 
-        final String filePath = exchange.getIn().getHeader("OriginalDrupalFilePath", String.class); 
+        final String filePath = exchange.getIn().getHeader("OriginalDrupalFilePath", String.class);
 
         final String millinerUri = addTrailingSlash(millinerBaseUrl) + filePath;
         exchange.setProperty("MillinerUri", millinerUri);
 
         LOGGER.info("Deleting Fedora resource for " + filePath);
 
-        // Prepare the message for Milliner 
+        // Prepare the message for Milliner
         exchange.getIn().removeHeaders("*");
         exchange.getIn().setHeader("Authorization", token);
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "DELETE");

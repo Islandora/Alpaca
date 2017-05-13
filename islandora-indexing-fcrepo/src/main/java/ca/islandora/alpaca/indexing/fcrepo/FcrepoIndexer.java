@@ -19,7 +19,6 @@
 package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.apache.camel.LoggingLevel.ERROR;
-import static org.apache.camel.LoggingLevel.INFO;
 import static org.apache.camel.LoggingLevel.WARN;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -168,7 +167,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{unmap.rdf.dead.stream}}");
 
-        // Routes for creating a Fedora resource from a Drupal file 
+        // Routes for creating a Fedora resource from a Drupal file
         from("{{create.binary.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerCreateBinary")
                 .errorHandler(
@@ -188,12 +187,12 @@ public class FcrepoIndexer extends RouteBuilder {
                 .toD("${exchangeProperty.MillinerUri}")
                 .to("bean:fcrepoIndexerBean?method=postprocessForMillinerCreateBinary")
                 .to("{{map.binary.input.stream}}");
-  
+
         from("direct:create-binary-log-error")
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{create.binary.dead.stream}}");
 
-        // Routes for mapping a Fedora resource to a Drupal file 
+        // Routes for mapping a Fedora resource to a Drupal file
         from("{{map.binary.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerMapBinary")
                 .errorHandler(
@@ -205,12 +204,12 @@ public class FcrepoIndexer extends RouteBuilder {
                 .toD("${exchangeProperty.GeminiUri}")
                 .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{map.binary.rdf.input.stream}}");
-        
+
         from("direct:map-binary-log-error")
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{map.binary.dead.stream}}");
 
-        // Routes for mapping a Fedora resource that describes a Drupal file 
+        // Routes for mapping a Fedora resource that describes a Drupal file
         from("{{map.binary.rdf.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerMapBinaryRdf")
                 .errorHandler(
@@ -227,7 +226,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{map.binary.rdf.dead.stream}}");
 
-        // Routes for updating a Fedora resource from a Drupal file 
+        // Routes for updating a Fedora resource from a Drupal file
         from("{{update.binary.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinary")
                 .errorHandler(
@@ -245,11 +244,15 @@ public class FcrepoIndexer extends RouteBuilder {
                 .toD("${exchangeProperty.GeminiUri}")
                 .to("bean:fcrepoIndexerBean?method=postprocessForGeminiGetFile")
                 .choice().when(isSameFile)
-                        .process(exchange -> { LOGGER.info("Binary has not been updated.  Skipping routing."); })
+                        .process(exchange -> {
+                            LOGGER.info("Binary has not been updated.  Skipping routing.");
+                        })
                         .to("{{update.binary.output.stream}}")
                 .otherwise()
                         // DELETE BINARY - UNMAP BINARY AND RDF - CREATE BINARY - MAP BINARY AND RDF
-                        .process(exchange -> { LOGGER.info("Binary has been updated.  Deleting old and creating new."); })
+                        .process(exchange -> {
+                            LOGGER.info("Binary has been updated.  Deleting old and creating new.");
+                        })
                         .to("{{update.binary.delete.input.stream}}")
                 .endChoice();
 
@@ -257,7 +260,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.dead.stream}}");
 
-        // Update routes for deleting a Fedora resource for a Drupal file 
+        // Update routes for deleting a Fedora resource for a Drupal file
         from("{{update.binary.delete.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryDelete")
                 .errorHandler(
@@ -281,7 +284,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.delete.dead.stream}}");
 
-        // Update routes for unmapping a Fedora resource from a Drupal file 
+        // Update routes for unmapping a Fedora resource from a Drupal file
         from("{{update.binary.unmap.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryUnmap")
                 .errorHandler(
@@ -298,7 +301,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.unmap.dead.stream}}");
 
-        // Update routes for unmapping a Fedora resource that describes a Drupal file 
+        // Update routes for unmapping a Fedora resource that describes a Drupal file
         from("{{update.binary.unmap.rdf.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryUnmapRdf")
                 .errorHandler(
@@ -315,7 +318,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.unmap.rdf.dead.stream}}");
 
-        // Update routes for creating a Fedora resource from a Drupal file 
+        // Update routes for creating a Fedora resource from a Drupal file
         from("{{update.binary.create.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryCreate")
                 .errorHandler(
@@ -334,12 +337,12 @@ public class FcrepoIndexer extends RouteBuilder {
                 .toD("${exchangeProperty.MillinerUri}")
                 .to("bean:fcrepoIndexerBean?method=postprocessForMillinerCreateBinaryUpdate")
                 .to("{{update.binary.map.input.stream}}");
-  
+
         from("direct:update-binary-create-log-error")
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.create.dead.stream}}");
 
-        // Update routes for mapping a Fedora resource to a Drupal file 
+        // Update routes for mapping a Fedora resource to a Drupal file
         from("{{update.binary.map.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryMap")
                 .errorHandler(
@@ -351,12 +354,12 @@ public class FcrepoIndexer extends RouteBuilder {
                 .toD("${exchangeProperty.GeminiUri}")
                 .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{update.binary.map.rdf.input.stream}}");
-        
+
         from("direct:update-binary-map-log-error")
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{map.binary.dead.stream}}");
 
-        // Update routes for mapping a Fedora resource that describes a Drupal file 
+        // Update routes for mapping a Fedora resource that describes a Drupal file
         from("{{update.binary.map.rdf.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUpdateBinaryMapRdf")
                 .errorHandler(
@@ -373,7 +376,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{update.binary.map.rdf.dead.stream}}");
 
-        // Routes for deleting a Fedora resource for a Drupal file 
+        // Routes for deleting a Fedora resource for a Drupal file
         from("{{delete.binary.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerDeleteBinary")
                 .errorHandler(
@@ -398,7 +401,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{delete.binary.dead.stream}}");
 
-        // Routes for unmapping a Fedora resource from a Drupal file 
+        // Routes for unmapping a Fedora resource from a Drupal file
         from("{{unmap.binary.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUnmapBinary")
                 .errorHandler(
@@ -415,7 +418,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .log(ERROR, LOGGER, "${exception.stacktrace}")
                 .to("{{unmap.binary.dead.stream}}");
 
-        // Routes for unmapping a Fedora resource that describes a Drupal file 
+        // Routes for unmapping a Fedora resource that describes a Drupal file
         from("{{unmap.binary.rdf.input.stream}}")
                 .routeId("IslandoraFcrepoIndexerUnmapBinaryRdf")
                 .errorHandler(

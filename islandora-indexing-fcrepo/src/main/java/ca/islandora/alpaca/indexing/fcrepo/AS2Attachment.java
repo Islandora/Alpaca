@@ -40,28 +40,28 @@ public class AS2Attachment {
     }
 
     /**
-     * @return  URL of the file 
+     * @return  URL of the file
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * @param   url  URL of the file 
+     * @param   url  URL of the file
      */
     public void setUrl(final String url) {
         this.url = url;
     }
 
     /**
-     * @return  Mimetype 
+     * @return  Mimetype
      */
     public String getMediaType() {
         return this.mediaType;
     }
 
     /**
-     * @param   mediaType  Mimetype 
+     * @param   mediaType  Mimetype
      */
     public void setMediaType(final String mediaType) {
         this.mediaType = mediaType;
