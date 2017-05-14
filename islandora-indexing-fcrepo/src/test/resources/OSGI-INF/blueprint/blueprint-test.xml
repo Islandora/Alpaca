@@ -11,23 +11,71 @@
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.fcrepo" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="1"/>
-      <cm:property name="create.input.stream" value="seda:islandora-indexing-fcrepo-create"/>
-      <cm:property name="create.dead.stream" value="mock:dead"/>
-      <cm:property name="create.output.stream" value="mock:result"/>
-      <cm:property name="update.input.stream" value="seda:islandora-indexing-fcrepo-update"/>
-      <cm:property name="update.dead.stream" value="mock:dead"/>
-      <cm:property name="update.output.stream" value="mock:result"/>
-      <cm:property name="delete.input.stream" value="seda:islandora-indexing-fcrepo-delete"/>
-      <cm:property name="delete.dead.stream" value="mock:dead"/>
-      <cm:property name="delete.output.stream" value="mock:result"/>
-      <cm:property name="map.input.stream" value="seda:islandora-indexing-fcrepo-map"/>
-      <cm:property name="map.dead.stream" value="mock:dead"/>
-      <cm:property name="unmap.input.stream" value="seda:islandora-indexing-fcrepo-unmap"/>
-      <cm:property name="unmap.dead.stream" value="mock:dead"/>
+
+      <cm:property name="create.rdf.input.stream" value="seda:islandora-indexing-fcrepo-create"/>
+      <cm:property name="create.rdf.dead.stream" value="mock:dead"/>
+      <cm:property name="create.rdf.output.stream" value="mock:result"/>
+
+      <cm:property name="update.rdf.input.stream" value="seda:islandora-indexing-fcrepo-update"/>
+      <cm:property name="update.rdf.dead.stream" value="mock:dead"/>
+      <cm:property name="update.rdf.output.stream" value="mock:result"/>
+
+      <cm:property name="delete.rdf.input.stream" value="seda:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="delete.rdf.dead.stream" value="mock:dead"/>
+      <cm:property name="delete.rdf.output.stream" value="mock:result"/>
+
+      <cm:property name="map.rdf.input.stream" value="seda:islandora-indexing-fcrepo-map"/>
+      <cm:property name="map.rdf.dead.stream" value="mock:dead"/>
+
+      <cm:property name="unmap.rdf.input.stream" value="seda:islandora-indexing-fcrepo-unmap"/>
+      <cm:property name="unmap.rdf.dead.stream" value="mock:dead"/>
+
       <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner/metadata"/>
       <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
       <cm:property name="drupal.baseUrl" value="http://localhost:8000"/>
       <cm:property name="fcrepo.baseUrl" value="http://localhost:8080/fcrepo/rest"/>
+
+      <cm:property name="create.binary.input.stream" value="seda:islandora-indexing-fcrepo-binary-create"/>
+      <cm:property name="create.binary.dead.stream" value="mock:dead"/>
+      <cm:property name="create.binary.output.stream" value="mock:result"/>
+
+      <cm:property name="update.binary.input.stream" value="seda:islandora-indexing-fcrepo-binary-update"/>
+      <cm:property name="update.binary.dead.stream" value="mock:dead"/>
+      <cm:property name="update.binary.output.stream" value="mock:result"/>
+
+      <cm:property name="update.binary.delete.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-delete"/>
+      <cm:property name="update.binary.delete.dead.stream" value="mock:dead"/>
+
+      <cm:property name="update.binary.unmap.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-unmap"/>
+      <cm:property name="update.binary.unmap.dead.stream" value="mock:dead"/>
+
+      <cm:property name="update.binary.unmap.rdf.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-unmap-rdf"/>
+      <cm:property name="update.binary.unmap.rdf.dead.stream" value="mock:dead"/>
+
+      <cm:property name="update.binary.create.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-create"/>
+      <cm:property name="update.binary.create.dead.stream" value="mock:dead"/>
+
+      <cm:property name="update.binary.map.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-map"/>
+      <cm:property name="update.binary.map.dead.stream" value="mock:dead"/>
+
+      <cm:property name="update.binary.map.rdf.input.stream" value="seda:islandora-indexing-fcrepo-binary-update-map-rdf"/>
+      <cm:property name="update.binary.map.rdf.dead.stream" value="mock:dead"/>
+
+      <cm:property name="delete.binary.input.stream" value="seda:islandora-indexing-fcrepo-binary-delete"/>
+      <cm:property name="delete.binary.dead.stream" value="mock:dead"/>
+      <cm:property name="delete.binary.output.stream" value="mock:result"/>
+
+      <cm:property name="map.binary.input.stream" value="seda:islandora-indexing-fcrepo-map-binary"/>
+      <cm:property name="map.binary.dead.stream" value="mock:dead"/>
+
+      <cm:property name="unmap.binary.input.stream" value="seda:islandora-indexing-fcrepo-unmap-binary"/>
+      <cm:property name="unmap.binary.dead.stream" value="mock:dead"/>
+
+      <cm:property name="map.binary.rdf.input.stream" value="seda:islandora-indexing-fcrepo-map-binary-rdf"/>
+      <cm:property name="map.binary.rdf.dead.stream" value="mock:dead"/>
+
+      <cm:property name="unmap.binary.rdf.input.stream" value="seda:islandora-indexing-fcrepo-unmap-binary-rdf"/>
+      <cm:property name="unmap.binary.rdf.dead.stream" value="mock:dead"/>
     </cm:default-properties>
   </cm:property-placeholder>
 

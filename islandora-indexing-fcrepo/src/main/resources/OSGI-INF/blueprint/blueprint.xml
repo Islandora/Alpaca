@@ -12,23 +12,23 @@
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
 
-      <cm:property name="create.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
-      <cm:property name="create.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-create-dead"/>
-      <cm:property name="create.output.stream" value="mock:result"/>
+      <cm:property name="create.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
+      <cm:property name="create.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-create-dead"/>
+      <cm:property name="create.rdf.output.stream" value="mock:result"/>
 
-      <cm:property name="update.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
-      <cm:property name="update.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-update-dead"/>
-      <cm:property name="update.output.stream" value="mock:result"/>
+      <cm:property name="update.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
+      <cm:property name="update.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-update-dead"/>
+      <cm:property name="update.rdf.output.stream" value="mock:result"/>
 
-      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
-      <cm:property name="delete.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-delete-dead"/>
-      <cm:property name="delete.output.stream" value="mock:result"/>
+      <cm:property name="delete.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="delete.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-delete-dead"/>
+      <cm:property name="delete.rdf.output.stream" value="mock:result"/>
 
-      <cm:property name="map.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map"/>
-      <cm:property name="map.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-dead"/>
+      <cm:property name="map.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map"/>
+      <cm:property name="map.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-dead"/>
 
-      <cm:property name="unmap.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap"/>
-      <cm:property name="unmap.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-dead"/>
+      <cm:property name="unmap.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap"/>
+      <cm:property name="unmap.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-dead"/>
 
       <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner"/>
       <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
@@ -63,7 +63,7 @@
 
       <cm:property name="delete.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-delete"/>
       <cm:property name="delete.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-delete-dead"/>
-      <cm:property name="delete.binary.ouput.stream" value="mock:result"/>
+      <cm:property name="delete.binary.output.stream" value="mock:result"/>
 
       <cm:property name="map.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary"/>
       <cm:property name="map.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary-dead"/>

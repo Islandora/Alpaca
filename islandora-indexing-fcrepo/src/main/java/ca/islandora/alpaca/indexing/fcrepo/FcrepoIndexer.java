@@ -201,8 +201,8 @@ public class FcrepoIndexer extends RouteBuilder {
                                 .maximumRedeliveries(maxRedeliveries)
                 )
                 .to("bean:fcrepoIndexerBean?method=preprocessForGeminiCreateBinary")
-                .toD("${exchangeProperty.GeminiUri}")
-                .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
+                //.toD("${exchangeProperty.GeminiUri}")
+                //.to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{map.binary.rdf.input.stream}}");
 
         from("direct:map-binary-log-error")
@@ -330,7 +330,7 @@ public class FcrepoIndexer extends RouteBuilder {
                         .useOriginalMessage()
                         .handled(true)
                                 .log(WARN, LOGGER, "Received 409 from Milliner POST, skipping routing.")
-                                .to("{{create.binary.output.stream}}")
+                                .to("{{update.binary.output.stream}}")
                 .end()
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
                 .to("bean:fcrepoIndexerBean?method=preprocessForMillinerCreateBinaryUpdate")
