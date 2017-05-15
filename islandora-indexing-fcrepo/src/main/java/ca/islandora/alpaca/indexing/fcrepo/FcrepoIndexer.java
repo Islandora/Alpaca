@@ -201,8 +201,8 @@ public class FcrepoIndexer extends RouteBuilder {
                                 .maximumRedeliveries(maxRedeliveries)
                 )
                 .to("bean:fcrepoIndexerBean?method=preprocessForGeminiCreateBinary")
-                //.toD("${exchangeProperty.GeminiUri}")
-                //.to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
+                .toD("${exchangeProperty.GeminiUri}")
+                .to("bean:fcrepoIndexerBean?method=resetToOriginalMessage")
                 .to("{{map.binary.rdf.input.stream}}");
 
         from("direct:map-binary-log-error")
