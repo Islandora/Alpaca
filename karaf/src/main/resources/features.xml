@@ -26,7 +26,6 @@
     <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
     <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-camel</feature>
     <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}</bundle>
 

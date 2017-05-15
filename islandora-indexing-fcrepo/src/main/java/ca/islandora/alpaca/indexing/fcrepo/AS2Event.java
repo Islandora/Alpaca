@@ -70,6 +70,20 @@ public class AS2Event {
     }
 
     /**
+     * @return  File associated with this event
+     */
+    public AS2Attachment getAttachment() {
+        return attachment;
+    }
+
+    /**
+     * @param   attachment    File associated with this event
+     */
+    public void setAttachment(final AS2Attachment attachment) {
+        this.attachment = attachment;
+    }
+
+    /**
      * @return  JSON-LD Context
      */
     @JsonProperty(value = "@context")
@@ -88,5 +102,6 @@ public class AS2Event {
     private String type;
     private String object;
     private AS2Actor actor;
+    private AS2Attachment attachment;
 
 }
