@@ -43,5 +43,15 @@
     <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
 
   </feature>
+  
+  <feature name="islandora-http-client" version="${project.version}" start-level="80">
+  
+    <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
+    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
+    <bundle>mvn:ca.islandora.alpaca/islandora-http-client/${project.version}</bundle>
+
+    <configfile finalname="/etc/ca.islandora.alpaca.http.client.cfg">mvn:ca.islandora.alpaca/islandora-http-client/${project.version}/cfg/configuration</configfile>
+  
+  </feature>
 
 </features>

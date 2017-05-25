@@ -87,8 +87,7 @@ subprojects {
     checkstyle {
         configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
         configProperties.checkstyleConfigDir = rootProject.file('gradle/checkstyle')
-        /* eventually, we should change this to fail builds on errors */
-        ignoreFailures true
+        ignoreFailures false
     }
 
     license {
