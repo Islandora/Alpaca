@@ -19,11 +19,15 @@
 package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.apache.camel.LoggingLevel.ERROR;
+import static org.apache.camel.LoggingLevel.INFO;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Predicate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.builder.PredicateBuilder;
+import org.apache.camel.http.common.HttpOperationFailedException;
 import org.slf4j.Logger;
 
 /**
@@ -76,6 +80,18 @@ public class FcrepoIndexer extends RouteBuilder {
     @Override
     public void configure() {
 
+        final Predicate is412 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 412"));
+
+        onException(HttpOperationFailedException.class)
+                .onWhen(is412)
+                .useOriginalMessage()
+                .handled(true)
+                .log(
+                        INFO,
+                        LOGGER,
+                        "Received 412 from Milliner, skipping indexing."
+                );
+
         onException(Exception.class)
                 .maximumRedeliveries(maxRedeliveries)
                 .log(
@@ -111,7 +127,7 @@ public class FcrepoIndexer extends RouteBuilder {
         from("{{delete.input.stream}}")
                 .routeId("FcrepoIndexerDelete")
                 .setProperty("urn").jsonpath("$.object.id")
-                .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\"}")
+                .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\")}")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
                 .toD(getMillinerBaseUrl() + "resource/${exchangeProperty.uuid}")

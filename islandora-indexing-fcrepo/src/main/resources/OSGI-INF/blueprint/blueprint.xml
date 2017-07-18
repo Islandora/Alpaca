@@ -24,7 +24,7 @@
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
-  <camelContext id="FcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext id="FcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="true">
     <package>ca.islandora.alpaca.indexing.fcrepo</package>
   </camelContext>
 
