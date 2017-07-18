@@ -100,31 +100,31 @@ public class FcrepoIndexer extends RouteBuilder {
                         "Error indexing resource in fcrepo: ${exception.message}\n\n${exception.stacktrace}"
                 );
 
-        from("{{content.input.stream}}")
-                .routeId("FcrepoIndexerSaveContent")
+        from("{{content.stream}}")
+                .routeId("FcrepoIndexerContent")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .to(getMillinerBaseUrl() + "content")
                 .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
 
-        from("{{file.input.stream}}")
-                .routeId("FcrepoIndexerSaveFile")
+        from("{{file.stream}}")
+                .routeId("FcrepoIndexerFile")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .to(getMillinerBaseUrl() + "file")
                 .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
 
-        from("{{media.input.stream}}")
-                .routeId("FcrepoIndexerSaveMedia")
+        from("{{media.stream}}")
+                .routeId("FcrepoIndexerMedia")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .to(getMillinerBaseUrl() + "media")
                 .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
 
-        from("{{delete.input.stream}}")
+        from("{{delete.stream}}")
                 .routeId("FcrepoIndexerDelete")
                 .setProperty("urn").jsonpath("$.object.id")
                 .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\")}")

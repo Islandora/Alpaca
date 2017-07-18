@@ -24,6 +24,7 @@ import static org.fcrepo.camel.FcrepoHeaders.FCREPO_URI;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import com.jayway.jsonpath.JsonPathException;
+import java.util.Map;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
 import org.fcrepo.camel.processor.SparqlUpdateProcessor;
@@ -39,7 +40,6 @@ public class TriplestoreIndexer extends RouteBuilder {
 
     @Override
     public void configure() {
-
         // Global exception handler for the indexer.
         // Just logs after retrying X number of times.
         onException(Exception.class)
@@ -52,15 +52,21 @@ public class TriplestoreIndexer extends RouteBuilder {
             );
 
         // Main router.
-        from("{{input.stream}}")
-            .routeId("IslandoraTriplestoreIndexerRouter")
-              .to("direct:parse.event")
+        from("{{index.stream}}")
+            .routeId("IslandoraTriplestoreIndexer")
+              .to("direct:parse.event");
+        /*
               .choice()
                 .when(exchangeProperty("action").isEqualTo("Delete"))
                   .to("direct:triplestore.delete")
                 .otherwise()
                   .to("direct:retrieve.resource")
                   .to("direct:triplestore.index");
+                  */
+
+        from("{{delete.stream}}")
+                .routeId("IslandoraTriplestoreIndexerDelete")
+                .to("direct:parse.event");
 
         // Extracts info using jsonpath and stores it as properties on the exchange.
         from("direct:parse.event")
@@ -75,8 +81,8 @@ public class TriplestoreIndexer extends RouteBuilder {
                    "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
                 )
                 .end()
-              .setProperty("action").jsonpath("$.type")
-              .setProperty("uri").jsonpath("$.object");
+              .transform().jsonpath("$.object")
+                .log(INFO, LOGGER, "${body.class}");
 
         // POSTs a SPARQL delete query for all triples with subject == uri.
         from("direct:triplestore.delete")

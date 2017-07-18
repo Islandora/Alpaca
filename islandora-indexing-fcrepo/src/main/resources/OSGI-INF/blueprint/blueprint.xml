@@ -11,10 +11,10 @@
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.fcrepo" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
-      <cm:property name="content.input.stream" value="activemq:queue:islandora-indexing-fcrepo-content"/>
-      <cm:property name="file.input.stream" value="activemq:queue:islandora-indexing-fcrepo-file"/>
-      <cm:property name="media.input.stream" value="activemq:queue:islandora-indexing-fcrepo-media"/>
-      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="content.stream" value="activemq:queue:islandora-indexing-fcrepo-content"/>
+      <cm:property name="file.stream" value="activemq:queue:islandora-indexing-fcrepo-file"/>
+      <cm:property name="media.stream" value="activemq:queue:islandora-indexing-fcrepo-media"/>
+      <cm:property name="delete.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
       <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner/"/>
     </cm:default-properties>
   </cm:property-placeholder>
