@@ -11,71 +11,11 @@
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.fcrepo" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
-
-      <cm:property name="create.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-create"/>
-      <cm:property name="create.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-create-dead"/>
-      <cm:property name="create.rdf.output.stream" value="mock:result"/>
-
-      <cm:property name="update.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-update"/>
-      <cm:property name="update.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-update-dead"/>
-      <cm:property name="update.rdf.output.stream" value="mock:result"/>
-
-      <cm:property name="delete.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
-      <cm:property name="delete.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-delete-dead"/>
-      <cm:property name="delete.rdf.output.stream" value="mock:result"/>
-
-      <cm:property name="map.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map"/>
-      <cm:property name="map.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-dead"/>
-
-      <cm:property name="unmap.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap"/>
-      <cm:property name="unmap.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-dead"/>
-
-      <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner"/>
-      <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini"/>
-      <cm:property name="drupal.baseUrl" value="http://localhost:8000"/>
-      <cm:property name="fcrepo.baseUrl" value="http://localhost:8080/fcrepo/rest"/>
-
-      <cm:property name="create.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-create"/>
-      <cm:property name="create.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-create-dead"/>
-      <cm:property name="create.binary.output.stream" value="mock:result"/>
-
-      <cm:property name="update.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update"/>
-      <cm:property name="update.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-dead"/>
-      <cm:property name="update.binary.output.stream" value="mock:result"/>
-
-      <cm:property name="update.binary.delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-delete"/>
-      <cm:property name="update.binary.delete.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-delete-dead"/>
-
-      <cm:property name="update.binary.unmap.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-unmap"/>
-      <cm:property name="update.binary.unmap.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-unmap-dead"/>
-
-      <cm:property name="update.binary.unmap.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-unmap-rdf"/>
-      <cm:property name="update.binary.unmap.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-unmap-rdf-dead"/>
-
-      <cm:property name="update.binary.create.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-create"/>
-      <cm:property name="update.binary.create.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-create-dead"/>
-
-      <cm:property name="update.binary.map.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-map"/>
-      <cm:property name="update.binary.map.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-map-dead"/>
-
-      <cm:property name="update.binary.map.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-map-rdf"/>
-      <cm:property name="update.binary.map.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-update-map-dead-rdf"/>
-
-      <cm:property name="delete.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-delete"/>
-      <cm:property name="delete.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-binary-delete-dead"/>
-      <cm:property name="delete.binary.output.stream" value="mock:result"/>
-
-      <cm:property name="map.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary"/>
-      <cm:property name="map.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary-dead"/>
-
-      <cm:property name="unmap.binary.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-binary"/>
-      <cm:property name="unmap.binary.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-binary-dead"/>
-
-      <cm:property name="map.binary.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary-rdf"/>
-      <cm:property name="map.binary.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-map-binary-rdf-dead"/>
-
-      <cm:property name="unmap.binary.rdf.input.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-binary-rdf"/>
-      <cm:property name="unmap.binary.rdf.dead.stream" value="activemq:queue:islandora-indexing-fcrepo-unmap-binary-rdf-dead"/>
+      <cm:property name="content.input.stream" value="activemq:queue:islandora-indexing-fcrepo-content"/>
+      <cm:property name="file.input.stream" value="activemq:queue:islandora-indexing-fcrepo-file"/>
+      <cm:property name="media.input.stream" value="activemq:queue:islandora-indexing-fcrepo-media"/>
+      <cm:property name="delete.input.stream" value="activemq:queue:islandora-indexing-fcrepo-delete"/>
+      <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner/"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -84,9 +24,7 @@
   <bean id="http" class="org.apache.camel.component.http4.HttpComponent"/>
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
-  <bean id="fcrepoIndexerBean" class="ca.islandora.alpaca.indexing.fcrepo.FcrepoIndexerBean"/>
-
-  <camelContext id="IslandoraFcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext id="FcrepoIndexer" xmlns="http://camel.apache.org/schema/blueprint">
     <package>ca.islandora.alpaca.indexing.fcrepo</package>
   </camelContext>
 
