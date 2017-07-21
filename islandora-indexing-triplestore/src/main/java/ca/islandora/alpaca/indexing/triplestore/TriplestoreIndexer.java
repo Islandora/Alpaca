@@ -47,7 +47,6 @@ public class TriplestoreIndexer extends RouteBuilder {
         // Just logs after retrying X number of times.
         onException(Exception.class)
             .maximumRedeliveries("{{error.maxRedeliveries}}")
-            .handled(true)
             .log(
                 ERROR,
                 LOGGER,
@@ -80,7 +79,6 @@ public class TriplestoreIndexer extends RouteBuilder {
               // Custom exception handler.  Doesn't retry if event is malformed.
               .onException(JsonPathException.class)
                 .maximumRedeliveries(0)
-                .handled(true)
                 .log(
                    ERROR,
                    LOGGER,
@@ -89,7 +87,7 @@ public class TriplestoreIndexer extends RouteBuilder {
                 .end()
               .transform().jsonpath("$.object.url")
               .process(ex -> {
-                  LinkedHashMap url = ex.getIn().getBody(JSONArray.class).stream()
+                  final LinkedHashMap url = ex.getIn().getBody(JSONArray.class).stream()
                           .map(LinkedHashMap.class::cast)
                           .filter(elem -> "application/ld+json".equals(elem.get("mediaType")))
                           .findFirst()

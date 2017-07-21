@@ -11,9 +11,9 @@
   <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.indexing.triplestore" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
-      <cm:property name="input.stream" value="seda:islandora-indexing-triplestore"/>
-      <cm:property name="triplestore.baseUrl" value="http://localhost:8080/bigdata/namespace/kb/sparql"/>
-      <cm:property name="jms.brokerUrl" value="tcp://localhost:61616"/>
+      <cm:property name="index.stream" value="seda:islandora-indexing-triplestore-index"/>
+      <cm:property name="delete.stream" value="seda:islandora-indexing-triplestore-delete"/>
+      <cm:property name="triplestore.baseUrl" value="http://localhost:8080/bigdata/namespace/islandora/sparql"/>
     </cm:default-properties>
   </cm:property-placeholder>
 

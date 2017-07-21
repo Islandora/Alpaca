@@ -21,12 +21,14 @@ package ca.islandora.alpaca.indexing.triplestore;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jayway.jsonpath.JsonPathException;
+import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -62,161 +64,97 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testRouterWithDeleteEvent() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerRouter";
+    public void testParseUrl() throws Exception {
+        final String route = "IslandoraTriplestoreIndexerParseUrl";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("direct:triplestore.*");
+                weaveAddLast().to(resultEndpoint);
             }
         });
         context.start();
 
-        getMockEndpoint("mock:direct:triplestore.delete").expectedMessageCount(1);
-        getMockEndpoint("mock:direct:triplestore.index").expectedMessageCount(0);
-
-        template.sendBody(
-                IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"));
-
-        assertMockEndpointsSatisfied();
-    }
-
-    @Test
-    public void testRouterWithNonDeleteEvent() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerRouter";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip("direct:triplestore.*");
-                mockEndpointsAndSkip("direct:retrieve.resource");
-            }
-        });
-        context.start();
-
-        getMockEndpoint("mock:direct:triplestore.delete").expectedMessageCount(0);
-        getMockEndpoint("mock:direct:triplestore.index").expectedMessageCount(1);
-
-        template.sendBody(
-                IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8")
-        );
-
-        assertMockEndpointsSatisfied();
-    }
-
-    @Test
-    public void testParseEvent() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerParseEvent";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip("*");
-            }
-        });
-        context.start();
+        resultEndpoint.expectedMessageCount(1);
 
         final Exchange exchange = template.send(xchange ->
-            xchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("create-event.json"), "UTF-8"))
+                xchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"))
         );
 
         this.assertPredicate(
-            exchangeProperty("uri").isEqualTo("http://localhost:8000/fedora_resource/1"),
-            exchange,
-            true
+                exchangeProperty("url").isEqualTo("http://localhost:8000/node/1?_format=jsonld"),
+                exchange,
+                true
         );
-        this.assertPredicate(
-            exchangeProperty("action").isEqualTo("Create"),
-            exchange,
-            true
-        );
+        assertMockEndpointsSatisfied();
     }
 
     @Test
-    public void testTriplestoreDelete() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerDelete";
+    public void testParseUrlDiesWithNoUrls() throws Exception {
+        final String route = "IslandoraTriplestoreIndexerParseUrl";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http*");
+                weaveAddLast().to(resultEndpoint);
             }
         });
         context.start();
 
-        final String uri = "http://localhost:8000/fedora_resource/1";
+        getMockEndpoint("mock:result").expectedMessageCount(0);
 
-        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/kb/sparql");
+        try {
+            template.sendBody(
+                    IOUtils.toString(loadResourceAsStream("AS2EventNoUrls.jsonld"), "UTF-8"));
+        } catch (CamelExecutionException e) {
+            assertIsInstanceOf(JsonPathException.class, e.getCause().getCause());
+        }
 
-        endpoint.expectedMessageCount(1);
-        endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
-        endpoint.expectedHeaderReceived(CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
-        endpoint.allMessages().body().startsWith(
-                "update=" + encode("DELETE WHERE { <" + uri + "?_format=jsonld> ?p ?o }", "UTF-8")
-        );
-
-        template.send(exchange -> {
-            exchange.setProperty("uri", uri);
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("delete-event.json"), "UTF-8"));
-        });
+        try {
+            template.sendBody(
+                    IOUtils.toString(loadResourceAsStream("AS2EventNoJsonldUrl.jsonld"), "UTF-8"));
+        } catch (CamelExecutionException e) {
+            assertIsInstanceOf(RuntimeException.class, e.getCause());
+        }
 
         assertMockEndpointsSatisfied();
     }
 
     @Test
-    public void testRetrieveResource() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerRetrieveResource";
+    public void testIndex() throws Exception {
+        final String route = "IslandoraTriplestoreIndexer";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http*");
-            }
+                @Override
+                public void configure() throws Exception {
+                    replaceFromWith("direct:start");
+
+                    // Mock milliner http endpoint and return canned response
+                    interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld")
+                            .skipSendToOriginalEndpoint()
+                            .process(exchange -> {
+                                exchange.getIn().removeHeaders("*");
+                                exchange.getIn().setHeader("Content-Type", "application/ld+json");
+                                exchange.getIn().setBody(
+                                        IOUtils.toString(loadResourceAsStream("node.jsonld"), "UTF-8"),
+                                        String.class);
+                            });
+
+                    mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql");
+                }
         });
         context.start();
 
-        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8000/fedora_resource/1");
-
-        endpoint.expectedMessageCount(1);
-        endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "GET");
-        endpoint.expectedHeaderReceived("Authentication", "some_nifty_token");
-
-        template.send(exchange -> {
-            exchange.setProperty("uri", "http://localhost:8000/fedora_resource/1");
-            exchange.getIn().setHeader("Authentication", "some_nifty_token");
-        });
-
-        assertMockEndpointsSatisfied();
-    }
-
-    @Test
-    public void testTriplestoreIndex() throws Exception {
-        final String route = "IslandoraTriplestoreIndexerIndex";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http*");
-            }
-        });
-        context.start();
-
-        final String uri = "http://localhost:8000/fedora_resource/1";
-        final String subject = "<" + uri + "?_format=jsonld>";
+        final String subject = "<http://localhost:8000/node/1?_format=jsonld>";
         final String responsePrefix =
                 "DELETE WHERE { " + subject + " ?p ?o };\n" +
-                "INSERT DATA { ";
+                        "INSERT DATA { ";
         final List<String> triples = Arrays.asList(
-           subject + " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Container> .",
-           subject + " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .",
-           subject + " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .",
-           subject + " <http://schema.org/dateCreated> \"2017-01-30T04:36:07+00:00\" .",
-           subject + " <http://schema.org/dateModified> \"2017-01-30T14:35:57+00:00\" .",
-           subject + " <http://islandora.ca/CLAW/vclock> 5 ."
+                subject + " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .",
+                subject + " <http://schema.org/dateCreated> \"2017-01-30T04:36:07+00:00\" .",
+                subject + " <http://schema.org/dateModified> \"2017-01-30T14:35:57+00:00\" ."
         );
 
-        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/kb/sparql");
+        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
@@ -228,11 +166,38 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         }
 
         template.send(exchange -> {
-            exchange.setProperty("uri", uri);
-            exchange.getIn().setHeader(CONTENT_TYPE, "application/ld+json");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("resource.rdf"), "UTF-8"));
+                exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"));
         });
 
         assertMockEndpointsSatisfied();
     }
+
+    @Test
+    public void testDelete() throws Exception {
+        final String route = "IslandoraTriplestoreIndexerDelete";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql");
+            }
+        });
+        context.start();
+
+        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
+
+        endpoint.expectedMessageCount(1);
+        endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        endpoint.expectedHeaderReceived(CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
+        endpoint.allMessages().body().startsWith(
+                "update=" + encode("DELETE WHERE { <http://localhost:8000/node/1?_format=jsonld> ?p ?o }", "UTF-8")
+        );
+
+        template.send(exchange -> {
+            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"));
+        });
+
+        assertMockEndpointsSatisfied();
+    }
+
 }
