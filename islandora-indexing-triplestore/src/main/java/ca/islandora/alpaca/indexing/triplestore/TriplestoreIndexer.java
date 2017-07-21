@@ -85,6 +85,14 @@ public class TriplestoreIndexer extends RouteBuilder {
                    "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
                 )
                 .end()
+              .onException(RuntimeException.class)
+                .maximumRedeliveries(0)
+                .log(
+                   ERROR,
+                   LOGGER,
+                   "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
+                )
+                .end()
               .transform().jsonpath("$.object.url")
               .process(ex -> {
                   final LinkedHashMap url = ex.getIn().getBody(JSONArray.class).stream()
