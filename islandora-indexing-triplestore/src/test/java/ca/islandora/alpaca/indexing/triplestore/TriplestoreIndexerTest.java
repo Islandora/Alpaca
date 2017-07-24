@@ -90,7 +90,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testParseUrlDiesWithNoUrls() throws Exception {
+    public void testParseUrlDiesOnMalformed() throws Exception {
         final String route = "IslandoraTriplestoreIndexerParseUrl";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
@@ -101,8 +101,9 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         });
         context.start();
 
-        getMockEndpoint("mock:result").expectedMessageCount(0);
+        resultEndpoint.expectedMessageCount(0);
 
+        // Make sure it dies if the jsonpath fails.
         try {
             template.sendBody(
                     IOUtils.toString(loadResourceAsStream("AS2EventNoUrls.jsonld"), "UTF-8"));
@@ -110,6 +111,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
             assertIsInstanceOf(JsonPathException.class, e.getCause().getCause());
         }
 
+        // Make sure it dies if you can't extract the jsonld url from the event.
         try {
             template.sendBody(
                     IOUtils.toString(loadResourceAsStream("AS2EventNoJsonldUrl.jsonld"), "UTF-8"));
@@ -128,7 +130,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
                 public void configure() throws Exception {
                     replaceFromWith("direct:start");
 
-                    // Mock milliner http endpoint and return canned response
+                    // Rig Drupal REST endpoint to return canned jsonld
                     interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld")
                             .skipSendToOriginalEndpoint()
                             .process(exchange -> {

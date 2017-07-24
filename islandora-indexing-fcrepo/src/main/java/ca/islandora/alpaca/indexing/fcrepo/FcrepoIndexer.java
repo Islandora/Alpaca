@@ -53,20 +53,16 @@ public class FcrepoIndexer extends RouteBuilder {
      * @return  Milliner base url
      */
     public String getMillinerBaseUrl() {
-        return millinerBaseUrl;
+        // Enforce trailing slash.
+        final String trimmed = millinerBaseUrl.trim();
+        return trimmed.endsWith("/") ? trimmed : trimmed + "/";
     }
 
     /**
      * @param   millinerBaseUrl Milliner base url
      */
     public void setMillinerBaseUrl(final String millinerBaseUrl) {
-        // Enforce trailing slash on the way in.
-        final String trimmed = millinerBaseUrl.trim();
-        if (trimmed.endsWith("/")) {
-            this.millinerBaseUrl = trimmed;
-        } else {
-            this.millinerBaseUrl = trimmed + "/";
-        }
+        this.millinerBaseUrl = millinerBaseUrl;
     }
 
     @PropertyInject("error.maxRedeliveries")
@@ -105,24 +101,21 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(getMillinerBaseUrl() + "content")
-                .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
+                .toD(getMillinerBaseUrl() + "content");
 
         from("{{file.stream}}")
                 .routeId("FcrepoIndexerFile")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(getMillinerBaseUrl() + "file")
-                .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
+                .to(getMillinerBaseUrl() + "file");
 
         from("{{media.stream}}")
                 .routeId("FcrepoIndexerMedia")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(getMillinerBaseUrl() + "media")
-                .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
+                .to(getMillinerBaseUrl() + "media");
 
         from("{{delete.stream}}")
                 .routeId("FcrepoIndexerDelete")
@@ -130,7 +123,6 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\")}")
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-                .toD(getMillinerBaseUrl() + "resource/${exchangeProperty.uuid}")
-                .process(exchange -> exchange.setOut(exchange.getUnitOfWork().getOriginalInMessage()));
+                .toD(getMillinerBaseUrl() + "resource/${exchangeProperty.uuid}");
     }
 }

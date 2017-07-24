@@ -76,7 +76,7 @@ public class TriplestoreIndexer extends RouteBuilder {
         // Extracts the JSONLD URL from the event message and stores it on the exchange.
         from("direct:parse.url")
             .routeId("IslandoraTriplestoreIndexerParseUrl")
-              // Custom exception handler.  Doesn't retry if event is malformed.
+              // Custom exception handlers.  Don't retry if event is malformed.
               .onException(JsonPathException.class)
                 .maximumRedeliveries(0)
                 .log(
