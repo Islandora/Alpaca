@@ -83,7 +83,7 @@ public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
     public static HttpClient defaultClient(final StaticTokenRequestInterceptor interceptor) {
         final PoolingHttpClientConnectionManager connMan = new PoolingHttpClientConnectionManager();
         return HttpClientBuilder.create()
-                .setConnectionManager(connMan)
+                .setConnectionManager(connMan).setConnectionManagerShared(true)
                 .addInterceptorFirst(interceptor).build();
     }
 }
