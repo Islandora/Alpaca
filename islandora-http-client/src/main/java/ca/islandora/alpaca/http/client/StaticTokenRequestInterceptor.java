@@ -25,6 +25,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 
@@ -80,6 +81,9 @@ public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
      * @return a default-configuration {@link HttpClient} that is wrapped with this interceptor
      */
     public static HttpClient defaultClient(final StaticTokenRequestInterceptor interceptor) {
-        return HttpClientBuilder.create().addInterceptorFirst(interceptor).build();
+        final PoolingHttpClientConnectionManager connMan = new PoolingHttpClientConnectionManager();
+        return HttpClientBuilder.create()
+                .setConnectionManager(connMan).setConnectionManagerShared(true)
+                .addInterceptorFirst(interceptor).build();
     }
 }
