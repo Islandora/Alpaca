@@ -112,7 +112,6 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("*");
             }
         });
         context.start();

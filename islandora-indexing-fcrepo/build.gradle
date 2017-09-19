@@ -23,7 +23,7 @@ jar {
       license project.license
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
-                            "org.apache.camel;version=\"${camelVersionRange}\"," +
+                            "org.apache.camel;version=\"${camelVersion}\"," +
                             "org.apache.activemq.camel.component;version=\"${activemqVersion}\"," +
                             defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.indexing.fcrepo'
