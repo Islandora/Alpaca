@@ -1,23 +1,32 @@
-language: php
-sudo: true
+language: java
 dist: trusty
-php:
-  - 7.0
+jdk:
+  - oraclejdk8
 
-before_install:  
- - "echo $JAVA_OPTS"
- - "export JAVA_OPTS=-Xmx512m"
-
-install:
-  - $TRAVIS_BUILD_DIR/.scripts/travis_setup.sh
+before_install:
+  - echo $JAVA_OPTS
+  - export JAVA_OPTS=-Xmx512m
 
 script:
-  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-  - ./gradlew --stacktrace build
-  - ./gradlew --stacktrace docs
-  - ./gradlew codeCoverageReport
+  - "./gradlew --stacktrace build"
+  - "./gradlew --stacktrace docs"
+  - "./gradlew codeCoverageReport"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
 notifications:
-  irc: "irc.freenode.org#islandora"
+  irc: irc.freenode.org#islandora
+
+deploy:
+  provider: script
+  script:
+    - "./gradlew uploadArchives -PossrhUsername='${SONATYPE_USERNAME}' -PossrhPassword='${SONATYPE_PASSWORD}'"
+  on:
+    branch: master
+
+# Secure env variables for snapshot releases
+env:
+  global:
+  - secure: Svz6XiWJGhMYU48rXp3L659o31nf5FhIBnBrM8Dcs9+gl3kVxmHcwALoJa9WHB5KkUIz6UVbUMLFY1GDAoeYmiAM8mo26BSRffm5x3JH8iZO7HNIesliKN5IYSAgwmy0BAo6dZRLmuJP9yCquVTSaxgUh8ST7hHanvufmYagPw0ubng6cjRhBuuCPFGJZYmYkxi06OSwV5PNNndl6bXYbeiEdy3paxrGCL1jnG4ktij2mBv9iKx7fZ0104FOwEdm7LqDQ1C9rBalv5OgpFawEY6npSg2Rs7v8Q/4kep8kCnb+qC0NHfiFDyn5VmfoqHZS6I3hc3TapLMRUTCifeg3Je+cnCkV/DlaUdKQO2SAmniLBZeXkTwcib2MDvsqPHbVW/P1HM4v1dMNMheer0IbF9SBBLE2Mn03tUvO/c/+Cc3Fvs+zKLmWYcuhmdV8Ez7pln2QkkpkiWSWltQG83ke2IXkzJmSsW6gkgNjxVVPLf7/EXvdlRzHWiedwO64rooGLDoY0Cmetisi9r8OG1qG4cOhDmSV2HRlsdHWeJOb8cHOvLHewZrXloklPFpeHOJOteWd/QJzldGv32pwf09Lyj0LgeTWq4rKSxnrf6CNz6SXH4qBByHOfMLVFcmvJAZtwPEcMG3ilFXm4IrI0gyWbjoeWjcqj7raZ4xFRwoDwk=
+  - secure: qxKftdnA+KZ8G+xtPLXt+PTEc0ExuUpZ03bc2kihkSpw7w6uo0L2TMr4p3xi15TpYS1tBe5pV+VuTDsHI7Vc3qeI6f+QmdeDDPgTdNl2LxLtmoi5ErT515dPtozJtzThYDiZ6/bRYpEGhk+jvb4Gg1AYDLEd4VVAXqOwxICcpsmXfsZn2h2umimHd3m2lt1JQ1nbKt35LbgNUqk+dFOzVm0q4xo69LGkXhhQWXLHXaabtKk665qaChrPsyNxkNqnYmRv+vV1WtJIVIldjCVesuB7xEhf+p9mxP9r5Uu7ucDFk8kYBvGwKiflXMks6JVAzLvrUO5s19pf4siBxlbFCw/Gm6EghtqRkUqdaOUXNET1pmSrGLH2Gc/htzNhDrv0WTK3dgi6/UuOQFQecJbn1qsenSPQgvlT5dcqHez/jUh1T17Y1VWxGSnB9jsSEhf2dOGEASm4VqRc4a3kO67u1sPgqhoH3nfgjRHcGutebLmzqB70EsIqvOptZiq1ULzTgtOTDS/1Wnia2jc8opaFs5frohaJEqVNVHw3UDHszAalQtilRGD7kOVCG3v1D4wFRTtrJjzgk5cgF9owZ4JGY0IME3+hPL8txUBDzmm/pm7bfK/tpjjyCZW7EU1tgq26LsFeGywk80GWxP7QTsUYZa40fNZkTJ4wem+Nsz38nPI=
