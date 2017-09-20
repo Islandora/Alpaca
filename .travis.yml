@@ -3,10 +3,6 @@ dist: trusty
 jdk:
   - oraclejdk8
 
-before_install:
-  - echo $JAVA_OPTS
-  - export JAVA_OPTS=-Xmx512m
-
 script:
   - "./gradlew --stacktrace build"
   - "./gradlew --stacktrace docs"
