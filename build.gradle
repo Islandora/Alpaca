@@ -34,7 +34,6 @@ subprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.hierynomus.license'
     apply plugin: 'pmd'
-    apply plugin: 'findbugs'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -103,18 +102,6 @@ subprojects {
     pmd {
         ignoreFailures true
         ruleSetFiles = rootProject.files('gradle/pmd/ruleset.xml')
-    }
-    
-    findbugs {
-        ignoreFailures = true
-        effort = 'max'
-    }
-    
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled false
-            html.enabled true
-        }
     }
 
     publishing {
