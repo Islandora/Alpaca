@@ -16,6 +16,10 @@ dependencies {
     testCompile group: 'com.googlecode.junit-toolbox', name: 'junit-toolbox', version: '2.3'
 }
 
+test {
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
+}
+
 jar {
     manifest {
       description project.description
