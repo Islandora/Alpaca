@@ -13,6 +13,11 @@ dependencies {
     testCompile group: 'org.apache.activemq', name: 'activemq-camel', version: activemqVersion
     testCompile group: 'org.apache.servicemix.bundles', name: 'org.apache.servicemix.bundles.xerces', version: '2.11.0_1'
     testCompile group: 'org.ow2.asm', name: 'asm-commons', version: '5.0.3'
+    testCompile group: 'com.googlecode.junit-toolbox', name: 'junit-toolbox', version: '2.3'
+}
+
+test {
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
 }
 
 jar {
