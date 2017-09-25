@@ -17,22 +17,30 @@
  */
 package ca.islandora.alpaca.indexing.fcrepo;
 
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.googlecode.junittoolbox.ParallelRunner;
 
 /**
  * @author ajs6f
  *
  */
+@RunWith(ParallelRunner.class)
 public class IslandoraFcrepoIndexerCreateBinaryTests extends FcrepoIndexerTestFramework {
 
     private final static String routeName = "IslandoraFcrepoIndexerCreateBinary";
 
     @Test
     public void testCreateBinaryFiltersBadEvents() throws Exception {
-        alter(routeName, a-> {
-            a.replaceFromWith("direct:start");
-            a.mockEndpoints();
+        context.getRouteDefinition(routeName).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpoints();
+            }
         });
 
         getMockEndpoint("mock:result").expectedMessageCount(0);
@@ -47,20 +55,23 @@ public class IslandoraFcrepoIndexerCreateBinaryTests extends FcrepoIndexerTestFr
 
     @Test
     public void testCreateBinaryRoutesToMapOnSuccess() throws Exception {
-        alter(routeName, a -> {
-            a.replaceFromWith("direct:start");
+        context.getRouteDefinition(routeName).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
 
-            // Mock milliner http endpoint and return canned response
-            a.interceptSendToEndpoint("http://*").skipSendToOriginalEndpoint().process(exchange -> {
-                exchange.getIn().removeHeaders("*");
-                exchange.getIn().setHeader("Location", "http://localhost:8080/fcrepo/rest/foo");
-                exchange.getIn().setHeader("Link",
-                        "<http://localhost:8080/fcrepo/rest/foo/fcr:metadata>; rel=\"describedby\"");
-                exchange.getIn().setBody("http://localhost:8080/fcrepo/rest/foo");
-            });
+                // Mock milliner http endpoint and return canned response
+                interceptSendToEndpoint("http://*").skipSendToOriginalEndpoint().process(exchange -> {
+                    exchange.getIn().removeHeaders("*");
+                    exchange.getIn().setHeader("Location", "http://localhost:8080/fcrepo/rest/foo");
+                    exchange.getIn().setHeader("Link",
+                            "<http://localhost:8080/fcrepo/rest/foo/fcr:metadata>; rel=\"describedby\"");
+                    exchange.getIn().setBody("http://localhost:8080/fcrepo/rest/foo");
+                });
 
-            // Mock and skip final endpoint
-            a.mockEndpointsAndSkip("seda:islandora-indexing-fcrepo-map-binary");
+                // Mock and skip final endpoint
+                mockEndpointsAndSkip("seda:islandora-indexing-fcrepo-map-binary");
+            }
         });
 
         getMockEndpoint("mock:result").expectedMessageCount(0);
@@ -74,15 +85,18 @@ public class IslandoraFcrepoIndexerCreateBinaryTests extends FcrepoIndexerTestFr
 
     @Test
     public void testCreateBinaryPassthruOn409() throws Exception {
-        alter(routeName, a -> {
-            a.replaceFromWith("direct:start");
-            a.mockEndpoints();
+        context.getRouteDefinition(routeName).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpoints();
 
-            // Jam in a 409 right at the beginning
-            a.weaveAddFirst().process(exchange -> {
-                throw new HttpOperationFailedException("http://test.com", 409, "Conflict", null, null,
-                        "Error message");
-            });
+                // Jam in a 409 right at the beginning
+                weaveAddFirst().process(exchange -> {
+                    throw new HttpOperationFailedException("http://test.com", 409, "Conflict", null, null,
+                            "Error message");
+                });
+            }
         });
 
         getMockEndpoint("mock:result").expectedMessageCount(1);
@@ -96,12 +110,15 @@ public class IslandoraFcrepoIndexerCreateBinaryTests extends FcrepoIndexerTestFr
 
     @Test
     public void testCreateBinaryRoutesToDLQOnOtherExceptions() throws Exception {
-        alter(routeName, a -> {
-            a.replaceFromWith("direct:start");
-            a.mockEndpoints();
+        context.getRouteDefinition(routeName).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpoints();
 
-            // Jam in some other type of exception right at the beginning
-            a.weaveAddFirst().throwException(Exception.class, "Error Message");
+                // Jam in some other type of exception right at the beginning
+                weaveAddFirst().throwException(Exception.class, "Error Message");
+            }
         });
 
         getMockEndpoint("mock:result").expectedMessageCount(0);
@@ -112,4 +129,5 @@ public class IslandoraFcrepoIndexerCreateBinaryTests extends FcrepoIndexerTestFr
 
         assertMockEndpointsSatisfied();
     }
+
 }

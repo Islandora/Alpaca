@@ -28,7 +28,6 @@ import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.commons.io.IOUtils;
@@ -85,28 +84,5 @@ public abstract class FcrepoIndexerTestFramework extends CamelBlueprintTestSuppo
 
     protected String loadResource(final String resourceName) throws IOException {
         return IOUtils.toString(loadResourceAsStream(resourceName), UTF_8);
-    }
-
-    protected void alter(final String routeName, final UnsafeConsumer<AdviceWithRouteBuilder> conf) throws Exception {
-        context.getRouteDefinition(routeName).adviceWith(context, new AbbreviatedAdviceWithRouteBuilder(conf));
-    }
-
-    static class AbbreviatedAdviceWithRouteBuilder extends AdviceWithRouteBuilder {
-
-        public AbbreviatedAdviceWithRouteBuilder(final UnsafeConsumer<AdviceWithRouteBuilder> conf) throws Exception {
-            super();
-            this.configure = conf;
-        }
-
-        private final UnsafeConsumer<AdviceWithRouteBuilder> configure;
-
-        @Override
-        public void configure() throws Exception {
-            configure.accept(this);
-        }
-    }
-
-    interface UnsafeConsumer<T> {
-        void accept(T input) throws Exception;
     }
 }
