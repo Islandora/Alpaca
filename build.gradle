@@ -33,6 +33,7 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.hierynomus.license'
+    apply plugin: 'pmd'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -94,6 +95,11 @@ subprojects {
         mapping {
             java = 'SLASHSTAR_STYLE'
         }
+    }
+
+    pmd {
+        ignoreFailures true
+        ruleSetFiles = rootProject.files('gradle/pmd/ruleset.xml')
     }
 
     publishing {
