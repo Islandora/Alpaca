@@ -37,7 +37,7 @@ public class IslandoraFcrepoIndexerUpdateRdfTests extends FcrepoIndexerTestFrame
                 mockEndpoints();
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
 
@@ -58,7 +58,7 @@ public class IslandoraFcrepoIndexerUpdateRdfTests extends FcrepoIndexerTestFrame
                 mockEndpointsAndSkip("http*");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(1);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
 
@@ -79,7 +79,7 @@ public class IslandoraFcrepoIndexerUpdateRdfTests extends FcrepoIndexerTestFrame
                 weaveAddFirst().throwException(Exception.class, "Error Message");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(1);
 

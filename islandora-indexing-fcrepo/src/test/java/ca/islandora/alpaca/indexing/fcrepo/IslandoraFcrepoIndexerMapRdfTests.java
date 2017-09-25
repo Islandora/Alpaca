@@ -40,6 +40,7 @@ public class IslandoraFcrepoIndexerMapRdfTests extends FcrepoIndexerTestFramewor
                 mockEndpointsAndSkip("http*");
             }
         });
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(1);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
 
@@ -60,7 +61,7 @@ public class IslandoraFcrepoIndexerMapRdfTests extends FcrepoIndexerTestFramewor
                 weaveAddFirst().throwException(Exception.class, "Error Message");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(1);
         sendBodyAndHeaders("create-event.json", h("Authorization", "some_nifty_token"),

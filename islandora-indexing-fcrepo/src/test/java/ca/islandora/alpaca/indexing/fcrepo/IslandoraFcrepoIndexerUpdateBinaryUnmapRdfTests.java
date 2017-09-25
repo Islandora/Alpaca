@@ -40,7 +40,7 @@ public class IslandoraFcrepoIndexerUpdateBinaryUnmapRdfTests extends FcrepoIndex
                 mockEndpointsAndSkip("seda:islandora-indexing-fcrepo-binary-update-create");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-binary-update-create").expectedMessageCount(1);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
 
@@ -65,7 +65,7 @@ public class IslandoraFcrepoIndexerUpdateBinaryUnmapRdfTests extends FcrepoIndex
                 weaveAddFirst().throwException(Exception.class, "Error Message");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-binary-update-create").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(1);
 

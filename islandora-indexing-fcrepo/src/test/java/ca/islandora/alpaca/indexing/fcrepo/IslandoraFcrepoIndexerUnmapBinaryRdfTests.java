@@ -40,6 +40,7 @@ public class IslandoraFcrepoIndexerUnmapBinaryRdfTests extends FcrepoIndexerTest
                 mockEndpointsAndSkip("http*");
             }
         });
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(1);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
         sendBodyAndHeaders("delete-binary-event.json", h("Authorization", "some_nifty_token"),
@@ -62,7 +63,7 @@ public class IslandoraFcrepoIndexerUnmapBinaryRdfTests extends FcrepoIndexerTest
                 weaveAddFirst().throwException(Exception.class, "Error Message");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(1);
         sendBodyAndHeaders("delete-binary-event.json", h("Authorization", "some_nifty_token"),

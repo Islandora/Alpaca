@@ -38,7 +38,7 @@ public class IslandoraFcrepoIndexerDeleteBinaryTests extends FcrepoIndexerTestFr
                 mockEndpoints();
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-unmap-binary").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
@@ -61,7 +61,7 @@ public class IslandoraFcrepoIndexerDeleteBinaryTests extends FcrepoIndexerTestFr
                 mockEndpointsAndSkip("seda:islandora-indexing-fcrepo-unmap-binary");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-unmap-binary").expectedMessageCount(1);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
@@ -86,7 +86,7 @@ public class IslandoraFcrepoIndexerDeleteBinaryTests extends FcrepoIndexerTestFr
                 });
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(1);
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-unmap-binary").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(0);
@@ -108,7 +108,7 @@ public class IslandoraFcrepoIndexerDeleteBinaryTests extends FcrepoIndexerTestFr
                 weaveAddFirst().throwException(Exception.class, "Error Message");
             }
         });
-
+        context.start();
         getMockEndpoint("mock:result").expectedMessageCount(0);
         getMockEndpoint("mock:seda:islandora-indexing-fcrepo-unmap-binary").expectedMessageCount(0);
         getMockEndpoint("mock:dead").expectedMessageCount(1);
