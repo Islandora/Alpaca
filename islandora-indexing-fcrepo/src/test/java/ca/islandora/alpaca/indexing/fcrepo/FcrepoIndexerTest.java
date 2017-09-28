@@ -18,7 +18,6 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
-import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
