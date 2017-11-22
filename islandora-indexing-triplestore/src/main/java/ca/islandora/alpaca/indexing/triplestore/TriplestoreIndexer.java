@@ -24,11 +24,15 @@ import static org.fcrepo.camel.FcrepoHeaders.FCREPO_URI;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import com.jayway.jsonpath.JsonPathException;
+
+import net.minidev.json.JSONArray;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
 import org.fcrepo.camel.processor.SparqlUpdateProcessor;
 import org.fcrepo.camel.processor.SparqlDeleteProcessor;
 import org.slf4j.Logger;
+
+import java.util.LinkedHashMap;
 
 /**
  * @author dhlamb
@@ -39,67 +43,64 @@ public class TriplestoreIndexer extends RouteBuilder {
 
     @Override
     public void configure() {
-
         // Global exception handler for the indexer.
         // Just logs after retrying X number of times.
         onException(Exception.class)
             .maximumRedeliveries("{{error.maxRedeliveries}}")
-            .handled(true)
             .log(
                 ERROR,
                 LOGGER,
                 "Error indexing ${property.uri} in triplestore: ${exception.message}\n\n${exception.stacktrace}"
             );
 
-        // Main router.
-        from("{{input.stream}}")
-            .routeId("IslandoraTriplestoreIndexerRouter")
-              .to("direct:parse.event")
-              .choice()
-                .when(exchangeProperty("action").isEqualTo("Delete"))
-                  .to("direct:triplestore.delete")
-                .otherwise()
-                  .to("direct:retrieve.resource")
-                  .to("direct:triplestore.index");
+        from("{{index.stream}}")
+            .routeId("IslandoraTriplestoreIndexer")
+              .to("direct:parse.url")
+              .removeHeaders("*", "Authorization")
+              .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+              .transform(simple("${null}"))
+              .toD("${exchangeProperty.url}")
+              .setHeader(FCREPO_URI, simple("${exchangeProperty.url}"))
+              .process(new SparqlUpdateProcessor())
+              .log(INFO, LOGGER, "Indexing ${exchangeProperty.url} in triplestore")
+              .to("{{triplestore.baseUrl}}");
 
-        // Extracts info using jsonpath and stores it as properties on the exchange.
-        from("direct:parse.event")
-            .routeId("IslandoraTriplestoreIndexerParseEvent")
-              // Custom exception handler.  Doesn't retry if event is malformed.
+        from("{{delete.stream}}")
+            .routeId("IslandoraTriplestoreIndexerDelete")
+              .to("direct:parse.url")
+              .setHeader(FCREPO_URI, simple("${exchangeProperty.url}"))
+              .process(new SparqlDeleteProcessor())
+              .log(INFO, LOGGER, "Deleting ${exchangeProperty.url} in triplestore")
+              .to("{{triplestore.baseUrl}}");
+
+        // Extracts the JSONLD URL from the event message and stores it on the exchange.
+        from("direct:parse.url")
+            .routeId("IslandoraTriplestoreIndexerParseUrl")
+              // Custom exception handlers.  Don't retry if event is malformed.
               .onException(JsonPathException.class)
                 .maximumRedeliveries(0)
-                .handled(true)
                 .log(
                    ERROR,
                    LOGGER,
                    "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
                 )
                 .end()
-              .setProperty("action").jsonpath("$.type")
-              .setProperty("uri").jsonpath("$.object");
-
-        // POSTs a SPARQL delete query for all triples with subject == uri.
-        from("direct:triplestore.delete")
-            .routeId("IslandoraTriplestoreIndexerDelete")
-              .setHeader(FCREPO_URI, simple("${property.uri}?_format=jsonld"))
-              .process(new SparqlDeleteProcessor())
-              .log(INFO, LOGGER, "Deleting ${property.uri} in triplestore")
-              .to("{{triplestore.baseUrl}}");
-
-        // Retrieves the resource from Drupal.
-        from("direct:retrieve.resource")
-            .routeId("IslandoraTriplestoreIndexerRetrieveResource")
-                .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-                .setHeader("Authentication", simple("${headers['Authentication']}"))
-                .toD("${property.uri}?_format=jsonld");
-
-        // Converts the resource to a SPARQL update query, POSTing it to the triplestore.
-        from("direct:triplestore.index")
-            .routeId("IslandoraTriplestoreIndexerIndex")
-              .setHeader(FCREPO_URI, simple("${property.uri}?_format=jsonld"))
-              .process(new SparqlUpdateProcessor())
-              .log(INFO, LOGGER, "Indexing ${property.uri} in triplestore")
-              .to("{{triplestore.baseUrl}}");
-
+              .onException(RuntimeException.class)
+                .maximumRedeliveries(0)
+                .log(
+                   ERROR,
+                   LOGGER,
+                   "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
+                )
+                .end()
+              .transform().jsonpath("$.object.url")
+              .process(ex -> {
+                  final LinkedHashMap url = ex.getIn().getBody(JSONArray.class).stream()
+                          .map(LinkedHashMap.class::cast)
+                          .filter(elem -> "application/ld+json".equals(elem.get("mediaType")))
+                          .findFirst()
+                          .orElseThrow(() -> new RuntimeException("Cannot find JSONLD URL in event message."));
+                  ex.setProperty("url", url.get("href"));
+              });
     }
 }
