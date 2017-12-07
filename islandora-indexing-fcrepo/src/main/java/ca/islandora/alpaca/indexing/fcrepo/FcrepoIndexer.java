@@ -77,6 +77,7 @@ public class FcrepoIndexer extends RouteBuilder {
     public void configure() {
 
         final Predicate is412 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 412"));
+        final Predicate is404 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 404"));
 
         onException(HttpOperationFailedException.class)
                 .onWhen(is412)
@@ -119,6 +120,16 @@ public class FcrepoIndexer extends RouteBuilder {
 
         from("{{delete.stream}}")
                 .routeId("FcrepoIndexerDelete")
+                .onException(HttpOperationFailedException.class)
+                        .onWhen(is404)
+                        .useOriginalMessage()
+                        .handled(true)
+                        .log(
+                                INFO,
+                                LOGGER,
+                                "Received 404 from Milliner, skipping de-indexing."
+                        )
+                        .end()
                 .setProperty("urn").jsonpath("$.object.id")
                 .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\")}")
                 .removeHeaders("*", "Authorization")
