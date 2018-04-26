@@ -18,6 +18,8 @@
 
 package ca.islandora.alpaca.connector.houdini.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * POJO for attachment content.  Part of a AS2Event.
  *
@@ -26,45 +28,33 @@ package ca.islandora.alpaca.connector.houdini.event;
 public class AS2AttachmentContent {
 
     /**
-     * @return  Source
+     * @return  Source uri
      */
-    public String getSource() {
-        return source;
+    @JsonProperty(value = "source_uri")
+    public String getSourceUri() {
+        return sourceUri;
     }
 
     /**
-     * @param   source    Source
+     * @param   sourceUri    Source uri
      */
-    public void setSource(final String source) {
-        this.source = source;
+    public void setSourceUri(final String sourceUri) {
+        this.sourceUri = sourceUri;
     }
 
     /**
-     * @return  Destination
+     * @return  Destination uri
      */
-    public String getDestination() {
-        return destination;
+    @JsonProperty(value = "destination_uri")
+    public String getDestinationUri() {
+        return destinationUri;
     }
 
     /**
-     * @param   destination    Destination
+     * @param   destinationUri    Destination uri
      */
-    public void setDestination(final String destination) {
-        this.destination = destination;
-    }
-
-    /**
-     * @return  Bundle
-     */
-    public String getBundle() {
-        return bundle;
-    }
-
-    /**
-     * @param   bundle    Bundle
-     */
-    public void setBundle(final String bundle) {
-        this.bundle = bundle;
+    public void setDestinationUri(final String destinationUri) {
+        this.destinationUri = destinationUri;
     }
 
     /**
@@ -95,11 +85,18 @@ public class AS2AttachmentContent {
         this.args = args;
     }
 
+    public String getFilename() {
+        return filename;
+    }
 
-    private String source;
-    private String destination;
-    private String bundle;
+    public void setFilename(final String filename) {
+        this.filename = filename;
+    }
+
+    private String sourceUri;
+    private String destinationUri;
     private String mimetype;
     private String args;
+    private String filename;
 
 }
