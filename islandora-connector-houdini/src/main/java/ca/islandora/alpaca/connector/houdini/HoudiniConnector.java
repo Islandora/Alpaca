@@ -78,6 +78,6 @@ public class HoudiniConnector extends RouteBuilder {
             .setHeader("Content-Disposition", simple("attachment; filename=\"${exchangeProperty.event.attachment.content.filename}\""))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
             .toD("${exchangeProperty.event.attachment.content.destinationUri}");
-        }
+    }
 
 }
