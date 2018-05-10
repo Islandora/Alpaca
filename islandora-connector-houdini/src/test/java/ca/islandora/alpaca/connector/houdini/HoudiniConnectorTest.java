@@ -75,7 +75,7 @@ public class HoudiniConnectorTest extends CamelBlueprintTestSupport {
                             .skipSendToOriginalEndpoint()
                             .process(exchange -> {
                                 exchange.getIn().removeHeaders("*", "Authorization");
-                                exchange.getIn().setHeader("Content-Type", "image/png");
+                                exchange.getIn().setHeader("Content-Type", "image/jpeg");
                                 exchange.getIn().setBody("SOME DERIVATIVE", String.class);
                             });
 
@@ -90,6 +90,7 @@ public class HoudiniConnectorTest extends CamelBlueprintTestSupport {
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
         endpoint.expectedHeaderReceived(CONTENT_TYPE, "image/jpeg");
         endpoint.expectedHeaderReceived("Content-Disposition", "attachment; filename=\"1 - ServiceFile.jpeg\"");
+        endpoint.expectedHeaderReceived("Authorization", "Bearer islandora");
 
         template.send(exchange -> {
                 exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"));
