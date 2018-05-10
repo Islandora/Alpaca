@@ -18,10 +18,6 @@
 
 package ca.islandora.alpaca.connector.houdini;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
@@ -32,7 +28,6 @@ import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import static java.net.URLEncoder.encode;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 

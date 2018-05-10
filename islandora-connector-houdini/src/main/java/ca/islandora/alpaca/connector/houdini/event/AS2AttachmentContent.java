@@ -85,10 +85,16 @@ public class AS2AttachmentContent {
         this.args = args;
     }
 
+    /**
+     * @return  Filename
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * @param   filename    Filename
+     */
     public void setFilename(final String filename) {
         this.filename = filename;
     }

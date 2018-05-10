@@ -19,21 +19,12 @@
 package ca.islandora.alpaca.connector.houdini;
 
 import static org.apache.camel.LoggingLevel.ERROR;
-import static org.apache.camel.LoggingLevel.INFO;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import ca.islandora.alpaca.connector.houdini.event.AS2Event;
-import ca.islandora.alpaca.connector.houdini.event.AS2Url;
-import ca.islandora.alpaca.connector.houdini.event.AS2AttachmentContent;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
 /**
@@ -75,7 +66,8 @@ public class HoudiniConnector extends RouteBuilder {
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
-            .setHeader("Content-Disposition", simple("attachment; filename=\"${exchangeProperty.event.attachment.content.filename}\""))
+            .setHeader("Content-Disposition",
+                    simple("attachment; filename=\"${exchangeProperty.event.attachment.content.filename}\""))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
             .toD("${exchangeProperty.event.attachment.content.destinationUri}");
     }
