@@ -1,0 +1,37 @@
+apply plugin: 'osgi'
+
+description = 'Islandora CLAW Houdini Connector'
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion 
+    compile group: 'org.apache.camel', name: 'camel-blueprint', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-core', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-jackson', version: camelVersion
+    compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
+    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    testCompile group: 'org.apache.camel', name: 'camel-test-blueprint', version: camelVersion
+    testCompile group: 'org.apache.servicemix.bundles', name: 'org.apache.servicemix.bundles.xerces', version: '2.11.0_1'
+    testCompile group: 'org.ow2.asm', name: 'asm-commons', version: '5.0.3'
+}
+
+jar {
+    manifest {
+      description project.description
+      docURL project.docURL
+      vendor project.vendor
+      license project.license
+
+      instruction 'Import-Package', 'org.apache.camel.component.http4,' +
+                            "org.apache.camel;version=\"${camelVersion}\"," +
+                            defaultOsgiImports
+      instruction 'Export-Package', 'ca.islandora.connector.houdini'
+    }
+}
+
+artifacts {
+    archives (file('build/cfg/main/ca.islandora.alpaca.connector.houdini.cfg')) {
+        classifier 'configuration'
+        type 'cfg'
+    }
+}
+
