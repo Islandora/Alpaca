@@ -22,12 +22,14 @@ import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import ca.islandora.alpaca.indexing.fcrepo.event.AS2Event;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 
 /**
@@ -53,9 +55,7 @@ public class FcrepoIndexer extends RouteBuilder {
      * @return  Milliner base url
      */
     public String getMillinerBaseUrl() {
-        // Enforce trailing slash.
-        final String trimmed = millinerBaseUrl.trim();
-        return trimmed.endsWith("/") ? trimmed : trimmed + "/";
+        return enforceTrailingSlash(millinerBaseUrl);
     }
 
     /**
@@ -65,11 +65,33 @@ public class FcrepoIndexer extends RouteBuilder {
         this.millinerBaseUrl = millinerBaseUrl;
     }
 
+    /**
+     * @return  Gemini base url
+     */
+    public String getGeminiBaseUrl() {
+        return enforceTrailingSlash(geminiBaseUrl);
+    }
+
+    /**
+     * @param   geminiBaseUrl Gemini base url
+     */
+    public void setGeminiBaseUrl(final String geminiBaseUrl) {
+        this.geminiBaseUrl = geminiBaseUrl;
+    }
+
+    private String enforceTrailingSlash(final String baseUrl) {
+        final String trimmed = baseUrl.trim();
+        return trimmed.endsWith("/") ? trimmed : trimmed + "/";
+    }
+
     @PropertyInject("error.maxRedeliveries")
     private int maxRedeliveries;
 
     @PropertyInject("milliner.baseUrl")
     private String millinerBaseUrl;
+
+    @PropertyInject("gemini.baseUrl")
+    private String geminiBaseUrl;
 
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
@@ -97,28 +119,47 @@ public class FcrepoIndexer extends RouteBuilder {
                         "Error indexing resource in fcrepo: ${exception.message}\n\n${exception.stacktrace}"
                 );
 
-        from("{{content.stream}}")
-                .routeId("FcrepoIndexerContent")
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .toD(getMillinerBaseUrl() + "content");
+        from("{{node.stream}}")
+                .routeId("FcrepoIndexerNode")
 
-        from("{{file.stream}}")
-                .routeId("FcrepoIndexerFile")
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(getMillinerBaseUrl() + "file");
+                // Parse the event into a POJO.
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
 
-        from("{{media.stream}}")
-                .routeId("FcrepoIndexerMedia")
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/ld+json"))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(getMillinerBaseUrl() + "media");
+                // Extract relevant data from the event.
+                .setProperty("event").simple("${body}")
+                .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
 
-        from("{{delete.stream}}")
+                // Make a HEAD request against Drupal.
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.HTTP_METHOD, constant("HEAD"))
+            	.transform(simple("${null}"))
+                .toD("${exchangeProperty.drupal}")
+
+                // Extract the link header for the JSONLD representation.
+                .process((Exchange ex) -> {
+                    final String headers = ex.getIn().getHeader("Link", String.class);
+                    final String[] links = headers.split(",");
+                    for (String header : links) {
+                        if (header.contains("rel=\"alternate\"; type=\"application/ld+json\"")) {
+                            final String[] parts = header.split(";");
+                            String url = parts[0];
+                            url = url.replaceAll("<", "");
+                            ex.setProperty("jsonldUrl", url.replaceAll(">", ""));
+                            return;
+                        }
+                    }
+                })
+
+                // Prepare the message. 
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
+
+                // Pass it to milliner.
+                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
+
+        from("{{node.delete.stream}}")
                 .routeId("FcrepoIndexerDelete")
                 .onException(HttpOperationFailedException.class)
                         .onWhen(is404)
@@ -130,10 +171,99 @@ public class FcrepoIndexer extends RouteBuilder {
                                 "Received 404 from Milliner, skipping de-indexing."
                         )
                         .end()
-                .setProperty("urn").jsonpath("$.object.id")
-                .setProperty("uuid").simple("${exchangeProperty.urn.replaceAll(\"urn:uuid:\",\"\")}")
+                // Parse the event into a POJO.
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+
+                // Extract relevant data from the event.
+                .setProperty("event").simple("${body}")
+                .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+
+                // Prepare the message. 
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
+            	.transform(simple("${null}"))
+
+                // Remove the file from Gemini.
                 .toD(getMillinerBaseUrl() + "resource/${exchangeProperty.uuid}");
+
+        from("{{media.stream}}")
+                .routeId("FcrepoIndexerMedia")
+
+                // Parse the event into a POJO.
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+
+                // Extract relevant data from the event.
+                .setProperty("event").simple("${body}")
+                .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
+                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
+
+                // Make a HEAD request against Drupal.
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.HTTP_METHOD, constant("HEAD"))
+            	.transform(simple("${null}"))
+                .toD("${exchangeProperty.drupal}")
+
+                // Extract the link header for the JSON representation.
+                .process((Exchange ex) -> {
+                    final String headers = ex.getIn().getHeader("Link", String.class);
+                    final String[] links = headers.split(",");
+                    for (String header : links) {
+                        if (header.contains("rel=\"alternate\"; type=\"application/json\"")) {
+                            final String[] parts = header.split(";");
+                            String url = parts[0];
+                            url = url.replaceAll("<", "");
+                            ex.setProperty("jsonUrl", url.replaceAll(">", ""));
+                            return;
+                        }
+                    }
+                })
+
+                // Prepare the message. 
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
+
+                // Pass it to milliner.
+                .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}");
+
+        from("{{file.stream}}")
+                .routeId("FcrepoIndexerFile")
+
+                // Parse the event into a POJO.
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+
+                // Extract relevant data from the event.
+                .setProperty("event").simple("${body}")
+                .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
+                .setProperty("fedora").simple("${exchangeProperty.event.attachment.content.fedoraUri}")
+
+                // Prepare the message. 
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+                .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
+                .transform(simple("{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}"))
+
+                // Index the file in Gemini.
+                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}");
+
+        from("{{file.delete.stream}}")
+                .routeId("FcrepoIndexerFileDelete")
+
+                // Parse the event into a POJO.
+                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+
+                // Extract relevant data from the event.
+                .setProperty("event").simple("${body}")
+                .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+
+                // Prepare the message. 
+                .removeHeaders("*", "Authorization")
+                .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
+            	.transform(simple("${null}"))
+
+                // Remove the file from Gemini.
+                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}");
+
     }
 }

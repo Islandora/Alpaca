@@ -86,23 +86,24 @@ public class AS2AttachmentContent {
     }
 
     /**
-     * @return  Filename
+     * @return  File upload uri
      */
-    public String getFilename() {
-        return filename;
+    @JsonProperty(value = "file_upload_uri")
+    public String getFileUploadUri() {
+        return fileUploadUri;
     }
 
     /**
-     * @param   filename    Filename
+     * @param   fileUploadUri    File upload uri
      */
-    public void setFilename(final String filename) {
-        this.filename = filename;
+    public void setFileUploadUri(final String fileUploadUri) {
+        this.fileUploadUri = fileUploadUri;
     }
 
     private String sourceUri;
     private String destinationUri;
     private String mimetype;
     private String args;
-    private String filename;
+    private String fileUploadUri;
 
 }
