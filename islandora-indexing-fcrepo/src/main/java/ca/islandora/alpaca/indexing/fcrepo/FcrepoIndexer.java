@@ -128,33 +128,13 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Extract relevant data from the event.
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
-                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
-
-                // Make a HEAD request against Drupal.
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.HTTP_METHOD, constant("HEAD"))
-            	.transform(simple("${null}"))
-                .toD("${exchangeProperty.drupal}")
-
-                // Extract the link header for the JSONLD representation.
-                .process((Exchange ex) -> {
-                    final String headers = ex.getIn().getHeader("Link", String.class);
-                    final String[] links = headers.split(",");
-                    for (String header : links) {
-                        if (header.contains("rel=\"alternate\"; type=\"application/ld+json\"")) {
-                            final String[] parts = header.split(";");
-                            String url = parts[0];
-                            url = url.replaceAll("<", "");
-                            ex.setProperty("jsonldUrl", url.replaceAll(">", ""));
-                            return;
-                        }
-                    }
-                })
+                .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.url[2].href}")
 
                 // Prepare the message. 
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
+            	.transform(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
@@ -195,33 +175,13 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Extract relevant data from the event.
                 .setProperty("event").simple("${body}")
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
-                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
-
-                // Make a HEAD request against Drupal.
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.HTTP_METHOD, constant("HEAD"))
-            	.transform(simple("${null}"))
-                .toD("${exchangeProperty.drupal}")
-
-                // Extract the link header for the JSON representation.
-                .process((Exchange ex) -> {
-                    final String headers = ex.getIn().getHeader("Link", String.class);
-                    final String[] links = headers.split(",");
-                    for (String header : links) {
-                        if (header.contains("rel=\"alternate\"; type=\"application/json\"")) {
-                            final String[] parts = header.split(";");
-                            String url = parts[0];
-                            url = url.replaceAll("<", "");
-                            ex.setProperty("jsonUrl", url.replaceAll(">", ""));
-                            return;
-                        }
-                    }
-                })
+                .setProperty("jsonUrl").simple("${exchangeProperty.event.object.url[1].href}")
 
                 // Prepare the message. 
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
+            	.transform(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}");
