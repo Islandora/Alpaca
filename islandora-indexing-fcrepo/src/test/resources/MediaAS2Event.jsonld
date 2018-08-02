@@ -14,41 +14,37 @@
       ]
    },
    "object":{
-      "id":"urn:uuid:72358916-51e9-4712-b756-4b0404c91b1d",
+      "id":"urn:uuid:4f528a92-4be2-4a9d-85e6-c5f4d36b1bce",
       "url":[
          {
             "name":"Canoncial",
             "type":"Link",
-            "href":"http:\/\/localhost:8000\/node\/2",
+            "href":"http:\/\/localhost:8000\/media\/6",
             "mediaType":"text\/html",
             "rel":"canonical"
          },
          {
             "name":"JSON",
             "type":"Link",
-            "href":"http:\/\/localhost:8000\/node\/2?_format=json",
+            "href":"http:\/\/localhost:8000\/media\/6?_format=json",
             "mediaType":"application\/json",
             "rel":"alternate"
          },
          {
             "name":"JSONLD",
             "type":"Link",
-            "href":"http:\/\/localhost:8000\/node\/2?_format=jsonld",
+            "href":"http:\/\/localhost:8000\/media\/6?_format=jsonld",
             "mediaType":"application\/ld+json",
             "rel":"alternate"
          }
       ]
    },
-   "type":"Activity",
-   "summary":"Generate Derivative",
+   "type":"Update",
+   "summary":"Update a Media",
    "attachment":{
       "type":"Object",
       "content":{
-         "mimetype":"image\/jpeg",
-         "args":"",
-         "source_uri":"http:\/\/localhost:8000\/_flysystem\/fedora\/2018-07\/Egyptology.jpg",
-         "destination_uri":"http:\/\/localhost:8000\/node\/2\/media\/image\/3",
-         "file_upload_uri":"public:\/\/2018-08\/2-Service File.jpg"
+         "source_field":"field_media_image"
       },
       "mediaType":"application\/json"
    }

@@ -39,17 +39,6 @@
          }
       ]
    },
-   "type":"Activity",
-   "summary":"Generate Derivative",
-   "attachment":{
-      "type":"Object",
-      "content":{
-         "mimetype":"image\/jpeg",
-         "args":"",
-         "source_uri":"http:\/\/localhost:8000\/_flysystem\/fedora\/2018-07\/Egyptology.jpg",
-         "destination_uri":"http:\/\/localhost:8000\/node\/2\/media\/image\/3",
-         "file_upload_uri":"public:\/\/2018-08\/2-Service File.jpg"
-      },
-      "mediaType":"application\/json"
-   }
+   "type":"Update",
+   "summary":"Update a Node"
 }

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AS2AttachmentContent {
 
     /**
-     * @return Fedora uri 
+     * @return Fedora uri
      */
     @JsonProperty(value = "fedora_uri")
     public String getFedoraUri() {
@@ -43,7 +43,7 @@ public class AS2AttachmentContent {
     }
 
     /**
-     * @return Source field 
+     * @return Source field
      */
     @JsonProperty(value = "source_field")
     public String getSourceField() {
@@ -51,7 +51,7 @@ public class AS2AttachmentContent {
     }
 
     /**
-     * @param   sourceField   Source field 
+     * @param   sourceField   Source field
      */
     public void setSourceField(final String sourceField) {
         this.sourceField = sourceField;

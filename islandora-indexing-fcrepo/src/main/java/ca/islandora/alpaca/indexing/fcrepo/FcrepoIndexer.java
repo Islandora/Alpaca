@@ -130,17 +130,17 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.url[2].href}")
 
-                // Prepare the message. 
+                // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
-            	.transform(simple("${null}"))
+                .transform(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
 
         from("{{node.delete.stream}}")
-                .routeId("FcrepoIndexerDelete")
+                .routeId("FcrepoIndexerDeleteNode")
                 .onException(HttpOperationFailedException.class)
                         .onWhen(is404)
                         .useOriginalMessage()
@@ -158,13 +158,13 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
 
-                // Prepare the message. 
+                // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-            	.transform(simple("${null}"))
+                .transform(simple("${null}"))
 
                 // Remove the file from Gemini.
-                .toD(getMillinerBaseUrl() + "resource/${exchangeProperty.uuid}");
+                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
 
         from("{{media.stream}}")
                 .routeId("FcrepoIndexerMedia")
@@ -177,11 +177,11 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
                 .setProperty("jsonUrl").simple("${exchangeProperty.event.object.url[1].href}")
 
-                // Prepare the message. 
+                // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
-            	.transform(simple("${null}"))
+                .transform(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}");
@@ -198,11 +198,13 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
                 .setProperty("fedora").simple("${exchangeProperty.event.attachment.content.fedoraUri}")
 
-                // Prepare the message. 
+                // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-                .transform(simple("{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}"))
+                .transform(simple(
+                    "{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}")
+                )
 
                 // Index the file in Gemini.
                 .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}");
@@ -217,10 +219,10 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
 
-                // Prepare the message. 
+                // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-            	.transform(simple("${null}"))
+                .transform(simple("${null}"))
 
                 // Remove the file from Gemini.
                 .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}");
