@@ -17,7 +17,7 @@
       "id":"urn:uuid:72358916-51e9-4712-b756-4b0404c91b1d",
       "url":[
          {
-            "name":"Canoncial",
+            "name":"Canonical",
             "type":"Link",
             "href":"http:\/\/localhost:8000\/node\/2",
             "mediaType":"text\/html",

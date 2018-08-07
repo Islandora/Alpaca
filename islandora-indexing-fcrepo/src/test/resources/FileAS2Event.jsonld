@@ -17,7 +17,7 @@
       "id":"urn:uuid:148dfe8f-9711-4263-97e7-3ef3fb15864f",
       "url":[
          {
-            "name":"Canoncial",
+            "name":"Canonical",
             "type":"Link",
             "href":"http:\/\/localhost:8000\/_flysystem\/fedora\/2018-08\/Voltaire-Records1.jpg",
             "mediaType":"image\/jpeg",
