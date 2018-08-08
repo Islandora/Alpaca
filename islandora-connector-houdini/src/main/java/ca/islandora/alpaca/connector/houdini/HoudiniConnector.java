@@ -61,7 +61,7 @@ public class HoudiniConnector extends RouteBuilder {
             .setHeader("Accept", simple("${exchangeProperty.event.attachment.content.mimetype}"))
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
-            .transform(simple("${null}"))
+            .setBody(simple("${null}"))
             .to("{{houdini.convert.url}}")
 
             // PUT the media.

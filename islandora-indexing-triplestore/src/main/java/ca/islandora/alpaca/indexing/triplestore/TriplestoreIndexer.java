@@ -58,7 +58,7 @@ public class TriplestoreIndexer extends RouteBuilder {
               .to("direct:parse.url")
               .removeHeaders("*", "Authorization")
               .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-              .transform(simple("${null}"))
+              .setBody(simple("${null}"))
               .toD("${exchangeProperty.url}")
               .setHeader(FCREPO_URI, simple("${exchangeProperty.url}"))
               .process(new SparqlUpdateProcessor())

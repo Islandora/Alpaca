@@ -134,7 +134,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
-                .transform(simple("${null}"))
+                .setBody(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
@@ -161,7 +161,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-                .transform(simple("${null}"))
+                .setBody(simple("${null}"))
 
                 // Remove the file from Gemini.
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}");
@@ -181,7 +181,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
-                .transform(simple("${null}"))
+                .setBody(simple("${null}"))
 
                 // Pass it to milliner.
                 .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}");
@@ -202,7 +202,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-                .transform(simple(
+                .setBody(simple(
                     "{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}")
                 )
 
@@ -222,7 +222,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-                .transform(simple("${null}"))
+                .setBody(simple("${null}"))
 
                 // Remove the file from Gemini.
                 .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}");
