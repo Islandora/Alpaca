@@ -74,17 +74,17 @@ public class HoudiniConnectorTest extends CamelBlueprintTestSupport {
                                 exchange.getIn().setBody("SOME DERIVATIVE", String.class);
                             });
 
-                    mockEndpointsAndSkip("http://localhost:8000/node/1/media/image/3");
+                    mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3");
                 }
         });
         context.start();
 
-        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8000/node/1/media/image/3");
+        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8000/node/2/media/image/3");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
         endpoint.expectedHeaderReceived(CONTENT_TYPE, "image/jpeg");
-        endpoint.expectedHeaderReceived("Content-Disposition", "attachment; filename=\"1 - ServiceFile.jpeg\"");
+        endpoint.expectedHeaderReceived("Content-Location", "public://2018-08/2-Service File.jpg");
         endpoint.expectedHeaderReceived("Authorization", "Bearer islandora");
 
         template.send(exchange -> {

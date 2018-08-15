@@ -61,13 +61,12 @@ public class HoudiniConnector extends RouteBuilder {
             .setHeader("Accept", simple("${exchangeProperty.event.attachment.content.mimetype}"))
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
-            .transform(simple("${null}"))
+            .setBody(simple("${null}"))
             .to("{{houdini.convert.url}}")
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
-            .setHeader("Content-Disposition",
-                    simple("attachment; filename=\"${exchangeProperty.event.attachment.content.filename}\""))
+            .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
             .toD("${exchangeProperty.event.attachment.content.destinationUri}");
     }

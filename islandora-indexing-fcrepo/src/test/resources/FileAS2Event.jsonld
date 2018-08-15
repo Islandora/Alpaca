@@ -1,0 +1,37 @@
+{
+   "@context":"https:\/\/www.w3.org\/ns\/activitystreams",
+   "actor":{
+      "type":"Person",
+      "id":"urn:uuid:9029a0c0-d845-4ddd-864c-2198d45839da",
+      "url":[
+         {
+            "name":"Canonical",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/user\/1",
+            "mediaType":"text\/html",
+            "rel":"canonical"
+         }
+      ]
+   },
+   "object":{
+      "id":"urn:uuid:148dfe8f-9711-4263-97e7-3ef3fb15864f",
+      "url":[
+         {
+            "name":"Canonical",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/_flysystem\/fedora\/2018-08\/Voltaire-Records1.jpg",
+            "mediaType":"image\/jpeg",
+            "rel":"canonical"
+         }
+      ]
+   },
+   "type":"Create",
+   "summary":"Create a File",
+   "attachment":{
+      "type":"Object",
+      "content":{
+         "fedora_uri":"http:\/\/localhost:8080\/fcrepo\/rest\/2018-08\/Voltaire-Records1.jpg"
+      },
+      "mediaType":"application\/json"
+   }
+}

@@ -53,29 +53,63 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testContent() throws Exception {
-        final String route = "FcrepoIndexerContent";
+    public void testNode() throws Exception {
+        final String route = "FcrepoIndexerNode";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8000/milliner/content");
+                mockEndpointsAndSkip("http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d");
             }
         });
         context.start();
 
-        // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/content");
+        // Assert we POST to milliner with creds.
+        final MockEndpoint milliner = getMockEndpoint(
+            "mock:http:localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d"
+        );
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/ld+json");
+        milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
 
         // Send an event.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "Bearer islandora");
             exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"),
+                    IOUtils.toString(loadResourceAsStream("NodeAS2Event.jsonld"), "UTF-8"),
+                    String.class
+            );
+        });
+
+        assertMockEndpointsSatisfied();
+    }
+
+    @Test
+    public void testNodeDelete() throws Exception {
+        final String route = "FcrepoIndexerDeleteNode";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpointsAndSkip("http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d");
+            }
+        });
+        context.start();
+
+        // Assert we DELETE to milliner with creds.
+        final MockEndpoint milliner = getMockEndpoint(
+            "mock:http:localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d"
+        );
+        milliner.expectedMessageCount(1);
+        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
+        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
+
+        // Send an event.
+        template.send(exchange -> {
+            exchange.getIn().setHeader("Authorization", "Bearer islandora");
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("NodeAS2Event.jsonld"), "UTF-8"),
                     String.class
             );
         });
@@ -90,23 +124,61 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8000/milliner/file");
+                mockEndpointsAndSkip("http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f");
             }
         });
         context.start();
 
-        // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/file");
-        milliner.expectedMessageCount(1);
-        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/ld+json");
-        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        // Assert we PUT to gemini with creds.
+        final MockEndpoint gemini = getMockEndpoint(
+            "mock:http:localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f"
+        );
+        gemini.expectedMessageCount(1);
+        gemini.expectedHeaderReceived("Authorization", "Bearer islandora");
+        gemini.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/json");
+        gemini.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
+        gemini.allMessages().body().startsWith(
+            "{\"drupal\": \"http://localhost:8000/_flysystem/fedora/2018-08/Voltaire-Records1.jpg\", \"fedora\": " +
+            "\"http://localhost:8080/fcrepo/rest/2018-08/Voltaire-Records1.jpg\"}"
+        );
 
         // Send an event.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "Bearer islandora");
             exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"),
+                    IOUtils.toString(loadResourceAsStream("FileAS2Event.jsonld"), "UTF-8"),
+                    String.class
+            );
+        });
+
+        assertMockEndpointsSatisfied();
+    }
+
+    @Test
+    public void testFileDelet() throws Exception {
+        final String route = "FcrepoIndexerFileDelete";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpointsAndSkip("http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f");
+            }
+        });
+        context.start();
+
+        // Assert we PUT to gemini with creds.
+        final MockEndpoint gemini = getMockEndpoint(
+            "mock:http:localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f"
+        );
+        gemini.expectedMessageCount(1);
+        gemini.expectedHeaderReceived("Authorization", "Bearer islandora");
+        gemini.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
+
+        // Send an event.
+        template.send(exchange -> {
+            exchange.getIn().setHeader("Authorization", "Bearer islandora");
+            exchange.getIn().setBody(
+                    IOUtils.toString(loadResourceAsStream("FileAS2Event.jsonld"), "UTF-8"),
                     String.class
             );
         });
@@ -121,56 +193,23 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8000/milliner/media");
+                mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image");
             }
         });
         context.start();
 
         // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/media");
+        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/media/field_media_image");
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/ld+json");
+        milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/media/6?_format=json");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
 
         // Send an event.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "Bearer islandora");
             exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"),
-                    String.class
-            );
-        });
-
-        assertMockEndpointsSatisfied();
-    }
-
-    @Test
-    public void testDelete() throws Exception {
-
-        final String uuid = "9541c0c1-5bee-4973-a9d0-e55c1658bc81";
-
-        final String route = "FcrepoIndexerDelete";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8000/milliner/resource/" + uuid);
-            }
-        });
-        context.start();
-
-        // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/resource/" + uuid);
-        milliner.expectedMessageCount(1);
-        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
-
-        // Send an event.
-        template.send(exchange -> {
-            exchange.getIn().setHeader("Authorization", "Bearer islandora");
-            exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"),
+                    IOUtils.toString(loadResourceAsStream("MediaAS2Event.jsonld"), "UTF-8"),
                     String.class
             );
         });
