@@ -1,0 +1,7 @@
+ca.islandora.alpaca.connector.broadcast
+ca.islandora.alpaca.connector.houdini
+ca.islandora.alpaca.connector.houdini.event
+ca.islandora.alpaca.http.client
+ca.islandora.alpaca.indexing.fcrepo
+ca.islandora.alpaca.indexing.fcrepo.event
+ca.islandora.alpaca.indexing.triplestore
