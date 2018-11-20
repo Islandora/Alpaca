@@ -16,60 +16,62 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.houdini.event;
+package ca.islandora.alpaca.connector.derivative.event;
 
 /**
- * POJO for a user performing an action.  Part of a AS2Event.
+ * POJO for an attachment.  Part of a AS2Event.
  *
  * @author Danny Lamb
  */
-public class AS2Actor {
+public class AS2Attachment {
 
     /**
-     * @return  Type of user
+     * @return  Type
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @param   type    Type of user
+     * @param   type    Type
      */
     public void setType(final String type) {
         this.type = type;
     }
 
     /**
-     * @return  URN of user
+     * @return  Mimetype
      */
-    public String getId() {
-        return id;
+    public String getMediaType() {
+        return mediaType;
     }
 
     /**
-     * @param   id  URN of user
+     * @param   mediaType  Mimetype
      */
-    public void setId(final String id) {
-        this.id = id;
+    public void setMediaType(final String mediaType) {
+        this.mediaType = mediaType;
     }
 
     /**
-     * @return  URL for user
+     * @return  Content
      */
-    public AS2Url[] getUrl() {
-        return url;
+    public AS2AttachmentContent getContent() {
+        return content;
     }
 
     /**
-     * @param   url  URL for user
+     * @param   content  Content
      */
-    public void setUrl(final AS2Url[] url) {
-        this.url = url;
+    public void setContent(final AS2AttachmentContent content) {
+        this.content = content;
     }
 
     private String type;
-    private String id;
-    private AS2Url[] url;
+    private String mediaType;
+    private AS2AttachmentContent content;
 
 }
+
+
 

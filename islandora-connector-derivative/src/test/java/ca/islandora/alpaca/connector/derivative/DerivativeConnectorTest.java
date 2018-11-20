@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.houdini;
+package ca.islandora.alpaca.connector.derivative;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -34,7 +34,7 @@ import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 /**
  * @author dannylamb
  */
-public class HoudiniConnectorTest extends CamelBlueprintTestSupport {
+public class DerivativeConnectorTest extends CamelBlueprintTestSupport {
 
     @EndpointInject(uri = "mock:result")
     protected MockEndpoint resultEndpoint;
@@ -58,15 +58,15 @@ public class HoudiniConnectorTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testHoudiniConnector() throws Exception {
-        final String route = "IslandoraConnectorHoudini";
+    public void testDerivativeConnector() throws Exception {
+        final String route = "IslandoraConnectorDerivative";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
                 @Override
                 public void configure() throws Exception {
                     replaceFromWith("direct:start");
 
                     // Rig Drupal REST endpoint to return canned jsonld
-                    interceptSendToEndpoint("http://example.org/houdini/convert")
+                    interceptSendToEndpoint("http://example.org/derivative/convert")
                             .skipSendToOriginalEndpoint()
                             .process(exchange -> {
                                 exchange.getIn().removeHeaders("*", "Authorization");

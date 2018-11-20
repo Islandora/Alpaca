@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.houdini.event;
+package ca.islandora.alpaca.connector.derivative.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

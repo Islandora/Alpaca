@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.houdini.event;
+package ca.islandora.alpaca.connector.derivative.event;
 
 /**
  * POJO for a user performing an action.  Part of a AS2Event.

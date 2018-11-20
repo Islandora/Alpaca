@@ -12,7 +12,7 @@
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
       <cm:property name="in.stream" value="activemq:queue:islandora-connector-houdini"/>
-      <cm:property name="houdini.convert.url" value="http://localhost:8000/houdini/convert"/>
+      <cm:property name="derivative.service.url" value="http://localhost:8000/houdini/convert"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -22,7 +22,7 @@
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
   <camelContext id="IslandoraHoudiniConnector" xmlns="http://camel.apache.org/schema/blueprint">
-    <package>ca.islandora.alpaca.connector.houdini</package>
+    <package>ca.islandora.alpaca.connector.derivative</package>
   </camelContext>
 
 </blueprint>

@@ -8,11 +8,11 @@
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
   <!-- OSGI blueprint property placeholder -->
-  <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.connector.houdini" update-strategy="reload" >
+  <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.connector.derivative" update-strategy="reload" >
     <cm:default-properties>
       <cm:property name="error.maxRedeliveries" value="5"/>
-      <cm:property name="in.stream" value="seda:islandora-connector.houdini-index"/>
-      <cm:property name="houdini.convert.url" value="http://example.org/houdini/convert"/>
+      <cm:property name="in.stream" value="seda:islandora-connector.derivative-index"/>
+      <cm:property name="derivative.service.url" value="http://example.org/derivative/convert"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -20,7 +20,7 @@
   <bean id="https" class="org.apache.camel.component.http4.HttpComponent"/>
 
   <camelContext id="IslandoraTriplestoreIndexer" xmlns="http://camel.apache.org/schema/blueprint">
-    <package>ca.islandora.alpaca.connector.houdini</package>
+    <package>ca.islandora.alpaca.connector.derivative</package>
   </camelContext>
 
 </blueprint>

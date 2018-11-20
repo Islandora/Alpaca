@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.houdini;
+package ca.islandora.alpaca.connector.derivative;
 
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.connector.houdini.event.AS2Event;
+import ca.islandora.alpaca.connector.derivative.event.AS2Event;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -30,9 +30,9 @@ import org.slf4j.Logger;
 /**
  * @author dhlamb
  */
-public class HoudiniConnector extends RouteBuilder {
+public class DerivativeConnector extends RouteBuilder {
 
-    private static final Logger LOGGER = getLogger(HoudiniConnector.class);
+    private static final Logger LOGGER = getLogger(DerivativeConnector.class);
 
     @Override
     public void configure() {
@@ -43,11 +43,12 @@ public class HoudiniConnector extends RouteBuilder {
             .log(
                 ERROR,
                 LOGGER,
-                "Error connecting generating derivative with Houdini: ${exception.message}\n\n${exception.stacktrace}"
+                "Error connecting generating derivative with {{derivative.service.url}}: " +
+                "${exception.message}\n\n${exception.stacktrace}"
             );
 
         from("{{in.stream}}")
-            .routeId("IslandoraConnectorHoudini")
+            .routeId("IslandoraConnectorDerivative")
 
             // Parse the event into a POJO.
             .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -62,7 +63,7 @@ public class HoudiniConnector extends RouteBuilder {
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
             .setBody(simple("${null}"))
-            .to("{{houdini.convert.url}}")
+            .to("{{derivative.service.url}}")
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
