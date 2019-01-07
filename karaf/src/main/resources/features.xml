@@ -49,13 +49,4 @@
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-derivative/${project.version}</bundle>
   </feature>
 
- <feature name="islandora-connector-houdini" version="${project.version}" start-level="80">
-    <details>Connects images to the Houdini microservice</details>
-
-    <feature version="${project.version}">islandora-connector-derivative</feature>
-
-    <bundle>mvn:ca.islandora.alpaca/islandora-connector-houdini/${project.version}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.alpaca.connector.houdini.cfg">mvn:ca.islandora.alpaca/islandora-connector-houdini/${project.version}/cfg/configuration</configfile>
-  </feature>
 </features>
