@@ -30,17 +30,6 @@
 
   </feature>
 
- <feature name="islandora-connector-broadcast" version="${project.version}" start-level="80">
-    <details>Distributes a message to a list of queues/topics.</details>
-
-    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-activemq</feature>
-
-    <bundle>mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.alpaca.connector.broadcast.cfg">mvn:ca.islandora.alpaca/islandora-connector-broadcast/${project.version}/cfg/configuration</configfile>
-
-  </feature>
-
   <feature name="islandora-http-client" version="${project.version}" start-level="80">
 
     <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
@@ -51,15 +40,13 @@
 
   </feature>
 
- <feature name="islandora-connector-houdini" version="${project.version}" start-level="80">
-    <details>Connects images to the Houdini microservice</details>
+ <feature name="islandora-connector-derivative" version="${project.version}" start-level="80">
+    <details>Re-usable route for connecting repository resources to derivative generation services</details>
 
     <feature version="${camelVersion}">camel-http4</feature>
     <feature version="${camelVersion}">camel-jsonpath</feature>
 
-    <bundle>mvn:ca.islandora.alpaca/islandora-connector-houdini/${project.version}</bundle>
-
-    <configfile finalname="/etc/ca.islandora.alpaca.connector.houdini.cfg">mvn:ca.islandora.alpaca/islandora-connector-houdini/${project.version}/cfg/configuration</configfile>
-
+    <bundle>mvn:ca.islandora.alpaca/islandora-connector-derivative/${project.version}</bundle>
   </feature>
+
 </features>
