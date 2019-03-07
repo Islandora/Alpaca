@@ -131,7 +131,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
                     replaceFromWith("direct:start");
 
                     // Rig Drupal REST endpoint to return canned jsonld
-                    interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld")
+                    interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld&connectionClose=true")
                             .skipSendToOriginalEndpoint()
                             .process(exchange -> {
                                 exchange.getIn().removeHeaders("*");
@@ -141,7 +141,9 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
                                         String.class);
                             });
 
-                    mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql");
+                    mockEndpointsAndSkip(
+                        "http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true"
+                    );
                 }
         });
         context.start();
@@ -181,7 +183,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql");
+                mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true");
             }
         });
         context.start();

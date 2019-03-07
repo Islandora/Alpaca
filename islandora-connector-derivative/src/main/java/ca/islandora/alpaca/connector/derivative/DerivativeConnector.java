@@ -63,13 +63,13 @@ public class DerivativeConnector extends RouteBuilder {
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
             .setBody(simple("${null}"))
-            .to("{{derivative.service.url}}")
+            .to("{{derivative.service.url}}?connectionClose=true")
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
             .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD("${exchangeProperty.event.attachment.content.destinationUri}");
+            .toD("${exchangeProperty.event.attachment.content.destinationUri}?connectionClose=true");
     }
 
 }
