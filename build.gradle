@@ -45,10 +45,10 @@ subprojects {
         docURL = 'http://github.com/Islandora-CLAW/wiki'
         license = 'MIT'
 
-        camelVersion = '2.19.2'
+        camelVersion = '2.20.4'
         slf4jVersion = '1.7.12'
-        fcrepoCamelVersion = '4.5.0'
-        fcrepoCamelToolboxVersion = '4.7.2'
+        fcrepoCamelVersion = '5.0.0'
+        fcrepoCamelToolboxVersion = '5.0.0'
         activemqVersion = '5.15.0'
         commonsIoVersion = '2.4'
 

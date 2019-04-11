@@ -23,7 +23,7 @@ jar {
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel;version=\"${camelVersion}\"," +
-                            "org.fcrepo.camel.processor," +
+                            "org.fcrepo.camel.processor;version=\"${fcrepoCamelVersion}\"," +
                             defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.alpaca.indexing.triplestore'
     }
