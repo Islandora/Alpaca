@@ -209,8 +209,8 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Index the file in Gemini.
                 .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}?connectionClose=true");
 
-        from("{{file.delete.stream}}")
-                .routeId("FcrepoIndexerFileDelete")
+        from("{{file.external.stream}}")
+                .routeId("FcrepoIndexerExternalFile")
 
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -218,14 +218,16 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Extract relevant data from the event.
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .setHeader("Content-Location", simple("${exchangeProperty.drupal}"))
                 .setBody(simple("${null}"))
 
-                // Remove the file from Gemini.
-                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}?connectionClose=true");
+                // Pass it to milliner.
+                .toD(getMillinerBaseUrl() + "external/${exchangeProperty.uuid}?connectionClose=true");
 
     }
 }
