@@ -161,32 +161,36 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testFileDelet() throws Exception {
-        final String route = "FcrepoIndexerFileDelete";
+    public void testExternalFile() throws Exception {
+        final String route = "FcrepoIndexerExternalFile";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
+                    "http://localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
                 );
             }
         });
         context.start();
 
-        // Assert we PUT to gemini with creds.
-        final MockEndpoint gemini = getMockEndpoint(
-            "mock:http:localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f"
+        // Assert we POST to Milliner with creds.
+        final MockEndpoint milliner = getMockEndpoint(
+            "mock:http:localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f"
         );
-        gemini.expectedMessageCount(1);
-        gemini.expectedHeaderReceived("Authorization", "Bearer islandora");
-        gemini.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
+        milliner.expectedMessageCount(1);
+        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
+        milliner.expectedHeaderReceived(
+            "Content-Location",
+            "http://localhost:8000/sites/default/files/2018-08/Voltaire-Records1.jpg"
+        );
+        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
 
         // Send an event.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "Bearer islandora");
             exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("FileAS2Event.jsonld"), "UTF-8"),
+                    IOUtils.toString(loadResourceAsStream("ExternalFileAS2Event.jsonld"), "UTF-8"),
                     String.class
             );
         });
