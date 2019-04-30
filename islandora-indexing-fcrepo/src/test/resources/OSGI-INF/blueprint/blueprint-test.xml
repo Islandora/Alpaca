@@ -14,7 +14,7 @@
       <cm:property name="node.stream" value="seda:islandora-indexing-fcrepo-content"/>
       <cm:property name="node.delete.stream" value="seda:islandora-indexing-fcrepo-delete"/>
       <cm:property name="file.stream" value="seda:islandora-indexing-fcrepo-file"/>
-      <cm:property name="file.delete.stream" value="seda:islandora-indexing-fcrepo-file-delete"/>
+      <cm:property name="file.external.stream" value="seda:islandora-indexing-fcrepo-file-external"/>
       <cm:property name="media.stream" value="seda:islandora-indexing-fcrepo-media"/>
       <cm:property name="milliner.baseUrl" value="http://localhost:8000/milliner/"/>
       <cm:property name="gemini.baseUrl" value="http://localhost:8000/gemini/"/>
