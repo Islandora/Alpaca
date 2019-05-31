@@ -1,0 +1,6 @@
+ca.islandora.alpaca.connector.derivative
+ca.islandora.alpaca.connector.derivative.event
+ca.islandora.alpaca.http.client
+ca.islandora.alpaca.indexing.fcrepo
+ca.islandora.alpaca.indexing.fcrepo.event
+ca.islandora.alpaca.indexing.triplestore
