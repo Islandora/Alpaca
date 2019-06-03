@@ -59,18 +59,18 @@ public class TriplestoreIndexer extends RouteBuilder {
               .removeHeaders("*", "Authorization")
               .setHeader(Exchange.HTTP_METHOD, constant("GET"))
               .setBody(simple("${null}"))
-              .toD("${exchangeProperty.url}&connectionClose=true")
-              .setHeader(FCREPO_URI, simple("${exchangeProperty.url}"))
+              .toD("${exchangeProperty.jsonld_url}&connectionClose=true")
+              .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlUpdateProcessor())
-              .log(INFO, LOGGER, "Indexing ${exchangeProperty.url} in triplestore")
+              .log(INFO, LOGGER, "Indexing ${exchangeProperty.subject_url} in triplestore")
               .to("{{triplestore.baseUrl}}?connectionClose=true");
 
         from("{{delete.stream}}")
             .routeId("IslandoraTriplestoreIndexerDelete")
               .to("direct:parse.url")
-              .setHeader(FCREPO_URI, simple("${exchangeProperty.url}"))
+              .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlDeleteProcessor())
-              .log(INFO, LOGGER, "Deleting ${exchangeProperty.url} in triplestore")
+              .log(INFO, LOGGER, "Deleting ${exchangeProperty.subject_url} in triplestore")
               .to("{{triplestore.baseUrl}}?connectionClose=true");
 
         // Extracts the JSONLD URL from the event message and stores it on the exchange.
@@ -95,12 +95,33 @@ public class TriplestoreIndexer extends RouteBuilder {
                 .end()
               .transform().jsonpath("$.object.url")
               .process(ex -> {
-                  final LinkedHashMap url = ex.getIn().getBody(JSONArray.class).stream()
+                  // Parse the event message.
+                  final JSONArray message = ex.getIn().getBody(JSONArray.class);
+
+                  // Get the JSONLD url.
+                  final LinkedHashMap jsonldUrl = message.stream()
                           .map(LinkedHashMap.class::cast)
                           .filter(elem -> "application/ld+json".equals(elem.get("mediaType")))
                           .findFirst()
                           .orElseThrow(() -> new RuntimeException("Cannot find JSONLD URL in event message."));
-                  ex.setProperty("url", url.get("href"));
+                  ex.setProperty("jsonld_url", jsonldUrl.get("href"));
+
+                  // Attempt to get the 'describes' url first, but if it fails, fall back to the canonical.
+                  try {
+                      final LinkedHashMap describesUrl = message.stream()
+                              .map(LinkedHashMap.class::cast)
+                              .filter(elem -> "describes".equals(elem.get("rel")))
+                              .findFirst()
+                              .orElseThrow(() -> new RuntimeException("Cannot find describes URL in event message."));
+                      ex.setProperty("subject_url", describesUrl.get("href"));
+                  } catch (RuntimeException e) {
+                      final LinkedHashMap canonicalUrl = message.stream()
+                              .map(LinkedHashMap.class::cast)
+                              .filter(elem -> "canonical".equals(elem.get("rel")))
+                              .findFirst()
+                              .orElseThrow(() -> new RuntimeException("Cannot find canonical URL in event message."));
+                      ex.setProperty("subject_url", canonicalUrl.get("href"));
+                  }
               });
     }
 }

@@ -82,7 +82,12 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         );
 
         this.assertPredicate(
-                exchangeProperty("url").isEqualTo("http://localhost:8000/node/1?_format=jsonld"),
+                exchangeProperty("jsonld_url").isEqualTo("http://localhost:8000/node/1?_format=jsonld"),
+                exchange,
+                true
+        );
+        this.assertPredicate(
+                exchangeProperty("subject_url").isEqualTo("http://localhost:8000/node/1"),
                 exchange,
                 true
         );
@@ -148,7 +153,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         });
         context.start();
 
-        final String subject = "<http://localhost:8000/node/1?_format=jsonld>";
+        final String subject = "<http://localhost:8000/node/1>";
         final String responsePrefix =
                 "DELETE WHERE { " + subject + " ?p ?o };\n" +
                         "INSERT DATA { ";
@@ -194,7 +199,7 @@ public class TriplestoreIndexerTest extends CamelBlueprintTestSupport {
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         endpoint.expectedHeaderReceived(CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
         endpoint.allMessages().body().startsWith(
-                "update=" + encode("DELETE WHERE { <http://localhost:8000/node/1?_format=jsonld> ?p ?o }", "UTF-8")
+                "update=" + encode("DELETE WHERE { <http://localhost:8000/node/1> ?p ?o }", "UTF-8")
         );
 
         template.send(exchange -> {
