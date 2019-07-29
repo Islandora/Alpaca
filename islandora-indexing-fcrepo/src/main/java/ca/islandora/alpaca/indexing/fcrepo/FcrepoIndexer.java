@@ -134,6 +134,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
+                .setHeader("Event", simple("${exchangeProperty.event.object.type}"))
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
