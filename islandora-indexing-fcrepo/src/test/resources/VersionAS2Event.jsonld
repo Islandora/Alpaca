@@ -1,0 +1,44 @@
+{
+   "@context":"https:\/\/www.w3.org\/ns\/activitystreams",
+   "actor":{
+      "type":"Person",
+      "id":"urn:uuid:9029a0c0-d845-4ddd-864c-2198d45839da",
+      "url":[
+         {
+            "name":"Canonical",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/user\/1",
+            "mediaType":"text\/html",
+            "rel":"canonical"
+         }
+      ]
+   },
+   "object":{
+      "id":"urn:uuid:72358916-51e9-4712-b756-4b0404c91b1d",
+      "url":[
+         {
+            "name":"Canonical",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/node\/2",
+            "mediaType":"text\/html",
+            "rel":"canonical"
+         },
+         {
+            "name":"JSON",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/node\/2?_format=json",
+            "mediaType":"application\/json",
+            "rel":"alternate"
+         },
+         {
+            "name":"JSONLD",
+            "type":"Link",
+            "href":"http:\/\/localhost:8000\/node\/2?_format=jsonld",
+            "mediaType":"application\/ld+json",
+            "rel":"alternate"
+         }
+      ]
+   },
+   "type":"Version",
+   "summary":"Update a Node"
+}
