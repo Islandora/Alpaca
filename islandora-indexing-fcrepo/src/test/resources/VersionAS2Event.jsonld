@@ -37,7 +37,8 @@
             "mediaType":"application\/ld+json",
             "rel":"alternate"
          }
-      ]
+      ],
+      "type": "Version"
    },
    "type":"Version",
    "summary":"Update a Node"
