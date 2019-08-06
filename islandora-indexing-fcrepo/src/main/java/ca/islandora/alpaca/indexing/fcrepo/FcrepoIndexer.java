@@ -134,11 +134,15 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
-                .setHeader("Event", simple("${exchangeProperty.event.object.type}"))
                 .setBody(simple("${null}"))
+                .choice()
+                        .when(exchangeProperty("${exchangeProperty.event.object.type}").isEqualTo("Version"))
+                                //pass it to milliner
+                                .toD(getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true")
+                        .otherwise()
+                                //pass it to milliner
+                                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
 
-                // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
 
         from("{{node.delete.stream}}")
                 .routeId("FcrepoIndexerDeleteNode")

@@ -95,7 +95,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                        "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d?connectionClose=true"
+                    "http://localhost:8000/milliner/version/72358916-51e9-4712-b756-4b0404c91b?connectionClose=true"
                 );
             }
         });
@@ -103,18 +103,17 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         // Assert we POST to milliner with creds.
         final MockEndpoint milliner = getMockEndpoint(
-                "mock:http:localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d"
-                );
-        milliner.expectedMessageCount(1);
+                "mock:http:localhost:8000/milliner/version/72358916-51e9-4712-b756-4b0404c91b"
+        );
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
-        milliner.expectedHeaderReceived("Event", "Version");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
 
         // Send an event.
         template.send(exchange -> {
             exchange.getIn().setHeader("Authorization", "Bearer islandora");
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("VersionAS2Event.jsonld"), "UTF-8"),
+            exchange.getIn().setBody(
+                IOUtils.toString(loadResourceAsStream("VersionAS2Event.jsonld"), "UTF-8"),
                     String.class);
         });
 
