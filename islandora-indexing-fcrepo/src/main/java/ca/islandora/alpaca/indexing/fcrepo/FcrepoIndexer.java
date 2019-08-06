@@ -118,7 +118,6 @@ public class FcrepoIndexer extends RouteBuilder {
                         LOGGER,
                         "Error indexing resource in fcrepo: ${exception.message}\n\n${exception.stacktrace}"
                 );
-
         from("{{node.stream}}")
                 .routeId("FcrepoIndexerNode")
 
@@ -136,9 +135,11 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
                 .setBody(simple("${null}"))
                 .choice()
-                        .when(exchangeProperty("${exchangeProperty.event.object.type}").isEqualTo("Version"))
+                        .when().simple("${exchangeProperty.event.object.type} == 'Version'")
                                 //pass it to milliner
-                                .toD(getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true")
+                                .toD(
+                                        getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"
+                                    ).endChoice()
                         .otherwise()
                                 //pass it to milliner
                                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");

@@ -105,6 +105,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         final MockEndpoint milliner = getMockEndpoint(
                 "mock:http:localhost:8000/milliner/version/72358916-51e9-4712-b756-4b0404c91b"
         );
+        milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
