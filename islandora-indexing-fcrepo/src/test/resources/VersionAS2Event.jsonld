@@ -38,7 +38,7 @@
             "rel":"alternate"
          }
       ],
-      "type": "Version"
+      "isNewVersion":1
    },
    "type":"Version",
    "summary":"Update a Node"
