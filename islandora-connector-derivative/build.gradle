@@ -1,6 +1,6 @@
 apply plugin: 'osgi'
 
-description = 'Islandora CLAW Derivative Connector'
+description = 'Islandora 8 Derivative Connector'
 
 dependencies {
     compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion 
