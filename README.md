@@ -25,7 +25,6 @@ Having problems or solved a problem? Check out the Islandora google groups for a
 ## Current Maintainers
 
 * [Jared Whiklo](https://github.com/whikloj)
-* [Daniel Lamb](https://github.com/dannylamb/)
 
 ## Sponsors
 
@@ -49,4 +48,4 @@ We recommend using the [claw-playbook](https://github.com/Islandora-Devops/claw-
 
 ## Licensing
 
-MIT
+[MIT](https://github.com/Islandora-CLAW/Alpaca/pull/LICENSE)
