@@ -47,5 +47,4 @@ If you would like to contribute code to the project, you need to be covered by a
 We recommend using the [claw-playbook](https://github.com/Islandora-Devops/claw-playbook) to get started. 
 
 ## Licensing
-
-[MIT](https://github.com/Islandora-CLAW/Alpaca/pull/LICENSE)
+[MIT](/License)
