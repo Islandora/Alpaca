@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
   <description>
-  CLAW Alpaca PMD ruleset
+  Islandora 8 Alpaca PMD ruleset
   </description>
 
   <rule ref="rulesets/java/basic.xml"/>

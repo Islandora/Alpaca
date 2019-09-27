@@ -1,6 +1,6 @@
 apply plugin: 'osgi'
 
-description = 'Islandora CLAW HTTP Client'
+description = 'Islandora 8 HTTP Client'
 
 dependencies {
     compile group: 'org.apache.httpcomponents', name: 'httpclient-osgi', version: '4.5.3'
