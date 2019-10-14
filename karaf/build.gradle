@@ -1,4 +1,4 @@
-description = 'Islandora CLAW Karaf Provisioning'
+description = 'Islandora 8 Karaf Provisioning'
 
 processResources {
     outputs.upToDateWhen { false  }
