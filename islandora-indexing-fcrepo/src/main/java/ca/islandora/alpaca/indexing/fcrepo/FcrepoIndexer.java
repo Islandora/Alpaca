@@ -31,10 +31,12 @@ import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
+// import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Danny Lamb
  */
+// @JsonIgnoreProperties(ignoreUnknown = true)
 public class FcrepoIndexer extends RouteBuilder {
 
     /**
@@ -120,6 +122,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 );
         from("{{node.stream}}")
                 .routeId("FcrepoIndexerNode")
+                .log(ERROR, LOGGER, "hello world - in the node indexer")
 
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -134,10 +137,25 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
                 .setBody(simple("${null}"))
+                .multicast().parallelProcessing()
                 //pass it to milliner
+                .log(ERROR, LOGGER, "hello world")
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
+                .log(ERROR, LOGGER, "after initial milliner call")
+                // .recipientList(getMillinerBaseUrl()
+                        // + "node/${exchangeProperty.uuid}?connectionClose=true")
+
+                .log(ERROR,
+                        LOGGER,
+                        "${exchangeProperty.event.object}"
+                )
                 .choice()
-                        .when().simple("${exchangeProperty.event.object.isNewVersion} == 1")
+                        .when()
+                        .simple("${exchangeProperty.event.object.isnewversion}"
+                        + " && ${exchangeProperty.event.object.isnewversion} == 1")
+                        .log(ERROR, LOGGER, "make version is true")
+                        // .recipientList(getMillinerBaseUrl()
+                                                // + "version/${exchangeProperty.uuid}?connectionClose=true")
                                 //pass it to milliner
                                 .toD(
                                         getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"

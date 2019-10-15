@@ -17,6 +17,7 @@
  */
 
 package ca.islandora.alpaca.indexing.fcrepo.event;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * POJO for a user performing an action.  Part of a AS2Event.
@@ -67,8 +68,23 @@ public class AS2Object {
         this.url = url;
     }
 
+    /**
+     * @return 0 or 1
+     */
+    @JsonProperty(value = "isnewversion")
+    public int getIsnewversion() {
+        return isnewversion;
+    }
+
+    /**
+     * @param isnewversion 0 or 1
+     */
+    public void setIsnewversion(final String isnewversion) {
+        this.isnewversion = Integer.parseInt(isnewversion);
+    }
+
     private String type;
     private String id;
     private AS2Url[] url;
-
+    private int isnewversion;
 }

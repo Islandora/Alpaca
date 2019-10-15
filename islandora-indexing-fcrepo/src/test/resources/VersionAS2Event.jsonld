@@ -38,8 +38,8 @@
             "rel":"alternate"
          }
       ],
-      "isNewVersion":1
+      "isnewversion":1
    },
-   "type":"Version",
+   "type":"Update",
    "summary":"Update a Node"
 }
