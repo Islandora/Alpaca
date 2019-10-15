@@ -69,22 +69,22 @@ public class AS2Object {
     }
 
     /**
-     * @return 0 or 1
+     * @return true or false
      */
-    @JsonProperty(value = "isnewversion")
-    public int getIsnewversion() {
-        return isnewversion;
+    @JsonProperty(value = "isNewVersion")
+    public Boolean getIsNewVersion() {
+        return isNewVersion;
     }
 
     /**
-     * @param isnewversion 0 or 1
+     * @param isNewVersion true or false
      */
-    public void setIsnewversion(final String isnewversion) {
-        this.isnewversion = Integer.parseInt(isnewversion);
+    public void setIsNewVersion(final Boolean isNewVersion) {
+        this.isNewVersion = isNewVersion;
     }
 
     private String type;
     private String id;
     private AS2Url[] url;
-    private int isnewversion;
+    private Boolean isNewVersion;
 }

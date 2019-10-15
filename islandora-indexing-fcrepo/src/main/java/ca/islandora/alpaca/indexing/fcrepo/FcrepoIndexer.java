@@ -122,7 +122,6 @@ public class FcrepoIndexer extends RouteBuilder {
                 );
         from("{{node.stream}}")
                 .routeId("FcrepoIndexerNode")
-                .log(ERROR, LOGGER, "hello world - in the node indexer")
 
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -139,23 +138,10 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
                 .multicast().parallelProcessing()
                 //pass it to milliner
-                .log(ERROR, LOGGER, "hello world")
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
-                .log(ERROR, LOGGER, "after initial milliner call")
-                // .recipientList(getMillinerBaseUrl()
-                        // + "node/${exchangeProperty.uuid}?connectionClose=true")
-
-                .log(ERROR,
-                        LOGGER,
-                        "${exchangeProperty.event.object}"
-                )
                 .choice()
                         .when()
-                        .simple("${exchangeProperty.event.object.isnewversion}"
-                        + " && ${exchangeProperty.event.object.isnewversion} == 1")
-                        .log(ERROR, LOGGER, "make version is true")
-                        // .recipientList(getMillinerBaseUrl()
-                                                // + "version/${exchangeProperty.uuid}?connectionClose=true")
+                        .simple("${exchangeProperty.event.object.isNewVersion}")
                                 //pass it to milliner
                                 .toD(
                                         getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"
