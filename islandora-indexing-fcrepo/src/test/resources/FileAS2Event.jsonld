@@ -27,6 +27,7 @@
    },
    "type":"Create",
    "summary":"Create a File",
+   "target":"http://localhost:8080/fcrepo/rest/file",
    "attachment":{
       "type":"Object",
       "content":{

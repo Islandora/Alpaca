@@ -111,9 +111,26 @@ public class AS2Event {
         this.context = context;
     }
 
+    /**
+     * Set the target for this event.
+     * @param target the URL of the target.
+     */
+    public void setTarget(final String target) {
+        this.target = target;
+    }
+
+    /**
+     * Return the target.
+     * @return the target URL.
+     */
+    public String getTarget() {
+        return this.target;
+    }
+
     private String context;
     private String type;
     private String summary;
+    private String target;
     private AS2Object object;
     private AS2Actor actor;
     private AS2Attachment attachment;
