@@ -60,7 +60,8 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d?connectionClose=true"
+                    "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d" +
+                    "?connectionClose=true&disableStreamCache=true"
                 );
             }
         });
@@ -95,7 +96,8 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d?connectionClose=true"
+                    "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d" +
+                    "?connectionClose=true&disableStreamCache=true"
                 );
             }
         });
@@ -129,7 +131,8 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
+                    "http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f" +
+                    "?connectionClose=true&disableStreamCache=true"
                 );
             }
         });
@@ -168,7 +171,8 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
+                    "http://localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f" +
+                    "?connectionClose=true&disableStreamCache=true"
                 );
             }
         });
@@ -205,7 +209,9 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
-                mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image?connectionClose=true");
+                mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image" +
+                                     "?connectionClose=true&disableStreamCache=true"
+                );
             }
         });
         context.start();

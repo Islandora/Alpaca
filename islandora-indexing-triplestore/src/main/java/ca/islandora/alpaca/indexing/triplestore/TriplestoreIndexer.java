@@ -59,11 +59,11 @@ public class TriplestoreIndexer extends RouteBuilder {
               .removeHeaders("*", "Authorization")
               .setHeader(Exchange.HTTP_METHOD, constant("GET"))
               .setBody(simple("${null}"))
-              .toD("${exchangeProperty.jsonld_url}&connectionClose=true")
+              .toD("${exchangeProperty.jsonld_url}&connectionClose=true&disableStreamCache=true")
               .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlUpdateProcessor())
               .log(INFO, LOGGER, "Indexing ${exchangeProperty.subject_url} in triplestore")
-              .to("{{triplestore.baseUrl}}?connectionClose=true");
+              .to("{{triplestore.baseUrl}}?connectionClose=true&disableStreamCache=true");
 
         from("{{delete.stream}}")
             .routeId("IslandoraTriplestoreIndexerDelete")
@@ -71,7 +71,7 @@ public class TriplestoreIndexer extends RouteBuilder {
               .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlDeleteProcessor())
               .log(INFO, LOGGER, "Deleting ${exchangeProperty.subject_url} in triplestore")
-              .to("{{triplestore.baseUrl}}?connectionClose=true");
+              .to("{{triplestore.baseUrl}}?connectionClose=true&disableStreamCache=true");
 
         // Extracts the JSONLD URL from the event message and stores it on the exchange.
         from("direct:parse.url")
