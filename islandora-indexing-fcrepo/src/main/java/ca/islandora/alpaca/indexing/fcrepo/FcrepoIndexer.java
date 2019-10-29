@@ -134,8 +134,8 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.url[2].href}")
                 .setProperty("fedoraUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received Node event for UUID (${exchangeProperty.uuid}, jsonld URL (" +
-                        "${exchangeProperty.jsonldUrl}, fedora base URL (${exchangeProperty.fedoraUrl})")
+                .log(DEBUG, LOGGER, "Received Node event for UUID (${exchangeProperty.uuid}), jsonld URL (" +
+                        "${exchangeProperty.jsonldUrl}), fedora base URL (${exchangeProperty.fedoraUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
@@ -175,7 +175,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("fedoraUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received Node delete event for UUID (${exchangeProperty.uuid}, fedora base URL" +
+                .log(DEBUG, LOGGER, "Received Node delete event for UUID (${exchangeProperty.uuid}), fedora base URL" +
                         " (${exchangeProperty.fedoraUrl})")
 
                 // Prepare the message.
@@ -198,8 +198,8 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
                 .setProperty("jsonUrl").simple("${exchangeProperty.event.object.url[1].href}")
                 .setProperty("fedoraUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received Media event for sourceField (${exchangeProperty.sourceField}, jsonld" +
-                        " URL (${exchangeProperty.jsonldUrl}, fedora Base URL (${exchangeProperty.fedoraUrl})")
+                .log(DEBUG, LOGGER, "Received Media event for sourceField (${exchangeProperty.sourceField}), jsonld" +
+                        " URL (${exchangeProperty.jsonUrl}), fedora Base URL (${exchangeProperty.fedoraUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
@@ -223,8 +223,8 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
                 .setProperty("fedora").simple("${exchangeProperty.event.attachment.content.fedoraUri}")
                 .setProperty("fedoraUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received File event for UUID (${exchangeProperty.uuid}, drupal URL (" +
-                        "${exchangeProperty.drupal}, fedoraURL (${exchangeProperty.fedora}), fedora base URL " +
+                .log(DEBUG, LOGGER, "Received File event for UUID (${exchangeProperty.uuid}), drupal URL (" +
+                        "${exchangeProperty.drupal}), fedoraURL (${exchangeProperty.fedora}), fedora base URL " +
                         "(${exchangeProperty.fedoraUrl})")
 
                 // Prepare the message.
@@ -250,8 +250,8 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
                 .setProperty("fedoraUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received File external event for UUID (${exchangeProperty.uuid}, drupal URL " +
-                        "(${exchangeProperty.drupal}, fedora base URL (${exchangeProperty.fedoraUrl})")
+                .log(DEBUG, LOGGER, "Received File external event for UUID (${exchangeProperty.uuid}), drupal URL " +
+                        "(${exchangeProperty.drupal}), fedora base URL (${exchangeProperty.fedoraUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
