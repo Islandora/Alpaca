@@ -1,8 +1,8 @@
 # ![Alpaca](https://cloud.githubusercontent.com/assets/2371345/15409648/16c140b4-1dec-11e6-81d9-41929bc83b1f.png) Alpaca
-[![Build Status](https://travis-ci.com/Islandora-CLAW/Alpaca.svg?branch=master)](https://travis-ci.com/Islandora-CLAW/Alpaca)
+[![Build Status](https://travis-ci.com/Islandora/Alpaca.svg?branch=master)](https://travis-ci.com/Islandora/Alpaca)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
-[![codecov](https://codecov.io/gh/Islandora-CLAW/Alpaca/branch/master/graph/badge.svg)](https://codecov.io/gh/Islandora-CLAW/Alpaca)
+[![codecov](https://codecov.io/gh/Islandora/Alpaca/branch/master/graph/badge.svg)](https://codecov.io/gh/Islandora/Alpaca)
 
 ## Introduction
 
@@ -14,7 +14,7 @@ This project requires Java 8 and can be built with [Gradle](https://gradle.org).
 
 ## Documentation
 
-Further documentation for this module is available on the [Islandora 8 documentation site](https://islandora-claw.github.io/CLAW/).
+Further documentation for this module is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
 
 ## Troubleshooting/Issues
 
@@ -40,11 +40,11 @@ Having problems or solved a problem? Check out the Islandora google groups for a
 
 ## Development
 
-If you would like to contribute, please get involved by attending our weekly [Tech Call](https://github.com/Islandora-CLAW/CLAW/wiki). We love to hear from you!
+If you would like to contribute, please get involved by attending our weekly [Tech Call](https://github.com/Islandora/documentation/wiki). We love to hear from you!
 
 If you would like to contribute code to the project, you need to be covered by an Islandora Foundation [Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_cla.pdf) or [Corporate Contributor License Agreement](http://islandora.ca/sites/default/files/islandora_ccla.pdf). Please see the [Contributors](http://islandora.ca/resources/contributors) pages on Islandora.ca for more information.
 
-We recommend using the [claw-playbook](https://github.com/Islandora-Devops/claw-playbook) to get started. 
+We recommend using the [islandora-playbook](https://github.com/Islandora-Devops/islandora-playbook) to get started. 
 
 ## Licensing
 [MIT](/License)
