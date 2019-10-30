@@ -42,7 +42,7 @@ subprojects {
         vendor = 'Islandora Foundation'
         homepage = 'http://islandora.ca'
         inceptionYear = '2015'
-        docURL = 'http://github.com/Islandora-CLAW/wiki'
+        docURL = 'https://islandora.github.io/documentation/'
         license = 'MIT'
 
         camelVersion = '2.20.4'
@@ -160,7 +160,7 @@ subprojects {
 
                 issueManagement {
                     system 'GitHub'
-                    url 'https://github.com/Islandora-CLAW/CLAW/issues'
+                    url 'https://github.com/Islandora/documentation/issues'
                 }
 
                 developers {
@@ -174,17 +174,6 @@ subprojects {
                             role 'developer'
                         }
                         timezone '-4'
-                    }
-                    developer {
-                        id 'ruebot'
-                        name 'Nick Ruest'
-                        email 'ruestn @ (domain of organization url)'
-                        organization 'York University'
-                        organizationUrl 'http://yorku.ca'
-                        roles {
-                            role 'developer'
-                        }
-                        timezone '-5'
                     }
                 }
 
