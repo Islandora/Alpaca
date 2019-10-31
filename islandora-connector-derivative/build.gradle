@@ -25,6 +25,7 @@ jar {
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel;version=\"${versions.camel}\"," +
+                            "ca.islandora.alpaca.support," +
                             defaultOsgiImports
       instruction 'Export-Package', 'ca.islandora.alpaca.connector.derivative'
     }
