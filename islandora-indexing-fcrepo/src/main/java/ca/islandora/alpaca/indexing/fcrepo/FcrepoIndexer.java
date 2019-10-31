@@ -23,7 +23,7 @@ import static org.apache.camel.LoggingLevel.INFO;
 import static org.apache.camel.LoggingLevel.DEBUG;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.indexing.fcrepo.event.AS2Event;
+import ca.islandora.alpaca.support.event.AS2Event;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.PropertyInject;

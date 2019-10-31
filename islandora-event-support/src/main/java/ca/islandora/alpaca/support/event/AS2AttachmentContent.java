@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.derivative.event;
+package ca.islandora.alpaca.support.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,6 +26,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Danny Lamb
  */
 public class AS2AttachmentContent {
+
+    /**
+     * @return Fedora uri
+     */
+    @JsonProperty(value = "fedora_uri")
+    public String getFedoraUri() {
+        return fedoraUri;
+    }
+
+    /**
+     * @param   fedoraUri    Fedora uri
+     */
+    public void setFedoraUri(final String fedoraUri) {
+        this.fedoraUri = fedoraUri;
+    }
+
+    /**
+     * @return Source field
+     */
+    @JsonProperty(value = "source_field")
+    public String getSourceField() {
+        return sourceField;
+    }
+
+    /**
+     * @param   sourceField   Source field
+     */
+    public void setSourceField(final String sourceField) {
+        this.sourceField = sourceField;
+    }
 
     /**
      * @return  Source uri
@@ -100,6 +130,8 @@ public class AS2AttachmentContent {
         this.fileUploadUri = fileUploadUri;
     }
 
+    private String fedoraUri;
+    private String sourceField;
     private String sourceUri;
     private String destinationUri;
     private String mimetype;

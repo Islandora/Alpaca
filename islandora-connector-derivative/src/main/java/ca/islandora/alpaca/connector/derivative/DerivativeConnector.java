@@ -21,7 +21,7 @@ package ca.islandora.alpaca.connector.derivative;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.connector.derivative.event.AS2Event;
+import ca.islandora.alpaca.support.event.AS2Event;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;

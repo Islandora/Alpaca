@@ -16,28 +16,14 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.derivative.event;
+package ca.islandora.alpaca.support.event;
 
 /**
- * POJO for a URL.  Part of a AS2Event.
+ * POJO for an attachment.  Part of a AS2Event.
  *
  * @author Danny Lamb
  */
-public class AS2Url {
-
-    /**
-     * @return  Name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param   name    Name
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
+public class AS2Attachment {
 
     /**
      * @return  Type
@@ -51,20 +37,6 @@ public class AS2Url {
      */
     public void setType(final String type) {
         this.type = type;
-    }
-
-    /**
-     * @return  Url as string
-     */
-    public String getHref() {
-        return href;
-    }
-
-    /**
-     * @param   href  Url as string
-     */
-    public void setHref(final String href) {
-        this.href = href;
     }
 
     /**
@@ -82,25 +54,24 @@ public class AS2Url {
     }
 
     /**
-     * @return  Link relation
+     * @return  Content
      */
-    public String getRel() {
-        return rel;
+    public AS2AttachmentContent getContent() {
+        return content;
     }
 
     /**
-     * @param   rel  Link relation
+     * @param   content  Content
      */
-    public void setRel(final String rel) {
-        this.rel = rel;
+    public void setContent(final AS2AttachmentContent content) {
+        this.content = content;
     }
 
-    private String name;
     private String type;
-    private String href;
     private String mediaType;
-    private String rel;
+    private AS2AttachmentContent content;
 
 }
+
 
 

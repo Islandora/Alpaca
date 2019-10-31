@@ -16,48 +16,60 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.indexing.fcrepo.event;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package ca.islandora.alpaca.support.event;
 
 /**
- * POJO for attachment content.  Part of a AS2Event.
+ * POJO for a user performing an action.  Part of a AS2Event.
  *
  * @author Danny Lamb
  */
-public class AS2AttachmentContent {
+public class AS2Actor {
 
     /**
-     * @return Fedora uri
+     * @return  Type of user
      */
-    @JsonProperty(value = "fedora_uri")
-    public String getFedoraUri() {
-        return fedoraUri;
+    public String getType() {
+        return type;
     }
 
     /**
-     * @param   fedoraUri    Fedora uri
+     * @param   type    Type of user
      */
-    public void setFedoraUri(final String fedoraUri) {
-        this.fedoraUri = fedoraUri;
+    public void setType(final String type) {
+        this.type = type;
     }
 
     /**
-     * @return Source field
+     * @return  URN of user
      */
-    @JsonProperty(value = "source_field")
-    public String getSourceField() {
-        return sourceField;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @param   sourceField   Source field
+     * @param   id  URN of user
      */
-    public void setSourceField(final String sourceField) {
-        this.sourceField = sourceField;
+    public void setId(final String id) {
+        this.id = id;
     }
 
-    private String fedoraUri;
-    private String sourceField;
+    /**
+     * @return  URL for user
+     */
+    public AS2Url[] getUrl() {
+        return url;
+    }
+
+    /**
+     * @param   url  URL for user
+     */
+    public void setUrl(final AS2Url[] url) {
+        this.url = url;
+    }
+
+    private String type;
+    private String id;
+    private AS2Url[] url;
 
 }
+

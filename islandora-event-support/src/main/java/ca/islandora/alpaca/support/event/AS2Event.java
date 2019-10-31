@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.indexing.fcrepo.event;
+package ca.islandora.alpaca.support.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
