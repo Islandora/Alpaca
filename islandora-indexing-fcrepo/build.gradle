@@ -8,7 +8,9 @@ dependencies {
     implementation group: 'org.apache.camel', name: 'camel-http4', version: versions.camel
     implementation group: 'org.apache.camel', name: 'camel-jackson', version: versions.camel
     implementation group: 'org.apache.camel', name: 'camel-jsonpath', version: versions.camel
-    implementation project(':islandora-event-support')
+    implementation(project(':islandora-event-support')) {
+        transitive = true
+    }
     implementation group: 'org.slf4j', name: 'slf4j-api', version: versions.slf4j
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo 
     testImplementation group: 'org.apache.camel', name: 'camel-test-blueprint', version: versions.camel
@@ -32,9 +34,13 @@ jar {
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel.jsonpath," +
                             "org.apache.camel;version=\"${versions.camel}\"," +
-                            "ca.islandora.alpaca.support," +
+                            "!ca.islandora.alpaca.support.event," +
                             defaultOsgiImports
+      instruction 'Bundle-ClassPath', ".,islandora-event-support-${project.version}.jar"
       instruction 'Export-Package', 'ca.islandora.alpaca.indexing.fcrepo'
+    }
+    from {
+        configurations.runtimeClasspath.findAll{ !it.directory && it.name.startsWith( 'islandora-event-support' ) }
     }
 }
 
@@ -42,5 +48,16 @@ artifacts {
     archives (file('build/cfg/main/ca.islandora.alpaca.indexing.fcrepo.cfg')) {
         classifier 'configuration'
         type 'cfg'
+    }
+}
+
+test {
+    testLogging {
+        // Make sure output from standard out or error is shown
+        // in Gradle output.
+        // Uncomment the below 3 lines while debugging.
+        events 'standard_out', 'standard_error'
+        exceptionFormat = 'full'
+        displayGranularity = 0
     }
 }

@@ -23,7 +23,6 @@
 
     <feature version="${versions.camel}">camel-http4</feature>
     <feature version="${versions.camel}">camel-jsonpath</feature>
-     <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}</bundle>
 
@@ -33,8 +32,8 @@
 
   <feature name="islandora-http-client" version="${project.version}" start-level="80">
 
-    <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
+    <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/${versions.httpCoreOsgi}</bundle>
+    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${versions.httpClientOsgi}</bundle>
     <bundle>mvn:ca.islandora.alpaca/islandora-http-client/${project.version}</bundle>
 
     <configfile finalname="/etc/ca.islandora.alpaca.http.client.cfg">mvn:ca.islandora.alpaca/islandora-http-client/${project.version}/cfg/configuration</configfile>
@@ -46,7 +45,6 @@
 
     <feature version="${versions.camel}">camel-http4</feature>
     <feature version="${versions.camel}">camel-jsonpath</feature>
-    <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-derivative/${project.version}</bundle>
   </feature>

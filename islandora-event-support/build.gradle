@@ -1,4 +1,4 @@
-apply plugin: 'osgi'
+//apply plugin: 'osgi'
 
 description = 'Islandora 8 Supporting Libraries'
 
@@ -9,13 +9,15 @@ dependencies {
 
 jar {
     manifest {
-      description project.description
-      docURL project.docURL
-      vendor project.vendor
-      license project.license
-      
-      instruction 'Import-Package', 'com.fasterxml.jackson.annotations,' +
-                            defaultOsgiImports
-      instruction 'Export-Package', 'ca.islandora.alpaca.support'
+        attributes(
+           "Implementation-Title": project.description,
+           //"docURL": project.docURL,
+           "Implementation-Vendor": project.vendor,
+           // license project.license,
+        )
+      //instruction 'Import-Package', 'com.fasterxml.jackson.annotations,' +
+      //                      defaultOsgiImports
+      //instruction 'Export-Package', "ca.islandora.alpaca.support;version=\"${project.version}\"," +
+      //        "ca.islandora.alpaca.support.event;version=\"${project.version}\""
     }
 }

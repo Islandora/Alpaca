@@ -25,9 +25,13 @@ jar {
 
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel;version=\"${versions.camel}\"," +
-                            "ca.islandora.alpaca.support," +
+                            "!ca.islandora.alpaca.support.event," +
                             defaultOsgiImports
+      instruction 'Bundle-ClassPath', ".,islandora-event-support-${project.version}.jar"
       instruction 'Export-Package', 'ca.islandora.alpaca.connector.derivative'
+    }
+    from {
+        configurations.runtimeClasspath.findAll{ !it.directory && it.name.startsWith( 'islandora-event-support' ) }
     }
 }
 

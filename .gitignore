@@ -4,6 +4,7 @@
 .project
 .idea
 .*.swp
+*.iml
 workbench.xmi
 target
 build

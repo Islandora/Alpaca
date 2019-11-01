@@ -18,13 +18,23 @@
 
 package ca.islandora.alpaca.support.event;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_ONLY;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * POJO for events emitted by Islandora.
  *
  * @author Danny Lamb
  */
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = PUBLIC_ONLY, setterVisibility = PUBLIC_ONLY)
 public class AS2Event {
 
     /**
@@ -99,7 +109,7 @@ public class AS2Event {
     /**
      * @return  JSON-LD Context
      */
-    @JsonProperty(value = "@context")
+    @JsonProperty("@context")
     public String getContext() {
         return context;
     }
@@ -107,6 +117,7 @@ public class AS2Event {
     /**
      * @param   context JSON-LD Context
      */
+    @JsonProperty("@context")
     public void setContext(final String context) {
         this.context = context;
     }
@@ -127,6 +138,15 @@ public class AS2Event {
         return this.target;
     }
 
+    /**
+     * Catch all setter.
+     * @param foo the thing from the JSON.
+     */
+    @JsonAnySetter
+    public void setTheRest(final Object foo) {
+        leftovers.add(foo);
+    }
+
     private String context;
     private String type;
     private String summary;
@@ -134,5 +154,7 @@ public class AS2Event {
     private AS2Object object;
     private AS2Actor actor;
     private AS2Attachment attachment;
+    private List<Object> leftovers = new ArrayList<>();
+
 
 }
