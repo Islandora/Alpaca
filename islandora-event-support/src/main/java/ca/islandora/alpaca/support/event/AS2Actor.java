@@ -26,6 +26,19 @@ package ca.islandora.alpaca.support.event;
 public class AS2Actor {
 
     /**
+     * The actor type, ie. Person
+     */
+    private String type;
+    /**
+     * The actor UUID.
+     */
+    private String id;
+    /**
+     * The actor URL.
+     */
+    private AS2Url[] url;
+
+    /**
      * @return  Type of user
      */
     public String getType() {
@@ -64,12 +77,8 @@ public class AS2Actor {
      * @param   url  URL for user
      */
     public void setUrl(final AS2Url[] url) {
-        this.url = url;
+        this.url = url.clone();
     }
-
-    private String type;
-    private String id;
-    private AS2Url[] url;
 
 }
 

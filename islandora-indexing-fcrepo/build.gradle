@@ -34,13 +34,9 @@ jar {
       instruction 'Import-Package', 'org.apache.camel.component.http4,' +
                             "org.apache.camel.jsonpath," +
                             "org.apache.camel;version=\"${versions.camel}\"," +
-                            "!ca.islandora.alpaca.support.event," +
+                            "ca.islandora.alpaca.support.event;version=\"${project.version}\"," +
                             defaultOsgiImports
-      instruction 'Bundle-ClassPath', ".,islandora-event-support-${project.version}.jar"
       instruction 'Export-Package', 'ca.islandora.alpaca.indexing.fcrepo'
-    }
-    from {
-        configurations.runtimeClasspath.findAll{ !it.directory && it.name.startsWith( 'islandora-event-support' ) }
     }
 }
 
@@ -53,10 +49,8 @@ artifacts {
 
 test {
     testLogging {
-        // Make sure output from standard out or error is shown
-        // in Gradle output.
-        // Uncomment the below 3 lines while debugging.
-        events 'standard_out', 'standard_error'
+        // Uncomment the below line while debugging.
+        //events 'standard_out', 'standard_error'
         exceptionFormat = 'full'
         displayGranularity = 0
     }

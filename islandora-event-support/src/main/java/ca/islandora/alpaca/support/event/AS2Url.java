@@ -26,6 +26,27 @@ package ca.islandora.alpaca.support.event;
 public class AS2Url {
 
     /**
+     *  The URL name, ie. JSON, Canonical, JSONLD
+     */
+    private String name;
+    /**
+     * The URL type, ie. Link
+     */
+    private String type;
+    /**
+     * The URL address.
+     */
+    private String href;
+    /**
+     * The URL media type, ie. text/xml, application/ld+json
+     */
+    private String mediaType;
+    /**
+     * The URL rel attribute, ie. alternate, canonical
+     */
+    private String rel;
+
+    /**
      * @return  Name
      */
     public String getName() {
@@ -94,12 +115,6 @@ public class AS2Url {
     public void setRel(final String rel) {
         this.rel = rel;
     }
-
-    private String name;
-    private String type;
-    private String href;
-    private String mediaType;
-    private String rel;
 
 }
 

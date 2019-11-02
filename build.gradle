@@ -112,8 +112,12 @@ subprojects {
     }
 
     pmd {
-        ignoreFailures true
+        toolVersion = '6.19.0'
+        // Only run on src/main
+        sourceSets = [sourceSets.main]
+        ignoreFailures = true
         ruleSetFiles = rootProject.files('gradle/pmd/ruleset.xml')
+
     }
 
     publishing {

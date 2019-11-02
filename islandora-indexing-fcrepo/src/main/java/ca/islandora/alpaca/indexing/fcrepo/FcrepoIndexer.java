@@ -40,7 +40,33 @@ import org.slf4j.Logger;
 // @JsonIgnoreProperties(ignoreUnknown = true)
 public class FcrepoIndexer extends RouteBuilder {
 
+    /**
+     * Header to use to pass the Fedora Base URI on.
+     */
     public final static String FEDORA_HEADER = "X-Islandora-Fedora-Endpoint";
+
+    /**
+     * Maximum attempts to deliver a message.
+     */
+    @PropertyInject("error.maxRedeliveries")
+    private int maxRedeliveries;
+
+    /**
+     * Base URI of the milliner web service.
+     */
+    @PropertyInject("milliner.baseUrl")
+    private String millinerBaseUrl;
+
+    /**
+     * Base URI of the Gemini web service.
+     */
+    @PropertyInject("gemini.baseUrl")
+    private String geminiBaseUrl;
+
+    /**
+     * The Logger.
+     */
+    private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
     /**
      * @return  Number of times to retry
@@ -89,16 +115,6 @@ public class FcrepoIndexer extends RouteBuilder {
         return trimmed.endsWith("/") ? trimmed : trimmed + "/";
     }
 
-    @PropertyInject("error.maxRedeliveries")
-    private int maxRedeliveries;
-
-    @PropertyInject("milliner.baseUrl")
-    private String millinerBaseUrl;
-
-    @PropertyInject("gemini.baseUrl")
-    private String geminiBaseUrl;
-
-    private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
     @Override
     public void configure() {

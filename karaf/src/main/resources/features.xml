@@ -23,6 +23,7 @@
 
     <feature version="${versions.camel}">camel-http4</feature>
     <feature version="${versions.camel}">camel-jsonpath</feature>
+    <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}</bundle>
 
@@ -45,6 +46,7 @@
 
     <feature version="${versions.camel}">camel-http4</feature>
     <feature version="${versions.camel}">camel-jsonpath</feature>
+    <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-derivative/${project.version}</bundle>
   </feature>

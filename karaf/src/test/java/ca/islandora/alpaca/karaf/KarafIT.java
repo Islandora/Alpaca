@@ -83,6 +83,7 @@ public class KarafIT {
         final boolean debugExam = Boolean.parseBoolean(cm.getProperty("debug.keepExam", "false"));
 
         final String islandoraHttp = getBundleUri("islandora-http-client", version);
+        final String isladnoraEvent = getBundleUri("islandora-event-support", version);
         final String islandoraIndexFcrepo = getBundleUri("islandora-indexing-fcrepo", version);
         final String islandoraIndexTriple = getBundleUri("islandora-indexing-triplestore", version);
         final String islandoraConnectDeriv = getBundleUri("islandora-connector-derivative", version);
@@ -156,6 +157,7 @@ public class KarafIT {
                 systemProperty("c.i.a.triplestore-bundle").value(islandoraIndexTriple),
 
                 bundle(islandoraHttp).start(),
+                bundle(isladnoraEvent).start(),
                 bundle(islandoraConnectDeriv).start(),
                 bundle(islandoraIndexFcrepo).start(),
                 bundle(islandoraIndexTriple).start(),

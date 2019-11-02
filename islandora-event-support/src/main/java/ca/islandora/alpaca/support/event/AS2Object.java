@@ -28,6 +28,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AS2Object {
 
     /**
+     * The object type if applicable.
+     */
+    private String type;
+    /**
+     * The object UUID.
+     */
+    private String id;
+    /**
+     * The URLs passed with the event.
+     */
+    private AS2Url[] url;
+
+    /**
+     * Are we creating a new revision?
+     */
+    private Boolean isNewVersion;
+
+    /**
      * @return  Type of object
      */
     public String getType() {
@@ -66,7 +84,7 @@ public class AS2Object {
      * @param   url  URLs for object
      */
     public void setUrl(final AS2Url[] url) {
-        this.url = url;
+        this.url = url.clone();
     }
 
     /**
@@ -83,9 +101,4 @@ public class AS2Object {
     public void setIsNewVersion(final Boolean isNewVersion) {
         this.isNewVersion = isNewVersion;
     }
-
-    private String type;
-    private String id;
-    private AS2Url[] url;
-    private Boolean isNewVersion;
 }

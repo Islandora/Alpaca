@@ -18,24 +18,43 @@
 
 package ca.islandora.alpaca.support.event;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_ONLY;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * POJO for events emitted by Islandora.
  *
  * @author Danny Lamb
  */
-@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = PUBLIC_ONLY, setterVisibility = PUBLIC_ONLY)
 public class AS2Event {
+
+    /**
+     * The JSON-LD context.
+     */
+    private String context;
+    /**
+     * The event type, ie. Activity.
+     */
+    private String type;
+    /**
+     * The event summary, ie. "Generate Derivative"
+     */
+    private String summary;
+    /**
+     * The Fcrepo Base URL.
+     */
+    private String target;
+    /**
+     * The object we are acting on.
+     */
+    private AS2Object object;
+    /**
+     * Who is doing the action.
+     */
+    private AS2Actor actor;
+    /**
+     * The event attachment.
+     */
+    private AS2Attachment attachment;
 
     /**
      * @return  Event type (Create, Update, Delete, etc...)
@@ -137,24 +156,5 @@ public class AS2Event {
     public String getTarget() {
         return this.target;
     }
-
-    /**
-     * Catch all setter.
-     * @param foo the thing from the JSON.
-     */
-    @JsonAnySetter
-    public void setTheRest(final Object foo) {
-        leftovers.add(foo);
-    }
-
-    private String context;
-    private String type;
-    private String summary;
-    private String target;
-    private AS2Object object;
-    private AS2Actor actor;
-    private AS2Attachment attachment;
-    private List<Object> leftovers = new ArrayList<>();
-
 
 }

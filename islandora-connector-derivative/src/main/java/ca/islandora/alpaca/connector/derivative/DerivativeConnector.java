@@ -32,6 +32,9 @@ import org.slf4j.Logger;
  */
 public class DerivativeConnector extends RouteBuilder {
 
+    /**
+     * Local logger.
+     */
     private static final Logger LOGGER = getLogger(DerivativeConnector.class);
 
     @Override

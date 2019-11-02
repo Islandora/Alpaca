@@ -26,6 +26,19 @@ package ca.islandora.alpaca.support.event;
 public class AS2Attachment {
 
     /**
+     * Attachment type, ie. Object.
+     */
+    private String type;
+    /**
+     * Attachment mime-type, ie. application/json
+     */
+    private String mediaType;
+    /**
+     * Attachment content.
+     */
+    private AS2AttachmentContent content;
+
+    /**
      * @return  Type
      */
     public String getType() {
@@ -66,10 +79,6 @@ public class AS2Attachment {
     public void setContent(final AS2AttachmentContent content) {
         this.content = content;
     }
-
-    private String type;
-    private String mediaType;
-    private AS2AttachmentContent content;
 
 }
 

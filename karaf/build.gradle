@@ -83,13 +83,14 @@ tasks.test.dependsOn tasks.generateDependsFile
 
 test {
     systemProperty "project.version", "${project.version}"
+
     // Uncomment to enable remote debugging of internal Karaf container on port 5005
     //systemProperty "debug.remote", "true"
+
     // Uncomment to keep the deployed karaf container inside build/exam/<uuid> for debugging.
     //systemProperty "debug.keepExam", "true"
+
     testLogging {
-        // Make sure output from standard out or error is shown
-        // in Gradle output.
         // Uncomment the below line while debugging.
         //events 'standard_out', 'standard_error'
         exceptionFormat = 'full'
