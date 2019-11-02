@@ -8,9 +8,7 @@ dependencies {
     implementation group: 'org.apache.camel', name: 'camel-http4', version: versions.camel
     implementation group: 'org.apache.camel', name: 'camel-jackson', version: versions.camel
     implementation group: 'org.apache.camel', name: 'camel-jsonpath', version: versions.camel
-    implementation(project(':islandora-event-support')) {
-        transitive = true
-    }
+    implementation(project(':islandora-event-support'))
     implementation group: 'org.slf4j', name: 'slf4j-api', version: versions.slf4j
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo 
     testImplementation group: 'org.apache.camel', name: 'camel-test-blueprint', version: versions.camel
