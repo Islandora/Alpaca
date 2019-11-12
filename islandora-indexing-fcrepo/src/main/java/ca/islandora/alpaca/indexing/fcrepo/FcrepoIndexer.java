@@ -31,10 +31,12 @@ import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
+// import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Danny Lamb
  */
+// @JsonIgnoreProperties(ignoreUnknown = true)
 public class FcrepoIndexer extends RouteBuilder {
 
     /**
@@ -118,7 +120,6 @@ public class FcrepoIndexer extends RouteBuilder {
                         LOGGER,
                         "Error indexing resource in fcrepo: ${exception.message}\n\n${exception.stacktrace}"
                 );
-
         from("{{node.stream}}")
                 .routeId("FcrepoIndexerNode")
 
@@ -135,9 +136,18 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
                 .setBody(simple("${null}"))
+                .multicast().parallelProcessing()
+                //pass it to milliner
+                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
+                .choice()
+                        .when()
+                        .simple("${exchangeProperty.event.object.isNewVersion}")
+                                //pass it to milliner
+                                .toD(
+                                        getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"
+                                    ).endChoice();
 
-                // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
+
 
         from("{{node.delete.stream}}")
                 .routeId("FcrepoIndexerDeleteNode")

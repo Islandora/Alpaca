@@ -70,5 +70,4 @@ public class AS2Object {
     private String type;
     private String id;
     private AS2Url[] url;
-
 }
