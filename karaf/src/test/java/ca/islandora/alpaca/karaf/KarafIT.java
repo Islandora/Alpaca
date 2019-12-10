@@ -88,6 +88,7 @@ public class KarafIT {
         final String islandoraIndexTriple = getBundleUri("islandora-indexing-triplestore", version);
         final String islandoraConnectDeriv = getBundleUri("islandora-connector-derivative", version);
 
+        final String karafVersion = MavenUtils.getArtifactVersion("org.apache.karaf", "apache-karaf");
         final String fcrepoCamelVersion = MavenUtils.getArtifactVersion("org.fcrepo.camel",
                 "fcrepo-camel");
         final String fcrepoCamelToolboxVersion = MavenUtils.getArtifactVersion("org.fcrepo.camel",
@@ -103,9 +104,10 @@ public class KarafIT {
                             maven()
                             .groupId("org.apache.karaf")
                             .artifactId("apache-karaf")
-                            .versionAsInProject()
+                            .version(karafVersion)
                             .type("zip")
                     )
+                    .karafVersion(karafVersion)
                     .unpackDirectory(new File("build/exam"))
                     .useDeployFolder(false),
                 when( debugExam ).useOptions(
