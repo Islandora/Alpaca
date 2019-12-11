@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.derivative.event;
+package ca.islandora.alpaca.support.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,9 +28,68 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AS2AttachmentContent {
 
     /**
+     * Path to resource in Fedora.
+     */
+    private String fedoraUri;
+    /**
+     * Source field.
+     */
+    private String sourceField;
+    /**
+     * Source URI, ie. http://localhost:8000/_flysystem/fedora/2019-10/wonderful.tiff.
+     */
+    private String sourceUri;
+    /**
+     * URL to post content back to, ie. http://localhost:8000/node/2/media/image/19.
+     */
+    private String destinationUri;
+    /**
+     * Attachment mime-type, image/jpeg.
+     */
+    private String mimetype;
+    /**
+     * Arguments to pass to derivative connector, ie. "-thumbnail 100x100".
+     */
+    private String args;
+    /**
+     * Path to attachment file, ie. public://2019-11/2-Thumbnail Image.jpg.
+     */
+    private String fileUploadUri;
+
+    /**
+     * @return Fedora uri
+     */
+    @JsonProperty("fedora_uri")
+    public String getFedoraUri() {
+        return fedoraUri;
+    }
+
+    /**
+     * @param   fedoraUri    Fedora uri
+     */
+    public void setFedoraUri(final String fedoraUri) {
+        this.fedoraUri = fedoraUri;
+    }
+
+    /**
+     * @return Source field
+     */
+    @JsonProperty("source_field")
+    public String getSourceField() {
+        return sourceField;
+    }
+
+    /**
+     * @param   sourceField   Source field
+     */
+    public void setSourceField(final String sourceField) {
+        this.sourceField = sourceField;
+    }
+
+    /**
      * @return  Source uri
      */
-    @JsonProperty(value = "source_uri")
+    @JsonProperty("source_uri")
     public String getSourceUri() {
         return sourceUri;
     }
@@ -45,7 +104,7 @@ public class AS2AttachmentContent {
     /**
      * @return  Destination uri
      */
-    @JsonProperty(value = "destination_uri")
+    @JsonProperty("destination_uri")
     public String getDestinationUri() {
         return destinationUri;
     }
@@ -88,7 +147,7 @@ public class AS2AttachmentContent {
     /**
      * @return  File upload uri
      */
-    @JsonProperty(value = "file_upload_uri")
+    @JsonProperty("file_upload_uri")
     public String getFileUploadUri() {
         return fileUploadUri;
     }
@@ -99,11 +158,5 @@ public class AS2AttachmentContent {
     public void setFileUploadUri(final String fileUploadUri) {
         this.fileUploadUri = fileUploadUri;
     }
-
-    private String sourceUri;
-    private String destinationUri;
-    private String mimetype;
-    private String args;
-    private String fileUploadUri;
 
 }

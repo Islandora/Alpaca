@@ -41,6 +41,7 @@
    },
    "type":"Update",
    "summary":"Update a Media",
+   "target":"http://localhost:8080/fcrepo/rest/media",
    "attachment":{
       "type":"Object",
       "content":{

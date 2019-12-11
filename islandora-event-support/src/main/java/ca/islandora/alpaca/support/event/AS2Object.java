@@ -16,60 +16,89 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.indexing.fcrepo.event;
+package ca.islandora.alpaca.support.event;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * POJO for a user performing an action.  Part of a AS2Event.
  *
  * @author Danny Lamb
  */
-public class AS2Actor {
+public class AS2Object {
 
     /**
-     * @return  Type of user
+     * The object type if applicable.
+     */
+    private String type;
+    /**
+     * The object UUID.
+     */
+    private String id;
+    /**
+     * The URLs passed with the event.
+     */
+    private AS2Url[] url;
+
+    /**
+     * Are we creating a new revision?
+     */
+    private Boolean isNewVersion;
+
+    /**
+     * @return  Type of object
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @param   type    Type of user
+     * @param   type    Type of object
      */
     public void setType(final String type) {
         this.type = type;
     }
 
     /**
-     * @return  URN of user
+     * @return  URN of object
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param   id  URN of user
+     * @param   id  URN of object
      */
     public void setId(final String id) {
         this.id = id;
     }
 
     /**
-     * @return  URL for user
+     * @return  URLs for object
      */
     public AS2Url[] getUrl() {
         return url;
     }
 
     /**
-     * @param   url  URL for user
+     * @param   url  URLs for object
      */
     public void setUrl(final AS2Url[] url) {
-        this.url = url;
+        this.url = url.clone();
     }
 
-    private String type;
-    private String id;
-    private AS2Url[] url;
+    /**
+     * @return true or false
+     */
+    @JsonProperty(value = "isNewVersion")
+    public Boolean getIsNewVersion() {
+        return isNewVersion;
+    }
 
+    /**
+     * @param isNewVersion true or false
+     */
+    public void setIsNewVersion(final Boolean isNewVersion) {
+        this.isNewVersion = isNewVersion;
+    }
 }
-

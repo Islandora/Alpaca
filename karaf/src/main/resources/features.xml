@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="${project.name}-${project.version}">
 
-  <repository>mvn:org.fcrepo.camel/fcrepo-camel/${fcrepoCamelVersion}/xml/features</repository>
-  <repository>mvn:org.fcrepo.camel/toolbox-features/${fcrepoCamelToolboxVersion}/xml/features</repository>
-  <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
+  <repository>mvn:org.fcrepo.camel/fcrepo-camel/${versions.fcrepoCamel}/xml/features</repository>
+  <repository>mvn:org.fcrepo.camel/toolbox-features/${versions.fcrepoCamelToolbox}/xml/features</repository>
+  <repository>mvn:org.apache.camel.karaf/apache-camel/${versions.camel}/xml/features</repository>
 
  <feature name="islandora-indexing-triplestore" version="${project.version}" start-level="80">
     <details>Indexes the triplestore from Drupal nodes</details>
 
-    <feature version="${fcrepoCamelToolboxVersion}">fcrepo-service-camel</feature>
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
+    <feature version="${versions.fcrepoCamelToolbox}">fcrepo-service-camel</feature>
+    <feature version="${versions.camel}">camel-http4</feature>
+    <feature version="${versions.camel}">camel-jsonpath</feature>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-triplestore/${project.version}</bundle>
 
@@ -21,8 +21,9 @@
   <feature name="islandora-indexing-fcrepo" version="${project.version}" start-level="80">
     <details>Indexes the Fedora repository from Drupal nodes</details>
 
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
+    <feature version="${versions.camel}">camel-http4</feature>
+    <feature version="${versions.camel}">camel-jsonpath</feature>
+    <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-indexing-fcrepo/${project.version}</bundle>
 
@@ -32,8 +33,8 @@
 
   <feature name="islandora-http-client" version="${project.version}" start-level="80">
 
-    <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
+    <bundle dependency='true'>mvn:org.apache.httpcomponents/httpcore-osgi/${versions.httpCoreOsgi}</bundle>
+    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${versions.httpClientOsgi}</bundle>
     <bundle>mvn:ca.islandora.alpaca/islandora-http-client/${project.version}</bundle>
 
     <configfile finalname="/etc/ca.islandora.alpaca.http.client.cfg">mvn:ca.islandora.alpaca/islandora-http-client/${project.version}/cfg/configuration</configfile>
@@ -43,8 +44,9 @@
  <feature name="islandora-connector-derivative" version="${project.version}" start-level="80">
     <details>Re-usable route for connecting repository resources to derivative generation services</details>
 
-    <feature version="${camelVersion}">camel-http4</feature>
-    <feature version="${camelVersion}">camel-jsonpath</feature>
+    <feature version="${versions.camel}">camel-http4</feature>
+    <feature version="${versions.camel}">camel-jsonpath</feature>
+    <bundle dependency="true">mvn:ca.islandora.alpaca/islandora-event-support/${project.version}</bundle>
 
     <bundle>mvn:ca.islandora.alpaca/islandora-connector-derivative/${project.version}</bundle>
   </feature>

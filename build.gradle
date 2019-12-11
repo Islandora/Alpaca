@@ -1,6 +1,6 @@
 plugins {
-    id 'com.github.hierynomus.license' version '0.13.1'
-    id 'net.researchgate.release' version '2.4.0'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'net.researchgate.release' version '2.8.1'
 }
 
 allprojects  {
@@ -45,12 +45,26 @@ subprojects {
         docURL = 'https://islandora.github.io/documentation/'
         license = 'MIT'
 
-        camelVersion = '2.20.4'
-        slf4jVersion = '1.7.12'
-        fcrepoCamelVersion = '5.0.0'
-        fcrepoCamelToolboxVersion = '5.0.0'
-        activemqVersion = '5.15.0'
-        commonsIoVersion = '2.4'
+        versions = [
+            activemq: '5.15.0',
+            asmCommons: '5.0.3',
+            camel: '2.20.4',
+            commonsIo: '2.4',
+            fcrepoCamel: '5.0.0',
+            fcrepoCamelToolbox: '5.0.0',
+            httpClientOsgi: '4.5.3',
+            httpCoreOsgi: '4.4.6',
+            jackson: '2.8.0',
+            javaxInject: '1',
+            junit: '4.12',
+            junitToolbox: '2.3',
+            karaf: '4.0.6',
+            osgiCore: '6.0.0',
+            osgiFramework: '1.9.0',
+            paxExam: '4.13.1',
+            slf4j: '1.7.28',
+            xercesServiceMix: '2.11.0_1'
+        ]
 
         /* OSGi */
         defaultOsgiImports = 'org.osgi.service.blueprint;version="[1,2)",*'
@@ -98,8 +112,12 @@ subprojects {
     }
 
     pmd {
-        ignoreFailures true
+        toolVersion = '6.19.0'
+        // Only run on src/main
+        sourceSets = [sourceSets.main]
+        ignoreFailures = true
         ruleSetFiles = rootProject.files('gradle/pmd/ruleset.xml')
+
     }
 
     publishing {
@@ -205,7 +223,7 @@ task codeCoverageReport(type: JacocoReport) {
 
     reports {
         xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
         html.enabled false
         csv.enabled false
     }

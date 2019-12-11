@@ -74,6 +74,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        milliner.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/node");
 
         // Send an event.
         template.send(exchange -> {
@@ -142,6 +143,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
+        milliner.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/node");
 
         // Send an event.
         template.send(exchange -> {
@@ -177,6 +179,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         gemini.expectedHeaderReceived("Authorization", "Bearer islandora");
         gemini.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/json");
         gemini.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
+        gemini.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/file");
         gemini.allMessages().body().startsWith(
             "{\"drupal\": \"http://localhost:8000/_flysystem/fedora/2018-08/Voltaire-Records1.jpg\", \"fedora\": " +
             "\"http://localhost:8080/fcrepo/rest/2018-08/Voltaire-Records1.jpg\"}"
@@ -219,6 +222,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
             "http://localhost:8000/sites/default/files/2018-08/Voltaire-Records1.jpg"
         );
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        milliner.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/externalFile");
 
         // Send an event.
         template.send(exchange -> {
@@ -250,6 +254,7 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/media/6?_format=json");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        milliner.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/media");
 
         // Send an event.
         template.send(exchange -> {

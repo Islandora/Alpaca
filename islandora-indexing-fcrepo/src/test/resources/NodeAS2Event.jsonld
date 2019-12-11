@@ -40,5 +40,6 @@
       ]
    },
    "type":"Update",
-   "summary":"Update a Node"
+   "summary":"Update a Node",
+   "target":"http://localhost:8080/fcrepo/rest/node"
 }

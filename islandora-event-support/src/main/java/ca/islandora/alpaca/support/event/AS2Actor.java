@@ -16,58 +16,69 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.connector.derivative.event;
+package ca.islandora.alpaca.support.event;
 
 /**
  * POJO for a user performing an action.  Part of a AS2Event.
  *
  * @author Danny Lamb
  */
-public class AS2Object {
+public class AS2Actor {
 
     /**
-     * @return  Type of object
+     * The actor type, ie. Person
+     */
+    private String type;
+    /**
+     * The actor UUID.
+     */
+    private String id;
+    /**
+     * The actor URL.
+     */
+    private AS2Url[] url;
+
+    /**
+     * @return  Type of user
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @param   type    Type of object
+     * @param   type    Type of user
      */
     public void setType(final String type) {
         this.type = type;
     }
 
     /**
-     * @return  URN of object
+     * @return  URN of user
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param   id  URN of object
+     * @param   id  URN of user
      */
     public void setId(final String id) {
         this.id = id;
     }
 
     /**
-     * @return  URLs for object
+     * @return  URL for user
      */
     public AS2Url[] getUrl() {
         return url;
     }
 
     /**
-     * @param   url  URLs for object
+     * @param   url  URL for user
      */
     public void setUrl(final AS2Url[] url) {
-        this.url = url;
+        this.url = url.clone();
     }
 
-    private String type;
-    private String id;
-    private AS2Url[] url;
 }
+

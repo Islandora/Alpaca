@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.indexing.fcrepo.event;
+package ca.islandora.alpaca.support.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,6 +26,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Danny Lamb
  */
 public class AS2Event {
+
+    /**
+     * The JSON-LD context.
+     */
+    private String context;
+    /**
+     * The event type, ie. Activity.
+     */
+    private String type;
+    /**
+     * The event summary, ie. "Generate Derivative"
+     */
+    private String summary;
+    /**
+     * The Fcrepo Base URL.
+     */
+    private String target;
+    /**
+     * The object we are acting on.
+     */
+    private AS2Object object;
+    /**
+     * Who is doing the action.
+     */
+    private AS2Actor actor;
+    /**
+     * The event attachment.
+     */
+    private AS2Attachment attachment;
 
     /**
      * @return  Event type (Create, Update, Delete, etc...)
@@ -99,7 +128,7 @@ public class AS2Event {
     /**
      * @return  JSON-LD Context
      */
-    @JsonProperty(value = "@context")
+    @JsonProperty("@context")
     public String getContext() {
         return context;
     }
@@ -107,15 +136,25 @@ public class AS2Event {
     /**
      * @param   context JSON-LD Context
      */
+    @JsonProperty("@context")
     public void setContext(final String context) {
         this.context = context;
     }
 
-    private String context;
-    private String type;
-    private String summary;
-    private AS2Object object;
-    private AS2Actor actor;
-    private AS2Attachment attachment;
+    /**
+     * Set the target for this event.
+     * @param target the URL of the target.
+     */
+    public void setTarget(final String target) {
+        this.target = target;
+    }
+
+    /**
+     * Return the target.
+     * @return the target URL.
+     */
+    public String getTarget() {
+        return this.target;
+    }
 
 }

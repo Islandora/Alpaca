@@ -20,9 +20,10 @@ package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.DEBUG;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.indexing.fcrepo.event.AS2Event;
+import ca.islandora.alpaca.support.event.AS2Event;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.PropertyInject;
@@ -38,6 +39,34 @@ import org.slf4j.Logger;
  */
 // @JsonIgnoreProperties(ignoreUnknown = true)
 public class FcrepoIndexer extends RouteBuilder {
+
+    /**
+     * Header to use to pass the Fedora Base URI on.
+     */
+    public final static String FEDORA_HEADER = "X-Islandora-Fedora-Endpoint";
+
+    /**
+     * Maximum attempts to deliver a message.
+     */
+    @PropertyInject("error.maxRedeliveries")
+    private int maxRedeliveries;
+
+    /**
+     * Base URI of the milliner web service.
+     */
+    @PropertyInject("milliner.baseUrl")
+    private String millinerBaseUrl;
+
+    /**
+     * Base URI of the Gemini web service.
+     */
+    @PropertyInject("gemini.baseUrl")
+    private String geminiBaseUrl;
+
+    /**
+     * The Logger.
+     */
+    private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
     /**
      * @return  Number of times to retry
@@ -86,16 +115,6 @@ public class FcrepoIndexer extends RouteBuilder {
         return trimmed.endsWith("/") ? trimmed : trimmed + "/";
     }
 
-    @PropertyInject("error.maxRedeliveries")
-    private int maxRedeliveries;
-
-    @PropertyInject("milliner.baseUrl")
-    private String millinerBaseUrl;
-
-    @PropertyInject("gemini.baseUrl")
-    private String geminiBaseUrl;
-
-    private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
     @Override
     public void configure() {
@@ -130,11 +149,15 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.url[2].href}")
+                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .log(DEBUG, LOGGER, "Received Node event for UUID (${exchangeProperty.uuid}), jsonld URL (" +
+                        "${exchangeProperty.jsonldUrl}), fedora base URL (${exchangeProperty.fedoraBaseUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
+                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple("${null}"))
                 .multicast().parallelProcessing()
                 //pass it to milliner
@@ -167,10 +190,14 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Extract relevant data from the event.
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
+                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .log(DEBUG, LOGGER, "Received Node delete event for UUID (${exchangeProperty.uuid}), fedora base URL" +
+                        " (${exchangeProperty.fedoraBaseUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
+                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple("${null}"))
 
                 // Remove the file from Gemini.
@@ -186,11 +213,15 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
                 .setProperty("jsonUrl").simple("${exchangeProperty.event.object.url[1].href}")
+                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .log(DEBUG, LOGGER, "Received Media event for sourceField (${exchangeProperty.sourceField}), jsonld" +
+                        " URL (${exchangeProperty.jsonUrl}), fedora Base URL (${exchangeProperty.fedoraBaseUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
+                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
@@ -207,11 +238,16 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
                 .setProperty("fedora").simple("${exchangeProperty.event.attachment.content.fedoraUri}")
+                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .log(DEBUG, LOGGER, "Received File event for UUID (${exchangeProperty.uuid}), drupal URL (" +
+                        "${exchangeProperty.drupal}), fedoraURL (${exchangeProperty.fedora}), fedora base URL " +
+                        "(${exchangeProperty.fedoraBaseUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
+                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple(
                     "{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}")
                 )
@@ -229,11 +265,15 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setProperty("event").simple("${body}")
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
                 .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
+                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .log(DEBUG, LOGGER, "Received File external event for UUID (${exchangeProperty.uuid}), drupal URL " +
+                        "(${exchangeProperty.drupal}), fedora base URL (${exchangeProperty.fedoraBaseUrl})")
 
                 // Prepare the message.
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.drupal}"))
+                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
