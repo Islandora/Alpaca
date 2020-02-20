@@ -43,6 +43,7 @@ import java.io.File;
 import javax.inject.Inject;
 
 import org.apache.karaf.features.FeaturesService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -63,6 +64,7 @@ import org.slf4j.Logger;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Ignore
 public class KarafIT {
 
     private static Logger LOGGER = getLogger(KarafIT.class);
