@@ -89,14 +89,15 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testVersion() throws Exception {
+    public void testNodeVersion() throws Exception {
         final String route = "FcrepoIndexerNode";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith("direct:start");
                 mockEndpointsAndSkip(
-                    "http://localhost:8000/milliner/version/72358916-51e9-4712-b756-4b0404c91b?connectionClose=true"
+                    "http://localhost:8000/milliner/node/72358916-51e9-"
+                    + "4712-b756-4b0404c91b/version?connectionClose=true"
                 );
             }
         });
@@ -104,7 +105,8 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
 
         // Assert we POST to milliner with creds.
         final MockEndpoint milliner = getMockEndpoint(
-                "mock:http:localhost:8000/milliner/version/72358916-51e9-4712-b756-4b0404c91b"
+                "mock:http:localhost:8000/milliner/"
+                + "node/72358916-51e9-4712-b756-4b0404c91b/version"
         );
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
@@ -263,6 +265,36 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
                     IOUtils.toString(loadResourceAsStream("MediaAS2Event.jsonld"), "UTF-8"),
                     String.class
             );
+        });
+
+        assertMockEndpointsSatisfied();
+    }
+
+    @Test
+    public void testVersionMedia() throws Exception {
+        final String route = "FcrepoIndexerMedia";
+        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:start");
+                mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image/"
+                + "version?connectionClose=true");
+            }
+        });
+        context.start();
+
+        // Assert we POST the event to milliner with creds.
+        final MockEndpoint milliner = getMockEndpoint("mock:http:localhost:8000/milliner/media/"
+        + "field_media_image/version");
+        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
+        milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/media/7?_format=json");
+        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+
+        // Send an event.
+        template.send(exchange -> {
+            exchange.getIn().setHeader("Authorization", "Bearer islandora");
+            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("MediaVersionAS2Event.jsonld"), "UTF-8"),
+                    String.class);
         });
 
         assertMockEndpointsSatisfied();
