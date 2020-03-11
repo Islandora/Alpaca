@@ -43,11 +43,11 @@ import java.io.File;
 import javax.inject.Inject;
 
 import org.apache.karaf.features.FeaturesService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.ConfigurationManager;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.MavenUtils;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -64,7 +64,6 @@ import org.slf4j.Logger;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-@Ignore
 public class KarafIT {
 
     private static Logger LOGGER = getLogger(KarafIT.class);
@@ -85,7 +84,7 @@ public class KarafIT {
         final boolean debugExam = Boolean.parseBoolean(cm.getProperty("debug.keepExam", "false"));
 
         final String islandoraHttp = getBundleUri("islandora-http-client", version);
-        final String isladnoraEvent = getBundleUri("islandora-event-support", version);
+        final String islandoraEvent = getBundleUri("islandora-event-support", version);
         final String islandoraIndexFcrepo = getBundleUri("islandora-indexing-fcrepo", version);
         final String islandoraIndexTriple = getBundleUri("islandora-indexing-triplestore", version);
         final String islandoraConnectDeriv = getBundleUri("islandora-connector-derivative", version);
@@ -97,19 +96,17 @@ public class KarafIT {
                 "toolbox-features");
         final String activemqVersion = MavenUtils.getArtifactVersion("org.apache.activemq", "activemq-karaf");
 
+
         return options(
                 when( debugRemote ).useOptions(
                        debugConfiguration( "5005", true )
                 ),
                 karafDistributionConfiguration()
                     .frameworkUrl(
-                            maven()
-                            .groupId("org.apache.karaf")
-                            .artifactId("apache-karaf")
-                            .version(karafVersion)
-                            .type("zip")
+                            CoreOptions.maven().groupId("org.apache.karaf").artifactId("apache-karaf")
+                                    .version(karafVersion).type("zip")
                     )
-                    .karafVersion(karafVersion)
+                    .name("Apache Karaf")
                     .unpackDirectory(new File("build/exam"))
                     .useDeployFolder(false),
                 when( debugExam ).useOptions(
@@ -117,29 +114,27 @@ public class KarafIT {
                 ),
                 logLevel(LogLevel.INFO),
                 configureConsole()
-                    .ignoreLocalConsole()
-                    .ignoreRemoteShell(),
+                    .ignoreLocalConsole(),
                 editConfigurationFilePut(
-                    "etc/org.apache.karaf.features.repos.cfg",
-                    "fcrepo-camel",
+                    "etc/org.apache.karaf.features.repos.cfg", "fcrepo-camel",
                     "mvn:org.fcrepo.camel/fcrepo-camel/" + fcrepoCamelVersion + "/xml/features"),
                 editConfigurationFilePut(
-                    "etc/org.apache.karaf.features.repos.cfg",
-                    "fcrepo-camel-toolbox",
+                    "etc/org.apache.karaf.features.repos.cfg", "fcrepo-camel-toolbox",
                     "mvn:org.fcrepo.camel/toolbox-features/" + fcrepoCamelToolboxVersion + "/xml/features"),
                 editConfigurationFilePut(
-                    "etc/org.apache.karaf.features.repos.cfg",
-                    "activemq",
+                    "etc/org.apache.karaf.features.repos.cfg", "activemq",
                     "mvn:org.apache.activemq/activemq-karaf/" + activemqVersion + "/xml/features"),
                 editConfigurationFilePut(
-                        "etc/org.apache.karaf.features.cfg",
-                        "featuresBoot",
-                        "standard"
+                        "etc/org.apache.karaf.features.cfg", "featuresBoot", "standard"
+                ),
+                editConfigurationFilePut(
+                        "etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories",
+                        "https://repo1.maven.org/maven2@id=central"
                 ),
                 editConfigurationFilePut(
                         "etc/org.ops4j.pax.url.mvn.cfg",
-                        "org.ops4j.pax.url.mvn.proxySupport",
-                        "true"
+                        "org.ops4j.pax.url.mvn.useFallbackRepositories",
+                        "false"
                 ),
                 features(maven().groupId("org.apache.karaf.features").artifactId("standard")
                     .versionAsInProject().classifier("features").type("xml"), "scr"),
@@ -161,7 +156,7 @@ public class KarafIT {
                 systemProperty("c.i.a.triplestore-bundle").value(islandoraIndexTriple),
 
                 bundle(islandoraHttp).start(),
-                bundle(isladnoraEvent).start(),
+                bundle(islandoraEvent).start(),
                 bundle(islandoraConnectDeriv).start(),
                 bundle(islandoraIndexFcrepo).start(),
                 bundle(islandoraIndexTriple).start(),
