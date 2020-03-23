@@ -61,7 +61,7 @@ subprojects {
             karaf: '4.0.6',
             osgiCore: '6.0.0',
             osgiFramework: '1.9.0',
-            paxExam: '4.13.1',
+            paxExam: '4.13.2',
             slf4j: '1.7.28',
             xercesServiceMix: '2.11.0_1'
         ]

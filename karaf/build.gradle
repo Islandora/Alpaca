@@ -84,6 +84,9 @@ tasks.test.dependsOn tasks.generateDependsFile
 test {
     systemProperty "project.version", "${project.version}"
 
+    systemProperty "org.ops4j.pax.url.mvn.useFallbackRepositories" ,"false"
+    systemProperty "org.ops4j.pax.url.mvn.repositories", "https://repo1.maven.org/maven2@id=central"
+
     // Uncomment to enable remote debugging of internal Karaf container on port 5005
     //systemProperty "debug.remote", "true"
 
