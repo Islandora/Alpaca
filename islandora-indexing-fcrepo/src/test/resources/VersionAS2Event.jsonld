@@ -14,7 +14,7 @@
       ]
    },
    "object":{
-      "id":"urn:uuid:72358916-51e9-4712-b756-4b0404c91b1d",
+      "id":"urn:uuid:72358916-51e9-4712-b756-4b0404c91b",
       "url":[
          {
             "name":"Canonical",
@@ -37,9 +37,9 @@
             "mediaType":"application\/ld+json",
             "rel":"alternate"
          }
-      ]
+      ],
+      "isNewVersion":"true"
    },
    "type":"Update",
-   "summary":"Update a Node",
-   "target":"http://localhost:8080/fcrepo/rest/node"
+   "summary":"Update a Node"
 }

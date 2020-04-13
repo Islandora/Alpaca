@@ -38,14 +38,21 @@ import org.apache.http.protocol.HttpContext;
  */
 public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
 
+    /**
+     * Authorization HTTP header.
+     */
     public static final String AUTH_HEADER = "Authorization";
 
+    /**
+     * The header to inject.
+     */
     private Header header;
 
     /**
      * Default constructor
      */
     public StaticTokenRequestInterceptor() {
+        // This constructor is intentionally blank.
     }
 
     /**

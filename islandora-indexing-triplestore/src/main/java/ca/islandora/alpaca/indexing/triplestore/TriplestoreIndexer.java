@@ -39,6 +39,9 @@ import java.util.LinkedHashMap;
  */
 public class TriplestoreIndexer extends RouteBuilder {
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = getLogger(TriplestoreIndexer.class);
 
     @Override

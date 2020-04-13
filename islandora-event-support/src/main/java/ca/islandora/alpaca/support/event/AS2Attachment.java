@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ca.islandora.alpaca.indexing.fcrepo.event;
+package ca.islandora.alpaca.support.event;
 
 /**
  * POJO for an attachment.  Part of a AS2Event.
@@ -24,6 +24,19 @@ package ca.islandora.alpaca.indexing.fcrepo.event;
  * @author Danny Lamb
  */
 public class AS2Attachment {
+
+    /**
+     * Attachment type, ie. Object.
+     */
+    private String type;
+    /**
+     * Attachment mime-type, ie. application/json
+     */
+    private String mediaType;
+    /**
+     * Attachment content.
+     */
+    private AS2AttachmentContent content;
 
     /**
      * @return  Type
@@ -66,10 +79,6 @@ public class AS2Attachment {
     public void setContent(final AS2AttachmentContent content) {
         this.content = content;
     }
-
-    private String type;
-    private String mediaType;
-    private AS2AttachmentContent content;
 
 }
 
