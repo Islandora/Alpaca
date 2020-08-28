@@ -27,6 +27,6 @@ deploy:
   script:
     - "./gradlew uploadArchives -PossrhUsername='${SONATYPE_USERNAME}' -PossrhPassword='${SONATYPE_PASSWORD}'"
   on:
-    branch: master
+    branch: main
 
 # Variables SONATYPE_USERNAME and SONATYPE_PASSWORD are defined on the Travis build.
