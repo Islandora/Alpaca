@@ -167,7 +167,8 @@ public class FcrepoIndexer extends RouteBuilder {
                         .simple("${exchangeProperty.event.object.isNewVersion}")
                                 //pass it to milliner
                                 .toD(
-                                        getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"
+                                        getMillinerBaseUrl() +
+                                        "node/${exchangeProperty.uuid}/version?connectionClose=true"
                                     ).endChoice();
 
 
@@ -225,7 +226,18 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}?connectionClose=true");
+                .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}?connectionClose=true")
+                .choice()
+                        .when()
+                        .simple("${exchangeProperty.event.object.isNewVersion}")
+                                .setHeader("Content-Location", simple(
+                                        "${exchangeProperty.jsonUrl}"))
+
+                                //pass it to milliner
+                                .toD(
+                                        getMillinerBaseUrl() +
+                                        "media/${exchangeProperty.sourceField}/version?connectionClose=true"
+                                    ).endChoice();
 
         from("{{file.stream}}")
                 .routeId("FcrepoIndexerFile")
