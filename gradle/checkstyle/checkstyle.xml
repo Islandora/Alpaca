@@ -5,7 +5,7 @@
 <module name="Checker">
   <!-- Suppress -->
   <module name="SuppressionFilter">
-    <property name="file" value="${checkstyleConfigDir}/suppressions.xml"/>
+    <property name="file" value="${checkStyleDir}/suppressions.xml"/>
   </module>
   <!-- Checks that there are no tab characters ('\t') in the source code. -->
   <module name="FileTabCharacter">

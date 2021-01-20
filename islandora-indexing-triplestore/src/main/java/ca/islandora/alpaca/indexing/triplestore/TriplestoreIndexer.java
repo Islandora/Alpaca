@@ -18,21 +18,27 @@
 
 package ca.islandora.alpaca.indexing.triplestore;
 
+import static ca.islandora.alpaca.indexing.triplestore.processors.FcrepoHeaders.FCREPO_URI;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
-import static org.fcrepo.camel.FcrepoHeaders.FCREPO_URI;
+import static org.apache.camel.LoggingLevel.TRACE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.builder.RouteBuilder;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPathException;
 
-import net.minidev.json.JSONArray;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.Exchange;
-import org.fcrepo.camel.processor.SparqlUpdateProcessor;
-import org.fcrepo.camel.processor.SparqlDeleteProcessor;
-import org.slf4j.Logger;
-
-import java.util.LinkedHashMap;
+import ca.islandora.alpaca.indexing.triplestore.processors.SparqlDeleteProcessor;
+import ca.islandora.alpaca.indexing.triplestore.processors.SparqlUpdateProcessor;
+import ca.islandora.alpaca.support.event.AS2Event;
+import ca.islandora.alpaca.support.event.AS2Url;
+import ca.islandora.alpaca.support.exceptions.MissingDescribesUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingPropertyException;
 
 /**
  * @author dhlamb
@@ -44,20 +50,27 @@ public class TriplestoreIndexer extends RouteBuilder {
      */
     private static final Logger LOGGER = getLogger(TriplestoreIndexer.class);
 
+    @Autowired
+    private TriplestoreIndexerOptions config;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void configure() {
+        LOGGER.info("TriplestoreIndexer routes starting");
         // Global exception handler for the indexer.
         // Just logs after retrying X number of times.
         onException(Exception.class)
-            .maximumRedeliveries("{{error.maxRedeliveries}}")
+            .maximumRedeliveries(config.getMaxRedeliveries())
             .log(
                 ERROR,
                 LOGGER,
-                "Error indexing ${property.uri} in triplestore: ${exception.message}\n\n${exception.stacktrace}"
+                "Error indexing ${exchangeProperty.uri} in triplestore: ${exception.message}\n\n${exception.stacktrace}"
             );
 
-        from("{{index.stream}}")
+        from(config.getJmsIndexStream())
             .routeId("IslandoraTriplestoreIndexer")
+                .log(TRACE, LOGGER, "Received message on IslandoraTriplestoreIndexer")
               .to("direct:parse.url")
               .removeHeaders("*", "Authorization")
               .setHeader(Exchange.HTTP_METHOD, constant("GET"))
@@ -66,65 +79,65 @@ public class TriplestoreIndexer extends RouteBuilder {
               .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlUpdateProcessor())
               .log(INFO, LOGGER, "Indexing ${exchangeProperty.subject_url} in triplestore")
-              .to("{{triplestore.baseUrl}}?connectionClose=true");
+              .to(config.getTriplestoreBaseUrl());
 
-        from("{{delete.stream}}")
+        from(config.getJmsDeleteStream())
             .routeId("IslandoraTriplestoreIndexerDelete")
               .to("direct:parse.url")
               .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlDeleteProcessor())
               .log(INFO, LOGGER, "Deleting ${exchangeProperty.subject_url} in triplestore")
-              .to("{{triplestore.baseUrl}}?connectionClose=true");
+              .to(config.getTriplestoreBaseUrl());
 
         // Extracts the JSONLD URL from the event message and stores it on the exchange.
         from("direct:parse.url")
             .routeId("IslandoraTriplestoreIndexerParseUrl")
               // Custom exception handlers.  Don't retry if event is malformed.
               .onException(JsonPathException.class)
-                .maximumRedeliveries(0)
+                .useOriginalMessage()
+                .handled(true)
                 .log(
                    ERROR,
                    LOGGER,
                    "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
                 )
                 .end()
-              .onException(RuntimeException.class)
-                .maximumRedeliveries(0)
+              .onException(MissingPropertyException.class)
+                .useOriginalMessage()
+                .handled(true)
                 .log(
                    ERROR,
                    LOGGER,
                    "Error extracting properties from event: ${exception.message}\n\n${exception.stacktrace}"
                 )
                 .end()
-              .transform().jsonpath("$.object.url")
+              .onException(MissingJsonldUrlException.class)
+                .useOriginalMessage()
+                .handled(true)
+                .log(
+                        INFO,
+                        LOGGER,
+                        "Unable to find JsonLD Url, this is an error or happens when a file is pre-uploaded to Drupal"
+                )
+                .end()
               .process(ex -> {
                   // Parse the event message.
-                  final JSONArray message = ex.getIn().getBody(JSONArray.class);
+                  final String message = ex.getIn().getBody(String.class);
 
-                  // Get the JSONLD url.
-                  final LinkedHashMap jsonldUrl = message.stream()
-                          .map(LinkedHashMap.class::cast)
-                          .filter(elem -> "application/ld+json".equals(elem.get("mediaType")))
-                          .findFirst()
-                          .orElseThrow(() -> new RuntimeException("Cannot find JSONLD URL in event message."));
-                  ex.setProperty("jsonld_url", jsonldUrl.get("href"));
+                  final AS2Event object = objectMapper.readValue(message, AS2Event.class);
+
+                  final AS2Url jsonldUrl = object.getObject().getJsonldUrl();
+
+                  ex.setProperty("jsonld_url", jsonldUrl.getHref());
 
                   // Attempt to get the 'describes' url first, but if it fails, fall back to the canonical.
+                  AS2Url subjectUrl;
                   try {
-                      final LinkedHashMap describesUrl = message.stream()
-                              .map(LinkedHashMap.class::cast)
-                              .filter(elem -> "describes".equals(elem.get("rel")))
-                              .findFirst()
-                              .orElseThrow(() -> new RuntimeException("Cannot find describes URL in event message."));
-                      ex.setProperty("subject_url", describesUrl.get("href"));
-                  } catch (RuntimeException e) {
-                      final LinkedHashMap canonicalUrl = message.stream()
-                              .map(LinkedHashMap.class::cast)
-                              .filter(elem -> "canonical".equals(elem.get("rel")))
-                              .findFirst()
-                              .orElseThrow(() -> new RuntimeException("Cannot find canonical URL in event message."));
-                      ex.setProperty("subject_url", canonicalUrl.get("href"));
+                      subjectUrl = object.getObject().getDescribesUrl();
+                  } catch (final MissingDescribesUrlException e) {
+                      subjectUrl = object.getObject().getCanonicalUrl();
                   }
-              });
+                  ex.setProperty("subject_url", subjectUrl.getHref());
+              }).transform().jsonpath("$.object.url");
     }
 }

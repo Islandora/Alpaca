@@ -1,33 +1,12 @@
-apply plugin: 'osgi'
-
 description = 'Islandora 8 HTTP Client'
 
 dependencies {
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient-osgi', version: versions.httpClientOsgi
-    testImplementation group: 'junit', name: 'junit', version: versions.junit
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpClient
+    implementation group: 'org.springframework', name: 'spring-context', version: versions.spring
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit5Api
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
 }
 
 jar {
-    manifest {
-      description project.description
-      docURL project.docURL
-      vendor project.vendor
-      license project.license
-
-      instruction 'Import-Package',
-        'org.apache.http,' + 
-        'org.apache.http.protocol,' +
-        'org.apache.http.message,' +
-        'org.apache.http.impl.client,' + 
-        'org.apache.http.client,' +
-        defaultOsgiImports
-      instruction 'Export-Package', 'ca.islandora.alpaca.http.client'
-    }
-}
-
-artifacts {
-    archives (file('build/cfg/main/ca.islandora.alpaca.http.client.cfg')) {
-        classifier 'configuration'
-        type 'cfg'
-    }
+    enabled = true
 }

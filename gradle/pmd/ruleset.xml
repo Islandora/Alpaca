@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
   <description>
-  Islandora 8 Alpaca PMD ruleset
+  Islandora Alpaca PMD ruleset
   </description>
 
   <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts" />
@@ -61,7 +61,11 @@
   <rule ref="category/java/design.xml/SimplifyConditional" />
   <rule ref="category/java/design.xml/UselessOverridingMethod" />
   <rule ref="category/java/design.xml/UseUtilityClass" />
-  <rule ref="category/java/documentation.xml/CommentRequired" />
+  <rule ref="category/java/documentation.xml/CommentRequired">
+    <properties>
+      <property name="fieldCommentRequirement" value="Ignored" />
+    </properties>
+  </rule>
   <rule ref="category/java/documentation.xml/UncommentedEmptyConstructor" />
   <rule ref="category/java/documentation.xml/UncommentedEmptyMethodBody" />
   <rule ref="category/java/errorprone.xml/AssignmentToNonFinalStatic" />

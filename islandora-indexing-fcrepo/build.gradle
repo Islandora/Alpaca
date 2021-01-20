@@ -1,51 +1,30 @@
-apply plugin: 'osgi'
 
-description = 'Islandora 8 Fcrepo Indexer'
+description = 'Islandora Fcrepo Indexer'
 
 dependencies {
-    implementation group: 'org.apache.camel', name: 'camel-core', version: versions.camel
-    implementation group: 'org.apache.camel', name: 'camel-blueprint', version: versions.camel
-    implementation group: 'org.apache.camel', name: 'camel-http4', version: versions.camel
-    implementation group: 'org.apache.camel', name: 'camel-jackson', version: versions.camel
-    implementation group: 'org.apache.camel', name: 'camel-jsonpath', version: versions.camel
-    implementation(project(':islandora-event-support'))
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: versions.slf4j
-    implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo 
-    testImplementation group: 'org.apache.camel', name: 'camel-test-blueprint', version: versions.camel
-    testImplementation group: 'org.apache.servicemix.bundles', name: 'org.apache.servicemix.bundles.xerces', version: versions.xercesServiceMix
-    testImplementation group: 'org.ow2.asm', name: 'asm-commons', version: versions.asmCommons
-    testImplementation group: 'com.googlecode.junit-toolbox', name: 'junit-toolbox', version: versions.junitToolbox
-    testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: versions.slf4j
+    implementation "ch.qos.logback:logback-core:${versions.logback}"
+    implementation "commons-io:commons-io:${versions.commonsIo}"
+    implementation "javax.inject:javax.inject:${versions.javaxInject}"
+    implementation "org.apache.camel:camel-activemq:${versions.camel}"
+    implementation "org.apache.camel:camel-core:${versions.camel}"
+    implementation "org.apache.camel:camel-http:${versions.camel}"
+    implementation "org.apache.camel:camel-jackson:${versions.camel}"
+    implementation "org.apache.camel:camel-jsonpath:${versions.camel}"
+    implementation "org.apache.camel:camel-spring-javaconfig:${versions.camel}"
+    implementation "org.slf4j:slf4j-api:${versions.slf4j}"
+    implementation project(':islandora-support')
+
+    runtimeOnly "ch.qos.logback:logback-classic:${versions.logback}"
+
+    testImplementation "org.apache.camel:camel-test-spring:${versions.camel}"
+    testImplementation "org.ow2.asm:asm-commons:${versions.asmCommons}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
 
 test {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
-}
-
-jar {
-    manifest {
-      description project.description
-      docURL project.docURL
-      vendor project.vendor
-      license project.license
-
-      instruction 'Import-Package', 'org.apache.camel.component.http4,' +
-                            "org.apache.camel.jsonpath," +
-                            "org.apache.camel;version=\"${versions.camel}\"," +
-                            "ca.islandora.alpaca.support.event;version=\"${project.version}\"," +
-                            defaultOsgiImports
-      instruction 'Export-Package', 'ca.islandora.alpaca.indexing.fcrepo'
-    }
-}
-
-artifacts {
-    archives (file('build/cfg/main/ca.islandora.alpaca.indexing.fcrepo.cfg')) {
-        classifier 'configuration'
-        type 'cfg'
-    }
-}
-
-test {
     testLogging {
         // Uncomment the below line while debugging.
         //events 'standard_out', 'standard_error'

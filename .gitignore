@@ -12,3 +12,4 @@ build
 bin/
 .bloop/
 .metals/
+islandora-alpaca-app/src/main/resources/alpaca.properties

@@ -1,13 +1,13 @@
-include ':islandora-karaf'
-include ':islandora-event-support'
+include ':islandora-support'
 include ':islandora-indexing-triplestore'
 include ':islandora-indexing-fcrepo'
 include ':islandora-connector-derivative'
 include ':islandora-http-client'
+include ':islandora-alpaca-app'
 
-project(':islandora-karaf').projectDir = "$rootDir/karaf" as File
-project(':islandora-event-support').projectDir = "$rootDir/islandora-event-support" as File
-project(':islandora-indexing-triplestore').projectDir = "$rootDir/islandora-indexing-triplestore" as File
-project(':islandora-indexing-fcrepo').projectDir = "$rootDir/islandora-indexing-fcrepo" as File
-project(':islandora-connector-derivative').projectDir = "$rootDir/islandora-connector-derivative" as File
-project(':islandora-http-client').projectDir = "$rootDir/islandora-http-client" as File
+project(':islandora-alpaca-app').setProjectDir("$rootDir/islandora-alpaca-app" as File)
+project(':islandora-support').setProjectDir("$rootDir/islandora-support" as File)
+project(':islandora-indexing-triplestore').setProjectDir("$rootDir/islandora-indexing-triplestore" as File)
+project(':islandora-indexing-fcrepo').setProjectDir("$rootDir/islandora-indexing-fcrepo" as File)
+project(':islandora-connector-derivative').setProjectDir("$rootDir/islandora-connector-derivative" as File)
+project(':islandora-http-client').setProjectDir("$rootDir/islandora-http-client" as File)

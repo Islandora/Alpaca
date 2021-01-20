@@ -1,0 +1,68 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
+description = 'Islandora Alpaca application'
+
+dependencies {
+    implementation "info.picocli:picocli:${versions.picocli}"
+    implementation "org.apache.camel:camel-spring-javaconfig:${versions.camel}"
+    implementation "org.slf4j:slf4j-api:${versions.slf4j}"
+    implementation "org.springframework:spring-context:${versions.spring}"
+    implementation project(':islandora-support')
+    implementation project(':islandora-connector-derivative')
+    implementation project(':islandora-indexing-fcrepo')
+    implementation project(':islandora-indexing-triplestore')
+
+    runtimeOnly "ch.qos.logback:logback-classic:${versions.logback}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+    transform(AppendingTransformer) {
+        resource = "META-INF/services/org/apache/camel/TypeConverterLoader"
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            "Main-Class": "ca.islandora.alpaca.driver.AlpacaDriver"
+        )
+    }
+
+    File outputFileDir = project.file( getProjectDir().toString() + '/src/main/resources' )
+    File outputFile = new File( outputFileDir, 'alpaca.properties' )
+
+    doFirst {
+        outputFileDir.mkdirs()
+
+        Properties properties = new Properties();
+
+        // Add properties, the file is needed by VersionProvider to determine the current version of Alpaca.
+        properties.setProperty("groupId", "${project.group}");
+        properties.setProperty("artifactId", "${project.name}");
+        properties.setProperty("version", "${project.version}");
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
+        try {
+            properties.store(outputStream, "Generated from Gradle")
+        }
+        finally {
+            outputStream.close()
+        }
+    }
+}
