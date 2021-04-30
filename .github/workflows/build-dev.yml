@@ -19,14 +19,18 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
           check-latest: true
-      - name: Gradle Check
+      - name: Gradle Build
         run: |
           cd $GITHUB_WORKSPACE/build_dir
-          ./gradlew check
-      - name: Jacoco Test
+          ./gradlew --stacktrace build
+      - name: Gradle Docs
         run: |
           cd $GITHUB_WORKSPACE/build_dir
-          ./gradlew jacocoTestReport
+          ./gradlew --stacktrace docs
+      - name: Codecov report
+        run: |
+          cd $GITHUB_WORKSPACE/build_dir
+          ./gradlew codeCoverageReport
       - name: Codecov
         uses: codecov/codecov-action@v1
 
