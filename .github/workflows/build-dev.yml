@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    braches: [dev, main, github_actions]
+    braches: [dev, main ]
   pull_request:
-    branches: [dev, main, github_actions]
+    branches: [dev, main ]
 
 jobs:
   build:

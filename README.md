@@ -1,8 +1,8 @@
 # ![Alpaca](https://cloud.githubusercontent.com/assets/2371345/15409648/16c140b4-1dec-11e6-81d9-41929bc83b1f.png) Alpaca
-[![Build Status](https://travis-ci.com/Islandora/Alpaca.svg?branch=master)](https://travis-ci.com/Islandora/Alpaca)
+[![Build Status](https://github.com/islandora/Alpaca/actions/workflows/build-dev.yml/badge.svg)](https://github.com/Islandora/Alpaca/actions)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
-[![codecov](https://codecov.io/gh/Islandora/Alpaca/branch/master/graph/badge.svg)](https://codecov.io/gh/Islandora/Alpaca)
+[![codecov](https://codecov.io/gh/Islandora/Alpaca/branch/master/graphs/badge.svg)](https://codecov.io/gh/Islandora/Alpaca)
 
 ## Introduction
 
