@@ -46,9 +46,9 @@ public class HttpConfigurerTest extends CamelBlueprintTestSupport {
     @Test
     public void testRequestConfig() throws Exception {
         context.start();
-        HttpComponent http = (HttpComponent) context.getComponent("http");
+        final HttpComponent http = (HttpComponent) context.getComponent("http");
 
-        RequestConfigConfigurer configurer = (RequestConfigConfigurer) http.getHttpClientConfigurer();
+        final RequestConfigConfigurer configurer = (RequestConfigConfigurer) http.getHttpClientConfigurer();
 
         assertEquals(10000, configurer.built.getSocketTimeout());
         assertEquals(10000, configurer.built.getConnectTimeout());

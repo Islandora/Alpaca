@@ -37,7 +37,7 @@ public class RequestConfigConfigurerTest {
      */
     @Test
     public void testDefaultValues() {
-        RequestConfigConfigurer underTest = new RequestConfigConfigurer();
+        final RequestConfigConfigurer underTest = new RequestConfigConfigurer();
 
         assertEquals(RequestConfig.DEFAULT.getConnectionRequestTimeout(), underTest.getConnectionRequestTimeoutMs());
         assertEquals(RequestConfig.DEFAULT.getConnectTimeout(), underTest.getConnectTimeoutMs());
@@ -49,7 +49,7 @@ public class RequestConfigConfigurerTest {
      */
     @Test
     public void testCustomValues() {
-        RequestConfigConfigurer underTest = new RequestConfigConfigurer();
+        final RequestConfigConfigurer underTest = new RequestConfigConfigurer();
         underTest.setConnectionRequestTimeoutMs(12345);
         underTest.setConnectTimeoutMs(1111111);
         underTest.setSocketTimeoutMs(9999999);
@@ -64,7 +64,7 @@ public class RequestConfigConfigurerTest {
      */
     @Test
     public void testBuild() {
-        RequestConfigConfigurer underTest = new RequestConfigConfigurer();
+        final RequestConfigConfigurer underTest = new RequestConfigConfigurer();
         underTest.setConnectionRequestTimeoutMs(12345);
         underTest.setConnectTimeoutMs(1111111);
         underTest.setSocketTimeoutMs(9999999);
