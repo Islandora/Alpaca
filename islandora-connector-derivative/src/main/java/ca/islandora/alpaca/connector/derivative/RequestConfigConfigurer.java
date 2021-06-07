@@ -53,9 +53,9 @@ public class RequestConfigConfigurer implements HttpClientConfigurer {
      * @see #setSocketTimeoutMs(int)
      */
     @Override
-    public void configureHttpClient(HttpClientBuilder clientBuilder) {
-        RequestConfig.Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
-        RequestConfig config = buildConfig(builder);
+    public void configureHttpClient(final HttpClientBuilder clientBuilder) {
+        final RequestConfig.Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
+        final RequestConfig config = buildConfig(builder);
         clientBuilder.setDefaultRequestConfig(config);
     }
 
@@ -65,7 +65,7 @@ public class RequestConfigConfigurer implements HttpClientConfigurer {
      * @param builder the RequestConfig builder
      * @return the RequestConfig
      */
-    RequestConfig buildConfig(RequestConfig.Builder builder) {
+    RequestConfig buildConfig(final RequestConfig.Builder builder) {
         builder.setConnectionRequestTimeout(connectionRequestTimeoutMs)
                 .setSocketTimeout(socketTimeoutMs)
                 .setConnectTimeout(connectTimeoutMs);
@@ -73,27 +73,57 @@ public class RequestConfigConfigurer implements HttpClientConfigurer {
         return built;
     }
 
+    /**
+     * Get the value of the connection request timeout
+     *
+     * @return the value
+     */
     public int getConnectionRequestTimeoutMs() {
         return connectionRequestTimeoutMs;
     }
 
-    public void setConnectionRequestTimeoutMs(int connectionRequestTimeoutMs) {
+    /**
+     * Set the value of the connection request timeout
+     *
+     * @param connectionRequestTimeoutMs the value
+     */
+    public void setConnectionRequestTimeoutMs(final int connectionRequestTimeoutMs) {
         this.connectionRequestTimeoutMs = connectionRequestTimeoutMs;
     }
 
+    /**
+     * Get the value of the connect timeout
+     *
+     * @return the value
+     */
     public int getConnectTimeoutMs() {
         return connectTimeoutMs;
     }
 
-    public void setConnectTimeoutMs(int connectTimeoutMs) {
+    /**
+     * Set the value of the connect timeout
+     *
+     * @param connectTimeoutMs the value
+     */
+    public void setConnectTimeoutMs(final int connectTimeoutMs) {
         this.connectTimeoutMs = connectTimeoutMs;
     }
 
+    /**
+     * Get the value of the socket timeout
+     *
+     * @return the value
+     */
     public int getSocketTimeoutMs() {
         return socketTimeoutMs;
     }
 
-    public void setSocketTimeoutMs(int socketTimeoutMs) {
+    /**
+     * Set the value of the socket timeout
+     *
+     * @param socketTimeoutMs the value
+     */
+    public void setSocketTimeoutMs(final int socketTimeoutMs) {
         this.socketTimeoutMs = socketTimeoutMs;
     }
 }
