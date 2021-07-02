@@ -58,12 +58,6 @@ public class FcrepoIndexer extends RouteBuilder {
     private String millinerBaseUrl;
 
     /**
-     * Base URI of the Gemini web service.
-     */
-    @PropertyInject("gemini.baseUrl")
-    private String geminiBaseUrl;
-
-    /**
      * The Logger.
      */
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
@@ -94,20 +88,6 @@ public class FcrepoIndexer extends RouteBuilder {
      */
     public void setMillinerBaseUrl(final String millinerBaseUrl) {
         this.millinerBaseUrl = millinerBaseUrl;
-    }
-
-    /**
-     * @return  Gemini base url
-     */
-    public String getGeminiBaseUrl() {
-        return enforceTrailingSlash(geminiBaseUrl);
-    }
-
-    /**
-     * @param   geminiBaseUrl Gemini base url
-     */
-    public void setGeminiBaseUrl(final String geminiBaseUrl) {
-        this.geminiBaseUrl = geminiBaseUrl;
     }
 
     private String enforceTrailingSlash(final String baseUrl) {
@@ -201,7 +181,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
                 .setBody(simple("${null}"))
 
-                // Remove the file from Gemini.
+                // Remove the file from Drupal.
                 .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
 
         from("{{media.stream}}")
@@ -238,34 +218,6 @@ public class FcrepoIndexer extends RouteBuilder {
                                         getMillinerBaseUrl() +
                                         "media/${exchangeProperty.sourceField}/version?connectionClose=true"
                                     ).endChoice();
-
-        from("{{file.stream}}")
-                .routeId("FcrepoIndexerFile")
-
-                // Parse the event into a POJO.
-                .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
-                // Extract relevant data from the event.
-                .setProperty("event").simple("${body}")
-                .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
-                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
-                .setProperty("fedora").simple("${exchangeProperty.event.attachment.content.fedoraUri}")
-                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
-                .log(DEBUG, LOGGER, "Received File event for UUID (${exchangeProperty.uuid}), drupal URL (" +
-                        "${exchangeProperty.drupal}), fedoraURL (${exchangeProperty.fedora}), fedora base URL " +
-                        "(${exchangeProperty.fedoraBaseUrl})")
-
-                // Prepare the message.
-                .removeHeaders("*", "Authorization")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple(
-                    "{\"drupal\": \"${exchangeProperty.drupal}\", \"fedora\": \"${exchangeProperty.fedora}\"}")
-                )
-
-                // Index the file in Gemini.
-                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}?connectionClose=true");
 
         from("{{file.external.stream}}")
                 .routeId("FcrepoIndexerExternalFile")
