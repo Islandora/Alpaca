@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"ca.islandora.alpaca.connector.derivative"},{"l":"ca.islandora.alpaca.http.client"},{"l":"ca.islandora.alpaca.indexing.fcrepo"},{"l":"ca.islandora.alpaca.indexing.triplestore"},{"l":"ca.islandora.alpaca.support.event"}]
