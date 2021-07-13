@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+       xsi:schemaLocation="
+       http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+  <!-- OSGI blueprint property placeholder -->
+  <cm:property-placeholder id="properties" persistent-id="ca.islandora.alpaca.connector.derivative" update-strategy="reload" >
+    <cm:default-properties>
+      <cm:property name="error.maxRedeliveries" value="5"/>
+      <cm:property name="in.stream" value="seda:islandora-connector.derivative-index"/>
+      <cm:property name="derivative.service.url" value="http://example.org/derivative/convert"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="requestConfigConfigurer" class="ca.islandora.alpaca.connector.derivative.RequestConfigConfigurer">
+    <property name="connectionRequestTimeoutMs" value="10000"/>
+    <property name="connectTimeoutMs" value="10000"/>
+    <property name="socketTimeoutMs" value="10000"/>
+  </bean>
+
+  <bean id="http" class="org.apache.camel.component.http4.HttpComponent">
+    <property name="httpClientConfigurer" ref="requestConfigConfigurer"/>
+  </bean>
+
+  <bean id="https" class="org.apache.camel.component.http4.HttpComponent">
+    <property name="httpClientConfigurer" ref="requestConfigConfigurer"/>
+  </bean>
+
+  <camelContext id="IslandoraTriplestoreIndexer" xmlns="http://camel.apache.org/schema/blueprint">
+    <package>ca.islandora.alpaca.connector.derivative</package>
+  </camelContext>
+
+</blueprint>

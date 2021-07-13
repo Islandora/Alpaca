@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    braches: [dev, main ]
+  pull_request:
+    branches: [dev, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: build_dir
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+          check-latest: true
+      - name: Gradle Build
+        run: |
+          cd $GITHUB_WORKSPACE/build_dir
+          ./gradlew --stacktrace build
+      - name: Gradle Docs
+        run: |
+          cd $GITHUB_WORKSPACE/build_dir
+          ./gradlew --stacktrace docs
+      - name: Codecov report
+        run: |
+          cd $GITHUB_WORKSPACE/build_dir
+          ./gradlew codeCoverageReport
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+      - name: Upload Archives
+        run: |
+          cd $GITHUB_WORKSPACE/build_dir
+          ./gradlew uploadArchives -PossrhUsername='${{ secrets.SONATYPE_USERNAME }}' -PossrhPassword='${{ secrets.SONATYPE_PASSWORD}}'
+        if: steps.extract_branch.outputs.branch == 'main'

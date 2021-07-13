@@ -10,3 +10,5 @@ target
 build
 .DS_Store
 bin/
+.bloop/
+.metals/

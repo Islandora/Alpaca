@@ -160,46 +160,6 @@ public class FcrepoIndexerTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testFile() throws Exception {
-        final String route = "FcrepoIndexerFile";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith("direct:start");
-                mockEndpointsAndSkip(
-                    "http://localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
-                );
-            }
-        });
-        context.start();
-
-        // Assert we PUT to gemini with creds.
-        final MockEndpoint gemini = getMockEndpoint(
-            "mock:http:localhost:8000/gemini/148dfe8f-9711-4263-97e7-3ef3fb15864f"
-        );
-        gemini.expectedMessageCount(1);
-        gemini.expectedHeaderReceived("Authorization", "Bearer islandora");
-        gemini.expectedHeaderReceived(Exchange.CONTENT_TYPE, "application/json");
-        gemini.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
-        gemini.expectedHeaderReceived(FcrepoIndexer.FEDORA_HEADER, "http://localhost:8080/fcrepo/rest/file");
-        gemini.allMessages().body().startsWith(
-            "{\"drupal\": \"http://localhost:8000/_flysystem/fedora/2018-08/Voltaire-Records1.jpg\", \"fedora\": " +
-            "\"http://localhost:8080/fcrepo/rest/2018-08/Voltaire-Records1.jpg\"}"
-        );
-
-        // Send an event.
-        template.send(exchange -> {
-            exchange.getIn().setHeader("Authorization", "Bearer islandora");
-            exchange.getIn().setBody(
-                    IOUtils.toString(loadResourceAsStream("FileAS2Event.jsonld"), "UTF-8"),
-                    String.class
-            );
-        });
-
-        assertMockEndpointsSatisfied();
-    }
-
-    @Test
     public void testExternalFile() throws Exception {
         final String route = "FcrepoIndexerExternalFile";
         context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
