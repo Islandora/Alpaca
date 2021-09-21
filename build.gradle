@@ -151,7 +151,7 @@ subprojects {
                 packaging 'jar'
                 url project.homepage
                 inceptionYear project.inceptionYear
-                name 'Islandora CLAW :: Alpaca'
+                name 'Islandora 2.0.0 :: Alpaca'
                 description 'Event driven middleware based on Apache Camel that synchronizes a Fedora 4 with Drupal.'
 
                 organization {
@@ -160,9 +160,9 @@ subprojects {
                 }
 
                 scm {
-                    connection 'scm:git:git@github.com:Islandora-CLAW/Alpaca.git'
-                    developerConnection 'scm:git:git@github.com:Islandora-CLAW/Alpaca.git'
-                    url 'https://github.com/islandora-CLAW/Alpaca'
+                    connection 'scm:git:git@github.com:Islandora/Alpaca.git'
+                    developerConnection 'scm:git:git@github.com:Islandora/Alpaca.git'
+                    url 'https://github.com/islandora/Alpaca'
                     tag 'HEAD'
                 }
 
