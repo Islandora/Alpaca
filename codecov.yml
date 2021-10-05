@@ -1,11 +1,10 @@
 codecov:
   # Default branch for CodeCov information
-  branch: master
+  branch: 1.x
 
 coverage:
   status:
     project:
       default:
-        # Only against master
         branches:
-        - master
+        - 1.x
