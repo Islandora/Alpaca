@@ -151,7 +151,7 @@ subprojects {
                 packaging 'jar'
                 url project.homepage
                 inceptionYear project.inceptionYear
-                name 'Islandora 2.0.0 :: Alpaca'
+                name 'Islandora :: Alpaca'
                 description 'Event driven middleware based on Apache Camel that synchronizes a Fedora 4 with Drupal.'
 
                 organization {
