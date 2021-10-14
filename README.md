@@ -20,7 +20,7 @@ Alpaca is made up of several services, each of these can be enabled or disabled 
 
 Alpaca takes an external file to configure its behaviour.
 
-Look at the `example.properties` file to see some example settings.
+Look at the [`example.properties`](example.properties) file to see some example settings.
 
 The properties are:
 
