@@ -10,9 +10,15 @@ Event-driven middleware based on [Apache Camel](http://camel.apache.org/) that s
 
 ## Requirements
 
-This project requires Java 11 and can be built with [Gradle](https://gradle.org). To build and test locally, use `./gradlew build`.
+This project requires Java 11 and can be built with [Gradle](https://gradle.org). 
 
-The main is available in the `islandora-alpaca-app/build/libs` directory, with the classifier `-all`.
+To build and test locally, clone this repository and then change into the Alpaca directory. 
+Next run `./gradlew clean build shadowJar`.
+
+The main executable jar is available in the `islandora-alpaca-app/build/libs` directory, with the classifier `-all`.
+
+ie.
+> islandora-alpaca-app/build/libs/islandora-alpaca-app-2.0.0-all.jar
 
 ## Configuration
 
@@ -68,7 +74,7 @@ fcrepo.indexer.media=queue:islandora-indexing-fcrepo-media
 fcrepo.indexer.external=queue:islandora-indexing-fcrepo-file-external
 ```
 These define the various queues to listen on for the indexing/deletion 
-messages. These should match your Islandora instance.
+messages. The part after `queue:` should match your Islandora instance "Actions".
 ```
 fcrepo.indexer.milliner.baseUrl=http://localhost:8000/milliner
 ```
@@ -90,7 +96,7 @@ triplestore.index.stream=queue:islandora-indexing-triplestore-index
 triplestore.delete.stream=queue:islandora-indexing-triplestore-delete
 ```
 These define the various queues to listen on for the indexing/deletion
-messages. These should match your Islandora instance.
+messages. The part after `queue:` should match your Islandora instance "Actions".
 ```
 triplestore.baseUrl=http://localhost:8080/bigdata/namespace/kb/sparql
 ```
@@ -111,8 +117,8 @@ This defines if the `item` service is enabled.
 ```
 derivative.<item>.in.stream=queue:islandora-item-connector.index
 ```
-This is the input queue for the derivative microservice. 
-It should match your Islandora instance.
+This is the input queue for the derivative microservice.
+The part after `queue:` should match your Islandora instance "Actions".
 ```
 derivative.<item>.service.url=http://example.org/derivative/convert
 ```
@@ -133,8 +139,26 @@ derivative.fits.service.url=http://127.0.0.1:8000/crayfits
 
 ## Deploying/Running
 
-To start Alpaca using an external properties file located at `/opt/my.properties`, I
-would run:
+You can see the options by passing the `-h|--help` flag
+```shell
+> java -jar  islandora-alpaca-app/build/libs/islandora-alpaca-app-2.0.0-all.jar -h
+Usage: alpaca [-hV] [-c=<configurationFilePath>]
+  -h, --help      Show this help message and exit.
+  -V, --version   Print version information and exit.
+  -c, --config=<configurationFilePath>
+                  The path to the configuration file
+```
+
+Using the `-V|--version` flag will just return the current version of the application.
+```shell
+> java -jar  islandora-alpaca-app/build/libs/islandora-alpaca-app-2.0.0-all.jar -v
+2.0.0
+```
+
+To start Alpaca you would pass the external property file with the `-c|--config` flag. 
+
+For example if you are using an external properties file located at `/opt/my.properties`, 
+you would run:
 
 ```shell
 java -jar islandora-alpaca-app-2.0.0-all.jar -c /opt/my.properties
@@ -142,16 +166,17 @@ java -jar islandora-alpaca-app-2.0.0-all.jar -c /opt/my.properties
 
 ## Debugging/Troubleshooting
 
-Logging is done to the console, and starts with INFO. To get more verbose logging you 
+Logging is done to the console, and defaults to the INFO level. To get more verbose logging you 
 can use the Java property `islandora.alpaca.log`
 
+i.e.
 ```shell
 java -Dislandora.alpaca.log=DEBUG -jar islandora-alpaca-app-2.0.0-all.jar -c /opt/my.properties
 ```
 
 ## Documentation
 
-Further documentation for this module is available on the [Islandora 8 documentation site](https://islandora.github.io/documentation/).
+Further documentation for this module is available on the [Islandora documentation site](https://islandora.github.io/documentation/).
 
 ## Troubleshooting/Issues
 
