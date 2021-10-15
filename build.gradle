@@ -101,8 +101,8 @@ subprojects {
 
     license {
         include "**/*.java"
-        // Ignore copied Sparql processors from fcrepo-camel
-        exclude "**/indexing/triplestore/processors/*.java"
+        // Ignore copied Sparql processors and ConditionOnProperty classes from fcrepo-camel and fcrepo-camel-toolbox
+        excludes(["**/indexing/triplestore/processors/*.java", "**/support/config/ConditionOnProperty*.java"])
         header rootProject.file('gradle/license/header.txt')
         mapping {
             java = 'SLASHSTAR_STYLE'

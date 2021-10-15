@@ -32,7 +32,7 @@ import org.apache.camel.NoSuchHeaderException;
 import org.apache.camel.Processor;
 
 /**
- * Represends a message processor that deletes objects from an
+ * Represents a message processor that deletes objects from an
  * external triplestore.
  *
  * @author Aaron Coburn
