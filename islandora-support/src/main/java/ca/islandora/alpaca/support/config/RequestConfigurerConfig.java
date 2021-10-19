@@ -17,7 +17,10 @@
  */
 package ca.islandora.alpaca.support.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.apache.camel.component.http.HttpComponent;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RequestConfigurerConfig {
+
+    private static final Logger LOGGER = getLogger(RequestConfigurerConfig.class);
 
     public static final String REQUEST_CONFIGURER_ENABLED_PROPERTY = "request.configurer.enabled";
     public static final String REQUEST_TIMEOUT_PROPERTY = "request.timeout";
@@ -53,6 +58,8 @@ public class RequestConfigurerConfig {
      */
     private HttpComponent configComponent(final HttpComponent component) {
         if (enabled) {
+            LOGGER.debug("Request configurer enabled, setting request.timeout {}, connection.timeout {}, socket" +
+                    ".timeout {}", requestTimeout, connectTimeout, socketTimeout);
             component.setConnectionRequestTimeout(requestTimeout);
             component.setConnectTimeout(connectTimeout);
             component.setSocketTimeout(socketTimeout);
