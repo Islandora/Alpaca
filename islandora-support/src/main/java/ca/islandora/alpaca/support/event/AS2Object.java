@@ -24,7 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ca.islandora.alpaca.support.exceptions.MissingCanonicalUrlException;
 import ca.islandora.alpaca.support.exceptions.MissingDescribesUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonUrlException;
 import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingPropertyException;
 
 /**
  * POJO for a user performing an action.  Part of a AS2Event.
@@ -113,9 +115,17 @@ public class AS2Object {
      * @throws MissingJsonldUrlException
      *   When there is no url with application/ld+json mimetype
      */
-    public AS2Url getJsonldUrl() throws MissingJsonldUrlException {
-        return Arrays.stream(url).filter(a -> a.getMediaType().equalsIgnoreCase("application/ld+json"))
-                .findFirst().orElseThrow(MissingJsonldUrlException::new);
+    public AS2Url getJsonldUrl() throws MissingPropertyException {
+        return getObjectUrl("application/ld+json", null, new MissingJsonldUrlException());
+    }
+
+    /**
+     * @return the Canonical Url
+     * @throws MissingJsonUrlException
+     *   When there is no url with rel = canonical and text/html mimetype
+     */
+    public AS2Url getJsonUrl() throws MissingPropertyException {
+        return getObjectUrl("application/json", null, new MissingJsonUrlException());
     }
 
     /**
@@ -123,10 +133,8 @@ public class AS2Object {
      * @throws MissingCanonicalUrlException
      *   When there is no url with rel = canonical and text/html mimetype
      */
-    public AS2Url getCanonicalUrl() throws MissingCanonicalUrlException {
-        return Arrays.stream(url).filter(a -> a.getMediaType().equalsIgnoreCase("text/html") &&
-                a.getRel().equalsIgnoreCase("canonical")).findFirst()
-                .orElseThrow(MissingCanonicalUrlException::new);
+    public AS2Url getCanonicalUrl() throws MissingPropertyException {
+        return getObjectUrl(null, "canonical", new MissingCanonicalUrlException());
     }
 
     /**
@@ -134,8 +142,42 @@ public class AS2Object {
      * @throws MissingDescribesUrlException
      *   When there is no url with rel = describes
      */
-    public AS2Url getDescribesUrl() throws MissingDescribesUrlException {
-        return Arrays.stream(url).filter(a ->a.getRel().equalsIgnoreCase("describes")).findFirst()
-                .orElseThrow(MissingDescribesUrlException::new);
+    public AS2Url getDescribesUrl() throws MissingPropertyException {
+        return getObjectUrl(null, "describes", new MissingDescribesUrlException());
+    }
+
+    /**
+     * Utility to filter AS2Urls, filters by mimetype or rel or both
+     * @param mimetype
+     *   The mimetype to filter on or null for none.
+     * @param rel
+     *   The rel to filter on or null for none.
+     * @param e
+     *   The exception to throw if we can't find a matching url
+     * @return
+     *   The first matching AS2Url.
+     * @throws MissingPropertyException
+     *   If no matching url can be found.
+     */
+    private AS2Url getObjectUrl(final String mimetype, final String rel, final MissingPropertyException e) throws
+            MissingPropertyException {
+        if (url == null) {
+            throw e;
+        }
+        final var filterUrl = Arrays.stream(url).filter(a -> {
+            if (mimetype != null) {
+                if (a.getMediaType() == null || !a.getMediaType().equalsIgnoreCase(mimetype)) {
+                    return false;
+                }
+            }
+            if (rel != null) {
+                return a.getRel() != null && a.getRel().equalsIgnoreCase(rel);
+            }
+            return true;
+        }).findFirst().orElse(null);
+        if (filterUrl == null) {
+            throw e;
+        }
+        return filterUrl;
     }
 }

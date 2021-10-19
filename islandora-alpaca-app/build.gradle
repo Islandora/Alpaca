@@ -18,9 +18,6 @@ dependencies {
 
     runtimeOnly "ch.qos.logback:logback-classic:${versions.logback}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
 
 sourceSets {

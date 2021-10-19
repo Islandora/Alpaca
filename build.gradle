@@ -5,6 +5,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0' apply(false)
 }
 
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 allprojects  {
     apply plugin: 'maven-publish'
     apply plugin: 'jacoco'
@@ -64,7 +67,7 @@ subprojects {
             javaxJms: '2.0.1',
             jena: '3.17.0',
             jsonSmart: '2.4.7',
-            junit5Api: '5.8.1',
+            junit4: '4.13.2',
             logback: '1.2.6',
             picocli: '4.6.1',
             slf4j: '1.7.32',
@@ -207,8 +210,36 @@ subprojects {
     }
 
     tasks.named('test') {
-        useJUnitPlatform()
+        useJUnit()
     }
+
+    tasks.withType(Test) {
+        testLogging {
+            // set options for log level LIFECYCLE
+            events TestLogEvent.FAILED,
+                    TestLogEvent.PASSED,
+                    TestLogEvent.SKIPPED
+                    //TestLogEvent.STANDARD_OUT
+            exceptionFormat TestExceptionFormat.FULL
+            showExceptions true
+            showCauses true
+            showStackTraces true
+
+            // set options for log level DEBUG and INFO
+            debug {
+                events TestLogEvent.STARTED,
+                        TestLogEvent.FAILED,
+                        TestLogEvent.PASSED,
+                        TestLogEvent.SKIPPED,
+                        TestLogEvent.STANDARD_ERROR,
+                        TestLogEvent.STANDARD_OUT
+                exceptionFormat TestExceptionFormat.FULL
+            }
+            info.events = debug.events
+            info.exceptionFormat = debug.exceptionFormat
+        }
+    }
+
 }
 
 task docs(type: Javadoc) {

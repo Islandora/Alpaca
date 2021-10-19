@@ -20,7 +20,7 @@ package ca.islandora.alpaca.indexing.fcrepo;
 
 import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 
-import java.util.Properties;
+import java.util.List;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -29,9 +29,9 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.apache.commons.io.IOUtils;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +39,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+
+import ca.islandora.alpaca.support.config.ActivemqConfig;
 
 /**
  * @author dannylamb
@@ -63,23 +66,29 @@ public class FcrepoIndexerTest {
     public void testNode() throws Exception {
         final String route = "FcrepoIndexerNode";
 
+        final String nodeSubRoute = "FcrepoIndexerNodeIndex";
+
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
-            a.mockEndpointsAndSkip(
-                    "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d?connectionClose=true"
-            );
+            a.mockEndpointsAndSkip("broker:*");
+        });
+        AdviceWithRouteBuilder.adviceWith(context, nodeSubRoute, a -> {
+            a.mockEndpointsAndSkip("http://localhost?connectionClose=true");
         });
         context.start();
 
         // Assert we POST to milliner with creds.
-        final MockEndpoint milliner = (MockEndpoint) context.getEndpoint(
-            "mock:http:localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d"
+        final MockEndpoint milliner = context.getEndpoint(
+            "mock:http:localhost",
+                MockEndpoint.class
         );
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         milliner.expectedHeaderReceived("X-ISLANDORA-FEDORA-HEADER", "http://localhost:8080/fcrepo/rest/node");
+        milliner.expectedHeaderReceived(Exchange.HTTP_URI,
+                "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d");
 
         // Send an event.
         template.send(exchange -> {
@@ -96,24 +105,31 @@ public class FcrepoIndexerTest {
     @Test
     public void testNodeVersion() throws Exception {
         final String route = "FcrepoIndexerNode";
+        final String versionSubRoute = "FcrepoIndexerNodeVersion";
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
-            a.mockEndpointsAndSkip(
-                "http://localhost:8000/milliner/node/72358916-51e9-"
-                + "4712-b756-4b0404c91b/version?connectionClose=true"
-            );
+            a.mockEndpointsAndSkip("broker:*");
+        });
+        AdviceWithRouteBuilder.adviceWith(context, versionSubRoute, a -> {
+            a.mockEndpointsAndSkip("http://localhost?connectionClose=true");
         });
         context.start();
 
         // Assert we POST to milliner with creds.
-        final MockEndpoint milliner = (MockEndpoint) context.getEndpoint(
-                "mock:http:localhost:8000/milliner/"
-                + "node/72358916-51e9-4712-b756-4b0404c91b/version"
+        final MockEndpoint milliner = context.getEndpoint(
+                "mock:http:localhost",
+                MockEndpoint.class
         );
-        milliner.expectedMessageCount(1);
-        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/node/2?_format=jsonld");
-        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        milliner.expectedMessageCount(2);
+        milliner.expectedHeaderValuesReceivedInAnyOrder("Authorization", List.of(
+                "Bearer islandora", "Bearer islandora"));
+        milliner.expectedHeaderValuesReceivedInAnyOrder("Content-Location", List.of(
+                "http://localhost:8000/node/2?_format=jsonld", "http://localhost:8000/node/2?_format=jsonld"));
+        milliner.expectedHeaderValuesReceivedInAnyOrder(Exchange.HTTP_METHOD, List.of(
+                "POST", "POST"));
+        milliner.expectedHeaderValuesReceivedInAnyOrder(Exchange.HTTP_URI, List.of(
+                "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b/version",
+                "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b"));
 
         // Send an event.
         template.send(exchange -> {
@@ -132,19 +148,21 @@ public class FcrepoIndexerTest {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpointsAndSkip(
-                "http://localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d?connectionClose=true"
+                "http://localhost?connectionClose=true"
             );
         });
         context.start();
 
         // Assert we DELETE to milliner with creds.
         final MockEndpoint milliner = (MockEndpoint) context.getEndpoint(
-            "mock:http:localhost:8000/milliner/node/72358916-51e9-4712-b756-4b0404c91b1d"
+            "mock:http:localhost"
         );
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "DELETE");
         milliner.expectedHeaderReceived("X-ISLANDORA-FEDORA-HEADER", "http://localhost:8080/fcrepo/rest/node");
+        milliner.expectedHeaderReceived(Exchange.HTTP_URI, "http://localhost:8000/milliner/node/72358916-51e9-4712" +
+                "-b756-4b0404c91b1d");
 
         // Send an event.
         template.send(exchange -> {
@@ -164,14 +182,14 @@ public class FcrepoIndexerTest {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpointsAndSkip(
-                "http://localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f?connectionClose=true"
+                "http://localhost?connectionClose=true"
             );
         });
         context.start();
 
         // Assert we POST to Milliner with creds.
         final MockEndpoint milliner = (MockEndpoint) context.getEndpoint(
-            "mock:http:localhost:8000/milliner/external/148dfe8f-9711-4263-97e7-3ef3fb15864f"
+            "mock:http:localhost"
         );
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
@@ -181,6 +199,8 @@ public class FcrepoIndexerTest {
         );
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         milliner.expectedHeaderReceived("X-ISLANDORA-FEDORA-HEADER", "http://localhost:8080/fcrepo/rest/externalFile");
+        milliner.expectedHeaderReceived(Exchange.HTTP_URI, "http://localhost:8000/milliner/external/148dfe8f-9711" +
+                "-4263-97e7-3ef3fb15864f");
 
         // Send an event.
         template.send(exchange -> {
@@ -197,20 +217,21 @@ public class FcrepoIndexerTest {
     @Test
     public void testMedia() throws Exception {
         final String route = "FcrepoIndexerMedia";
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
-            a.replaceFromWith("direct:start");
-            a.mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image?connectionClose=true");
-        });
+        final String mediaSubRoute = "FcrepoIndexerMediaIndex";
+        AdviceWithRouteBuilder.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
+        AdviceWithRouteBuilder.adviceWith(context, mediaSubRoute,
+                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true"));
+
         context.start();
 
         // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = (MockEndpoint) context
-                .getEndpoint("mock:http:localhost:8000/milliner/media/field_media_image");
+        final MockEndpoint milliner = context.getEndpoint("mock:http:localhost", MockEndpoint.class);
         milliner.expectedMessageCount(1);
         milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
         milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/media/6?_format=json");
         milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         milliner.expectedHeaderReceived("X-ISLANDORA-FEDORA-HEADER", "http://localhost:8080/fcrepo/rest/media");
+        milliner.expectedHeaderReceived(Exchange.HTTP_URI, "http://localhost:8000/milliner/media/field_media_image");
 
         // Send an event.
         template.send(exchange -> {
@@ -227,19 +248,32 @@ public class FcrepoIndexerTest {
     @Test
     public void testVersionMedia() throws Exception {
         final String route = "FcrepoIndexerMedia";
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
-            a.replaceFromWith("direct:start");
-            a.mockEndpointsAndSkip("http://localhost:8000/milliner/media/field_media_image/"
-            + "version?connectionClose=true");
-        });
+        final String versionSubRoute = "FcrepoIndexerMediaIndexVersion";
+        AdviceWithRouteBuilder.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
+        AdviceWithRouteBuilder.adviceWith(context, versionSubRoute,
+                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true"));
+
         context.start();
 
         // Assert we POST the event to milliner with creds.
-        final MockEndpoint milliner = (MockEndpoint) context.getEndpoint("mock:http:localhost:8000/milliner/media/"
-        + "field_media_image/version");
-        milliner.expectedHeaderReceived("Authorization", "Bearer islandora");
-        milliner.expectedHeaderReceived("Content-Location", "http://localhost:8000/media/7?_format=json");
-        milliner.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
+        final MockEndpoint milliner = context.getEndpoint("mock:http:localhost", MockEndpoint.class);
+        // Expect 2 messages as we send the normal and version messages to the same "endpoint" but different
+        // Exchange.HTTP_URIs
+        milliner.expectedMessageCount(2);
+        milliner.expectedHeaderValuesReceivedInAnyOrder("Authorization", List.of(
+                "Bearer islandora", "Bearer islandora"
+        ));
+        milliner.expectedHeaderValuesReceivedInAnyOrder("Content-Location", List.of(
+                "http://localhost:8000/media/7?_format=json",
+                "http://localhost:8000/media/7?_format=json"
+        ));
+        milliner.expectedHeaderValuesReceivedInAnyOrder(Exchange.HTTP_METHOD, List.of(
+                "POST", "POST"
+        ));
+        milliner.expectedHeaderValuesReceivedInAnyOrder(Exchange.HTTP_URI, List.of(
+                "http://localhost:8000/milliner/media/field_media_image/version",
+                "http://localhost:8000/milliner/media/field_media_image"
+        ));
 
         // Send an event.
         template.send(exchange -> {
@@ -253,21 +287,22 @@ public class FcrepoIndexerTest {
 
     @BeforeClass
     public static void setProperties() {
-        final Properties props = new Properties();
-        props.setProperty("error.maxRedeliveries", "1");
-        props.setProperty("node.stream", "seda:islandora-indexing-fcrepo-content");
-        props.setProperty("node.delete.stream", "seda:islandora-indexing-fcrepo-delete");
-        props.setProperty("file.stream", "seda:islandora-indexing-fcrepo-file");
-        props.setProperty("external.stream", "seda:islandora-indexing-fcrepo-file-external");
-        props.setProperty("media.stream", "seda:islandora-indexing-fcrepo-media");
-        props.setProperty("milliner.baseUrl", "http://localhost:8000/milliner/");
-        props.setProperty("fcrepo.indexer.fedoraHeader", "X-ISLANDORA-FEDORA-HEADER");
-        System.setProperties(props);
+        System.setProperty("error.maxRedeliveries", "1");
+        System.setProperty("fcrepo.indexer.enabled", "true");
+        System.setProperty("fcrepo.indexer.node", "topic:islandora-indexing-fcrepo-content");
+        System.setProperty("fcrepo.indexer.delete", "topic:islandora-indexing-fcrepo-delete");
+        System.setProperty("fcrepo.indexer.external", "topic:islandora-indexing-fcrepo-file-external");
+        System.setProperty("fcrepo.indexer.media", "topic:islandora-indexing-fcrepo-media");
+        System.setProperty("fcrepo.indexer.milliner.baseUrl", "http://localhost:8000/milliner/");
+        System.setProperty("fcrepo.indexer.fedoraHeader", "X-ISLANDORA-FEDORA-HEADER");
     }
 
     @Configuration
-    @ComponentScan(resourcePattern = "**/FcrepoIndexer*.class")
-    static class ContextConfig {
+    @ComponentScan(basePackageClasses = {FcrepoIndexerOptions.class, ActivemqConfig.class},
+            useDefaultFilters = false,
+            includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                    classes = {FcrepoIndexerOptions.class, ActivemqConfig.class}))
+    static class ContextConfig extends CamelConfiguration {
 
         @Bean
         public RouteBuilder route() {

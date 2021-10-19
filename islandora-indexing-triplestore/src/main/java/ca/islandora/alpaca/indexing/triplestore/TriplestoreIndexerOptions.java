@@ -17,7 +17,6 @@
  */
 package ca.islandora.alpaca.indexing.triplestore;
 
-import org.apache.camel.component.http.HttpComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -82,23 +81,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    */
   public String getTriplestoreBaseUrl() {
     // Append "connectionClose=true" to force closing connections immediately
-    return triplestoreBaseUrl + "?connectionClose=true";
-  }
-
-  /**
-   * @return bean for the http endpoint.
-   */
-  @Bean(name = "http")
-  public HttpComponent http() {
-    return new HttpComponent();
-  }
-
-  /**
-   * @return bean for the https endpoint.
-   */
-  @Bean(name = "https")
-  public HttpComponent https() {
-    return new HttpComponent();
+    return triplestoreBaseUrl + (triplestoreBaseUrl.indexOf('?') > -1 ? '&' : '?') +  "connectionClose=true";
   }
 
   /**

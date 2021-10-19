@@ -116,14 +116,19 @@ public class DerivativeConnectorTest {
     @ComponentScan(resourcePattern = "**/Derivative*.class")
     static class ContextConfig extends CamelConfiguration {
 
+    }
+
+    @Configuration
+    @ComponentScan(resourcePattern = "**/Derivative*.class")
+    static class InternalOptions {
+
         @Autowired
         private DerivativeOptions config;
 
         @Bean
         public RouteBuilder route() {
-            return new DerivativeConnector("testRoutes", "direct:input",
-                    "direct:output", config);
+            return new DerivativeConnector("testRoutes", "direct:start",
+                    "http://example.org/derivative/convert", config);
         }
-
     }
 }

@@ -19,6 +19,7 @@
 package ca.islandora.alpaca.indexing.triplestore;
 
 import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.apache.camel.test.junit4.TestSupport.assertIsInstanceOf;
 import static org.apache.camel.test.junit4.TestSupport.assertPredicate;
@@ -27,7 +28,6 @@ import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
@@ -38,6 +38,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
@@ -47,12 +48,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import com.jayway.jsonpath.JsonPathException;
+import ca.islandora.alpaca.support.config.ActivemqConfig;
+import ca.islandora.alpaca.support.exceptions.MissingCanonicalUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
 
 /**
  * @author dannylamb
@@ -104,7 +108,7 @@ public class TriplestoreIndexerTest {
     }
 
     @Test
-    public void testParseUrlDiesOnMalformed() throws Exception {
+    public void testParseUrlDiesOnNoJsonld() throws Exception {
         final String route = "IslandoraTriplestoreIndexerParseUrl";
 
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
@@ -115,20 +119,35 @@ public class TriplestoreIndexerTest {
 
         resultEndpoint.expectedMessageCount(0);
 
-        // Make sure it dies if the jsonpath fails.
-        try {
-            template.sendBody(
-                    IOUtils.toString(loadResourceAsStream("AS2EventNoUrls.jsonld"), "UTF-8"));
-        } catch (final CamelExecutionException e) {
-            assertIsInstanceOf(JsonPathException.class, e.getCause().getCause());
-        }
-
         // Make sure it dies if you can't extract the jsonld url from the event.
         try {
             template.sendBody(
                     IOUtils.toString(loadResourceAsStream("AS2EventNoJsonldUrl.jsonld"), "UTF-8"));
         } catch (final CamelExecutionException e) {
-            assertIsInstanceOf(RuntimeException.class, e.getCause());
+            assertIsInstanceOf(MissingJsonldUrlException.class, e.getCause());
+        }
+
+        resultEndpoint.assertIsSatisfied();
+    }
+
+    @Test
+    public void testParseUrlDiesOnNoCanonical() throws Exception {
+        final String route = "IslandoraTriplestoreIndexerParseUrl";
+
+        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+            a.replaceFromWith("direct:start");
+            a.weaveAddLast().to(resultEndpoint);
+        });
+        context.start();
+
+        resultEndpoint.expectedMessageCount(0);
+
+        // Make sure it dies if you can't extract the jsonld url from the event.
+        try {
+            template.sendBody(
+                    IOUtils.toString(loadResourceAsStream("AS2EventNoCanonicalUrl.jsonld"), UTF_8));
+        } catch (final CamelExecutionException e) {
+            assertIsInstanceOf(MissingCanonicalUrlException.class, e.getCause());
         }
 
         resultEndpoint.assertIsSatisfied();
@@ -148,7 +167,7 @@ public class TriplestoreIndexerTest {
                         exchange.getIn().removeHeaders("*");
                         exchange.getIn().setHeader("Content-Type", "application/ld+json");
                         exchange.getIn().setBody(
-                                IOUtils.toString(loadResourceAsStream("node.jsonld"), "UTF-8"),
+                                IOUtils.toString(loadResourceAsStream("node.jsonld"), UTF_8),
                                 String.class);
                     });
 
@@ -168,20 +187,20 @@ public class TriplestoreIndexerTest {
                 subject + " <http://schema.org/dateModified> \"2017-01-30T14:35:57+00:00\" ."
         );
 
-        final MockEndpoint endpoint = (MockEndpoint) context
-                .getEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
+        final MockEndpoint endpoint = (MockEndpoint) context.
+                getEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         endpoint.expectedHeaderReceived(CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
-        endpoint.allMessages().body().startsWith("update=" + encode(responsePrefix, "UTF-8"));
-        endpoint.allMessages().body().endsWith(encode("\n}", "UTF-8"));
+        endpoint.allMessages().body().startsWith("update=" + encode(responsePrefix, UTF_8));
+        endpoint.allMessages().body().endsWith(encode("\n}", UTF_8));
         for (final String triple : triples) {
-            endpoint.expectedBodyReceived().body().contains(encode(triple, "UTF-8"));
+            endpoint.expectedBodyReceived().body().contains(encode(triple, UTF_8));
         }
 
         template.send(exchange -> {
-                exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"));
+                exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), UTF_8));
         });
 
         endpoint.assertIsSatisfied();
@@ -193,6 +212,7 @@ public class TriplestoreIndexerTest {
 
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
+            a.mockEndpoints("broker:*");
             a.mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true");
         });
         context.start();
@@ -204,11 +224,11 @@ public class TriplestoreIndexerTest {
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
         endpoint.expectedHeaderReceived(CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
         endpoint.allMessages().body().startsWith(
-                "update=" + encode("DELETE WHERE { <http://localhost:8000/node/1> ?p ?o }", "UTF-8")
+                "update=" + encode("DELETE WHERE { <http://localhost:8000/node/1> ?p ?o }", UTF_8)
         );
 
         template.send(exchange -> {
-            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), "UTF-8"));
+            exchange.getIn().setBody(IOUtils.toString(loadResourceAsStream("AS2Event.jsonld"), UTF_8));
         });
 
         endpoint.assertIsSatisfied();
@@ -216,17 +236,19 @@ public class TriplestoreIndexerTest {
 
     @BeforeClass
     public static void setProperties() {
-        final Properties props = new Properties();
-        props.setProperty("error.maxRedeliveries", "1");
-        props.setProperty("index.stream", "activemq:queue:islandora-indexing-triplestore-index");
-        props.setProperty("delete.stream", "activemq:queue:islandora-indexing-triplestore-delete");
-        props.setProperty("triplestore.baseUrl", "http://localhost:8080/bigdata/namespace/kb/sparql");
-        System.setProperties(props);
+        System.setProperty("error.maxRedeliveries", "1");
+        System.setProperty("triplestore.indexer.enabled", "true");
+        System.setProperty("triplestore.index.stream", "topic:islandora-indexing-triplestore-index");
+        System.setProperty("triplestore.delete.stream", "topic:islandora-indexing-triplestore-delete");
+        System.setProperty("triplestore.baseUrl", "http://localhost:8080/bigdata/namespace/islandora/sparql");
     }
 
     @Configuration
-    @ComponentScan(resourcePattern = "**/TriplestoreIndexer*.class")
-    static class ContextConfig {
+    @ComponentScan(basePackageClasses = {TriplestoreIndexerOptions.class, ActivemqConfig.class},
+        useDefaultFilters = false,
+        includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+        classes = {TriplestoreIndexerOptions.class, ActivemqConfig.class}))
+    static class ContextConfig extends CamelConfiguration {
 
         @Bean
         public RouteBuilder route() {

@@ -7,7 +7,6 @@ dependencies {
     implementation "javax.inject:javax.inject:${versions.javaxInject}"
     implementation "org.apache.camel:camel-activemq:${versions.camel}"
     implementation "org.apache.camel:camel-core:${versions.camel}"
-    implementation "org.apache.camel:camel-http:${versions.camel}"
     implementation "org.apache.camel:camel-jackson:${versions.camel}"
     implementation "org.apache.camel:camel-jsonpath:${versions.camel}"
     implementation "org.apache.camel:camel-spring-javaconfig:${versions.camel}"
@@ -22,7 +21,5 @@ dependencies {
 
     testImplementation "org.apache.camel:camel-test-spring:${versions.camel}"
     testImplementation "org.ow2.asm:asm-commons:${versions.asmCommons}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation "junit:junit:${versions.junit4}"
 }

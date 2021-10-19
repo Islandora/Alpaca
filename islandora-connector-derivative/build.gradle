@@ -19,16 +19,6 @@ dependencies {
 
     testImplementation "org.apache.camel:camel-test-spring:${versions.camel}"
     testImplementation "org.ow2.asm:asm-commons:${versions.asmCommons}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation "junit:junit:${versions.junit4}"
 }
 
-test {
-    testLogging {
-        // Uncomment the below line while debugging.
-        //events 'standard_out', 'standard_error'
-        exceptionFormat = 'full'
-        displayGranularity = 0
-    }
-}

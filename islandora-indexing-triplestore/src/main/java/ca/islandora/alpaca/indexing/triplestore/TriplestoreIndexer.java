@@ -94,8 +94,7 @@ public class TriplestoreIndexer extends RouteBuilder {
             .routeId("IslandoraTriplestoreIndexerParseUrl")
               // Custom exception handlers.  Don't retry if event is malformed.
               .onException(JsonPathException.class)
-                .useOriginalMessage()
-                .handled(true)
+                .maximumRedeliveries(0)
                 .log(
                    ERROR,
                    LOGGER,
@@ -103,8 +102,7 @@ public class TriplestoreIndexer extends RouteBuilder {
                 )
                 .end()
               .onException(MissingPropertyException.class)
-                .useOriginalMessage()
-                .handled(true)
+                .maximumRedeliveries(0)
                 .log(
                    ERROR,
                    LOGGER,
@@ -112,8 +110,7 @@ public class TriplestoreIndexer extends RouteBuilder {
                 )
                 .end()
               .onException(MissingJsonldUrlException.class)
-                .useOriginalMessage()
-                .handled(true)
+                .maximumRedeliveries(0)
                 .log(
                         INFO,
                         LOGGER,
@@ -123,6 +120,8 @@ public class TriplestoreIndexer extends RouteBuilder {
               .process(ex -> {
                   // Parse the event message.
                   final String message = ex.getIn().getBody(String.class);
+
+                  LOGGER.trace("Triplestore ParseUrl incoming message is \n{}", message);
 
                   final AS2Event object = objectMapper.readValue(message, AS2Event.class);
 

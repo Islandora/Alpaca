@@ -18,17 +18,10 @@ dependencies {
 
     testImplementation "org.apache.camel:camel-test-spring:${versions.camel}"
     testImplementation "org.ow2.asm:asm-commons:${versions.asmCommons}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junit5Api}"
+    testImplementation "junit:junit:${versions.junit4}"
 
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
 
 test {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
-    testLogging {
-        // Uncomment the below line while debugging.
-        //events 'standard_out', 'standard_error'
-        exceptionFormat = 'full'
-        displayGranularity = 0
-    }
 }

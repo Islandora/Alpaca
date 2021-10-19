@@ -21,6 +21,7 @@ package ca.islandora.alpaca.indexing.fcrepo;
 import static org.apache.camel.LoggingLevel.DEBUG;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.TRACE;
 import static org.apache.camel.LoggingLevel.WARN;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.islandora.alpaca.support.event.AS2Event;
 import ca.islandora.alpaca.support.exceptions.MissingCanonicalUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonUrlException;
 import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
 
 /**
@@ -117,21 +119,29 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
                 .setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
+                .setBody(constant(null))
+
                 .multicast().parallelProcessing()
-                //pass it to milliner
-                .toD(config.getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
-                .choice()
-                        .when()
-                        .simple("${exchangeProperty.event.object.isNewVersion}")
-                                //pass it to milliner
-                                .log(DEBUG, LOGGER, "Create a new version")
-                                .toD(
-                                        config.getMillinerBaseUrl() +
-                                        "node/${exchangeProperty.uuid}/version?connectionClose=true"
-                                    ).endChoice();
+                    .to("seda:nodeIndex", "seda:nodeVersionIndex")
+                .end();
 
+        // Dynamic endpoints (ie. toD() ) use more resources if the dynamic part is specified in the actual toD(). By
+        // sending to the same hostname and passing the URI in the headers we can save those resources.
+        from("seda:nodeIndex")
+                .routeId("FcrepoIndexerNodeIndex")
+                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty" +
+                        ".uuid}"))
+                .toD("http://localhost?connectionClose=true");
 
+        from("seda:nodeVersionIndex")
+                .routeId("FcrepoIndexerNodeVersion")
+                .log(TRACE, LOGGER, "Node indexer version endpoint, isNewVersion is " +
+                        "(${exchangeProperty.event.object.isNewVersion}")
+                .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
+                    .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
+                    "node/${exchangeProperty.uuid}/version"))
+                    .toD("http://localhost?connectionClose=true")
+                .end();
 
         from(config.getNodeDelete())
                 .routeId("FcrepoIndexerDeleteNode")
@@ -159,23 +169,23 @@ public class FcrepoIndexer extends RouteBuilder {
                 .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
                 .setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
+                .setBody(constant(null))
 
                 // Remove the file from Gemini.
-                .toD(config.getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
+                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty.uuid}"))
+                .toD("http://localhost?connectionClose=true");
 
         from(config.getMediaIndex())
                 .routeId("FcrepoIndexerMedia")
-                .onException(MissingJsonldUrlException.class)
+                .onException(MissingJsonUrlException.class)
                     .useOriginalMessage()
                     .handled(true)
                     .log(
-                            DEBUG,
-                            LOGGER,
-                            "Media without JSON-LD url. This happens due to pre-upload by Drupal. Ignoring till the " +
-                                    "media is saved."
+                        WARN,
+                        LOGGER,
+                        "Could not locate the Json Url for the media, event could be pre-upload. Skipping processing."
                     )
-                    .end()
+                .end()
 
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -183,7 +193,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Extract relevant data from the event.
                 .setProperty("event").simple("${body}")
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
-                .setProperty("jsonUrl").simple("${exchangeProperty.event.object.getJsonldUrl().href}")
+                .setProperty("jsonUrl").simple("${exchangeProperty.event.object.getJsonUrl().href}")
                 .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
                 .log(DEBUG, LOGGER, "Received Media event for sourceField (${exchangeProperty.sourceField}), jsonld" +
                         " URL (${exchangeProperty.jsonUrl}), fedora Base URL (${exchangeProperty.fedoraBaseUrl})")
@@ -193,21 +203,30 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
                 .setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
+                .setBody(constant(null))
 
-                // Pass it to milliner.
-                .toD(config.getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}?connectionClose=true")
-                .choice()
-                        .when()
-                        .simple("${exchangeProperty.event.object.isNewVersion}")
-                                .setHeader("Content-Location", simple(
-                                        "${exchangeProperty.jsonUrl}"))
+                .multicast().parallelProcessing()
+                    .to("seda:mediaIndex", "seda:mediaVersionIndex")
+                .end();
 
-                                //pass it to milliner
-                                .toD(
-                                        config.getMillinerBaseUrl() +
-                                        "media/${exchangeProperty.sourceField}/version?connectionClose=true"
-                                    ).endChoice();
+        // Dynamic endpoints (ie. toD() ) use more resources if the dynamic part is specified in the actual toD(). By
+        // sending to the same hostname and passing the URI in the headers we can save those resources.
+        from("seda:mediaIndex")
+                .routeId("FcrepoIndexerMediaIndex")
+                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
+                        "media/${exchangeProperty.sourceField}"))
+                .toD("http://localhost?connectionClose=true");
+
+        from("seda:mediaVersionIndex")
+                .routeId("FcrepoIndexerMediaIndexVersion")
+                .log(TRACE, LOGGER, "Media indexer version endpoint, isNewVersion is " +
+                        "(${exchangeProperty.event.object.isNewVersion}")
+                .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
+                    //pass it to milliner
+                    .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
+                        "media/${exchangeProperty.sourceField}/version"))
+                    .toD("http://localhost?connectionClose=true")
+                .end();
 
         from(config.getExternalIndex())
                 .routeId("FcrepoIndexerExternalFile")
@@ -237,10 +256,12 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.drupal}"))
                 .setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
+                .setBody(constant(null))
 
                 // Pass it to milliner.
-                .toD(config.getMillinerBaseUrl() + "external/${exchangeProperty.uuid}?connectionClose=true");
+                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
+                        "external/${exchangeProperty.uuid}"))
+                .toD("http://localhost?connectionClose=true");
 
     }
 }
