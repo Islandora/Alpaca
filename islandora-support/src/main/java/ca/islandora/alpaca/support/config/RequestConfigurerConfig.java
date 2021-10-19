@@ -43,13 +43,13 @@ public class RequestConfigurerConfig {
     @Value("${" + REQUEST_CONFIGURER_ENABLED_PROPERTY + ":false}")
     private boolean enabled;
 
-    @Value("${" + REQUEST_TIMEOUT_PROPERTY + ":1000}")
+    @Value("${" + REQUEST_TIMEOUT_PROPERTY + ":-1}")
     private int requestTimeout;
 
-    @Value("${" + CONNECT_TIMEOUT_PROPERTY + ":1000}")
+    @Value("${" + CONNECT_TIMEOUT_PROPERTY + ":-1}")
     private int connectTimeout;
 
-    @Value("${" + SOCKET_TIMEOUT_PROPERTY + ":1000}")
+    @Value("${" + SOCKET_TIMEOUT_PROPERTY + ":-1}")
     private int socketTimeout;
 
     /**

@@ -137,6 +137,23 @@ derivative.fits.in.stream=queue:islandora-connector-fits
 derivative.fits.service.url=http://127.0.0.1:8000/crayfits
 ```
 
+### Customizing HTTP client timeouts
+
+You can alter the HTTP client from the defaults for its request, connection and socket timeouts.
+To do this you want to enable the request configurer.
+```shell
+request.configurer.enabled=true
+```
+
+Then set the next 3 timeouts (measured in milliseconds) to the desired timeout.
+```shell
+request.timeout=-1
+connection.timeout=-1
+socket.timeout=-1
+```
+
+The default for all three is `-1` which indicates no timeout.
+
 ## Deploying/Running
 
 You can see the options by passing the `-h|--help` flag
