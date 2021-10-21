@@ -41,6 +41,8 @@ public class FcrepoIndexerOptions extends PropertyConfig {
   private static final String FCREPO_INDEXER_EXTERNAL_INDEX = "fcrepo.indexer.external";
   private static final String FCREPO_INDEXER_MILLINER = "fcrepo.indexer.milliner.baseUrl";
   private static final String FCREPO_BASE_URI_HEADER_PROPERTY = "fcrepo.indexer.fedoraHeader";
+  private static final String FCREPO_INDEXER_CONCURRENT = "fcrepo.indexer.concurrent-consumers";
+  private static final String FCREPO_INDEXER_MAX_CONCURRENT = "fcrepo.indexer.max-concurrent-consumers";
 
   @Value("${" + FCREPO_INDEXER_NODE_INDEX + ":}")
   private String fcrepoNodeIndex;
@@ -60,6 +62,12 @@ public class FcrepoIndexerOptions extends PropertyConfig {
   @Value("${" + FCREPO_BASE_URI_HEADER_PROPERTY + ":X-Islandora-Fedora-Endpoint}")
   private String fcrepoFedoraUriHeader;
 
+  @Value("${" + FCREPO_INDEXER_CONCURRENT + ":-1}")
+  private int fcrepoConcurrentConsumers;
+
+  @Value("${" + FCREPO_INDEXER_MAX_CONCURRENT + ":-1}")
+  private int fcrepoMaxConcurrentConsumers;
+
   /**
    * Defines that Fedora indexer is only enabled if the appropriate property is set to "true".
    */
@@ -73,28 +81,39 @@ public class FcrepoIndexerOptions extends PropertyConfig {
    * @return the node index endpoint.
    */
   public String getNodeIndex() {
-    return JMS_ENDPOINT_NAME + ":" + fcrepoNodeIndex;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + fcrepoNodeIndex);
   }
 
   /**
    * @return the node delete endpoint.
    */
   public String getNodeDelete() {
-    return JMS_ENDPOINT_NAME + ":" + fcrepoNodeDelete;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + fcrepoNodeDelete);
   }
 
   /**
    * @return the media index endpoint.
    */
   public String getMediaIndex() {
-    return JMS_ENDPOINT_NAME + ":" + fcrepoMediaIndex;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + fcrepoMediaIndex);
   }
 
   /**
    * @return the external content index endpoint.
    */
   public String getExternalIndex() {
-    return JMS_ENDPOINT_NAME + ":" + fcrepoExternalIndex;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + fcrepoExternalIndex);
+  }
+
+  /**
+   * Utility to avoid passing variables each time.
+   * @param queueString
+   *   The topic/queue string to alter.
+   * @return
+   *   The altered topic/queue string.
+   */
+  private String addConcurrent(final String queueString) {
+    return super.addConcurrent(queueString, fcrepoConcurrentConsumers, fcrepoMaxConcurrentConsumers);
   }
 
   /**

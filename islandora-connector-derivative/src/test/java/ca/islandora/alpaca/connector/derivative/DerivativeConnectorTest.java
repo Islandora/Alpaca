@@ -27,7 +27,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
@@ -38,13 +37,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+
+import ca.islandora.alpaca.support.config.ActivemqConfig;
 
 /**
  * @author dannylamb
@@ -107,28 +108,17 @@ public class DerivativeConnectorTest {
     public static void beforeClass() {
         System.setProperty("derivative.systems.installed", "testRoutes");
         System.setProperty("derivative.testRoutes.enabled", "true");
-        System.setProperty("derivative.testRoutes.input", "direct:input");
-        System.setProperty("derivative.testRoutes.output", "direct:output");
+        System.setProperty("derivative.testRoutes.in.stream", "topic:input");
+        System.setProperty("derivative.testRoutes.service.url", "http://example.org/derivative/convert");
         System.setProperty("error.maxRedeliveries", "1");
     }
 
     @Configuration
-    @ComponentScan(resourcePattern = "**/Derivative*.class")
+    @ComponentScan(basePackageClasses = {DerivativeOptions.class, ActivemqConfig.class},
+            useDefaultFilters = false,
+            includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                    classes = {DerivativeOptions.class, ActivemqConfig.class}))
     static class ContextConfig extends CamelConfiguration {
 
-    }
-
-    @Configuration
-    @ComponentScan(resourcePattern = "**/Derivative*.class")
-    static class InternalOptions {
-
-        @Autowired
-        private DerivativeOptions config;
-
-        @Bean
-        public RouteBuilder route() {
-            return new DerivativeConnector("testRoutes", "direct:start",
-                    "http://example.org/derivative/convert", config);
-        }
     }
 }

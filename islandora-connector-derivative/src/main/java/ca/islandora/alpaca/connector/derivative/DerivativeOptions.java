@@ -49,6 +49,8 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
   private static final String DERIVATIVE_ENABLED_PROPERTY = "enabled";
   private static final String DERIVATIVE_INPUT_PROPERTY = "in.stream";
   private static final String DERIVATIVE_OUTPUT_PROPERTY = "service.url";
+  private static final String DERIVATIVE_CONCURRENT_PROPERTY = "concurrent-consumers";
+  private static final String DERIVATIVE_MAX_CONCURRENT_PROPERTY = "max-concurrent-consumers";
 
   @Autowired
   private Environment environment;
@@ -91,9 +93,14 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
       final var input = environment.getProperty(inputProperty(serviceName), "");
       final var output = environment.getProperty(outputProperty(serviceName), "");
       if (!input.isBlank() && !output.isBlank()) {
+        final int concurrentConsumers = environment.getProperty(concurrentConsumerProperty(serviceName),
+                Integer.class, -1);
+        final int maxConcurrentConsumers = environment.getProperty(maxConcurrentConsumerProperty(serviceName),
+                Integer.class, -1);
         try {
-          camelContext.addRoutes(new DerivativeConnector(serviceName, addBrokerName(input), output,
-                  this));
+          // Add concurrent/max-concurrent
+          final String finalInput = addConcurrent(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
+          camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, output, this));
         } catch (final Exception e) {
           e.printStackTrace();
         }
@@ -148,6 +155,24 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
    */
   private String outputProperty(final String systemName) {
     return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_OUTPUT_PROPERTY;
+  }
+
+  /**
+   * Return the expected concurrent consumers property.
+   * @param systemName the derivative system name
+   * @return the property
+   */
+  private String concurrentConsumerProperty(final String systemName) {
+    return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_CONCURRENT_PROPERTY;
+  }
+
+  /**
+   * Return the expected max-concurrent consumers property.
+   * @param systemName the derivative system name
+   * @return the property
+   */
+  private String maxConcurrentConsumerProperty(final String systemName) {
+    return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_MAX_CONCURRENT_PROPERTY;
   }
 
   @Override

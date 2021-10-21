@@ -44,7 +44,6 @@ public class ActivemqConfig extends PropertyConfig {
   public static final String JMS_BROKER_URL = "jms.brokerUrl";
   public static final String JMS_USERNAME = "jms.username";
   public static final String JMS_PASSWORD = "jms.password";
-  public static final String CONCURRENT_CONSUMERS = "jms.concurrent-consumers";
   public static final String CONNECTIONS = "jms.connections";
 
   @Value("${" + JMS_BROKER_URL + ":tcp://localhost:61616}")
@@ -55,9 +54,6 @@ public class ActivemqConfig extends PropertyConfig {
 
   @Value("${" + JMS_PASSWORD + ":#{null}}")
   private String jmsPassword;
-
-  @Value("${" + CONCURRENT_CONSUMERS + ":1}")
-  private int jmsConsumers;
 
   @Value("${" + CONNECTIONS + ":10}")
   private int jmsConnections;
@@ -90,13 +86,6 @@ public class ActivemqConfig extends PropertyConfig {
       return "";
     }
     return jmsPassword;
-  }
-
-  /**
-   * @return the number of jms consumers.
-   */
-  public int getJmsConsumers() {
-    return jmsConsumers;
   }
 
   /**
@@ -143,7 +132,6 @@ public class ActivemqConfig extends PropertyConfig {
   @Bean
   public JmsConfiguration jmsConfiguration(final PooledConnectionFactory connectionFactory) {
     final var configuration = new JmsConfiguration();
-    configuration.setConcurrentConsumers(getJmsConsumers());
     configuration.setConnectionFactory(connectionFactory);
     return configuration;
   }

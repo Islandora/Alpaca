@@ -10,9 +10,9 @@ Event-driven middleware based on [Apache Camel](http://camel.apache.org/) that s
 
 ## Requirements
 
-This project requires Java 11 and can be built with [Gradle](https://gradle.org). 
+This project requires Java 11 and can be built with [Gradle](https://gradle.org).
 
-To build and test locally, clone this repository and then change into the Alpaca directory. 
+To build and test locally, clone this repository and then change into the Alpaca directory.
 Next run `./gradlew clean build shadowJar`.
 
 The main executable jar is available in the `islandora-alpaca-app/build/libs` directory, with the classifier `-all`.
@@ -73,12 +73,19 @@ fcrepo.indexer.delete=queue:islandora-indexing-fcrepo-delete
 fcrepo.indexer.media=queue:islandora-indexing-fcrepo-media
 fcrepo.indexer.external=queue:islandora-indexing-fcrepo-file-external
 ```
-These define the various queues to listen on for the indexing/deletion 
+These define the various queues to listen on for the indexing/deletion
 messages. The part after `queue:` should match your Islandora instance "Actions".
 ```
 fcrepo.indexer.milliner.baseUrl=http://localhost:8000/milliner
 ```
 This defines the location of your Milliner microservice.
+```
+fcrepo.indexer.concurrent-consumers=1
+fcrepo.indexer.max-concurrent-consumers=1
+```
+These define the default number of concurrent consumers and maximum number of concurrent
+consumers working off your ActiveMQ instance.
+A value of `-1` means no setting is applied.
 
 ### islandora-indexing-triplestore
 
@@ -101,14 +108,21 @@ messages. The part after `queue:` should match your Islandora instance "Actions"
 triplestore.baseUrl=http://localhost:8080/bigdata/namespace/kb/sparql
 ```
 This defines the location of your triplestore's SPARQL update endpoint.
+```
+triplestore.indexer.concurrent-consumers=1
+triplestore.indexer.max-concurrent-consumers=1
+```
+These define the default number of concurrent consumers and maximum number of concurrent
+consumers working off your ActiveMQ instance.
+A value of `-1` means no setting is applied.
 
 ### islandora-connector-derivative
 
 This service is used to configure an external microservice. This service will deploy multiple copies of its routes
 with different configured inputs and outputs based on properties.
 
-The routes to be configured are defined with the property `derivative.systems.installed` which expects 
-a comma separated list. Each item in the list defines a new route and must also define 3 additional properties. 
+The routes to be configured are defined with the property `derivative.systems.installed` which expects
+a comma separated list. Each item in the list defines a new route and must also define 3 additional properties.
 
 ```
 derivative.<item>.enabled=true
@@ -123,6 +137,13 @@ The part after `queue:` should match your Islandora instance "Actions".
 derivative.<item>.service.url=http://example.org/derivative/convert
 ```
 This is the microservice URL to process the request.
+```
+derivative.<item>.concurrent-consumers=1
+derivative.<item>.max-concurrent-consumers=1
+```
+These define the default number of concurrent consumers and maximum number of concurrent
+consumers working off your ActiveMQ instance.
+A value of `-1` means no setting is applied.
 
 For example, with two services defined (houdini and crayfits) my configuration would have
 ```
@@ -131,10 +152,14 @@ derivative.systems.installed=houdini,fits
 derivative.houdini.enabled=true
 derivative.houdini.in.stream=queue:islandora-connector-houdini
 derivative.houdini.service.url=http://127.0.0.1:8000/houdini/convert
+derivative.houdini.concurrent-consumers=1
+derivative.houdini.max-concurrent-consumers=4
 
 derivative.fits.enabled=true
 derivative.fits.in.stream=queue:islandora-connector-fits
 derivative.fits.service.url=http://127.0.0.1:8000/crayfits
+derivative.fits.concurrent-consumers=2
+derivative.fits.max-concurrent-consumers=2
 ```
 
 ### Customizing HTTP client timeouts
@@ -172,9 +197,9 @@ Using the `-V|--version` flag will just return the current version of the applic
 2.0.0
 ```
 
-To start Alpaca you would pass the external property file with the `-c|--config` flag. 
+To start Alpaca you would pass the external property file with the `-c|--config` flag.
 
-For example if you are using an external properties file located at `/opt/my.properties`, 
+For example if you are using an external properties file located at `/opt/my.properties`,
 you would run:
 
 ```shell
@@ -183,7 +208,7 @@ java -jar islandora-alpaca-app-2.0.0-all.jar -c /opt/my.properties
 
 ## Debugging/Troubleshooting
 
-Logging is done to the console, and defaults to the INFO level. To get more verbose logging you 
+Logging is done to the console, and defaults to the INFO level. To get more verbose logging you
 can use the Java property `islandora.alpaca.log`
 
 i.e.

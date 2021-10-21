@@ -41,6 +41,8 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
   private static final String BASE_URL_PROPERTY = "triplestore.baseUrl";
   private static final String TRIPLESTORE_INDEX_QUEUE = "triplestore.index.stream";
   private static final String TRIPLESTORE_DELETE_QUEUE = "triplestore.delete.stream";
+  private static final String TRIPLESTORE_CONCURRENT = "triplestore.indexer.concurrent-consumers";
+  private static final String TRIPLESTORE_MAX_CONCURRENT = "triplestore.indexer.max-concurrent-consumers";
 
   @Value("${" + TRIPLESTORE_INDEX_QUEUE + ":}")
   private String jmsIndexStream;
@@ -50,6 +52,12 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
 
   @Value("${" + BASE_URL_PROPERTY + "}")
   private String triplestoreBaseUrl;
+
+  @Value("${" + TRIPLESTORE_CONCURRENT + ":-1}")
+  private int triplestoreConcurrent;
+
+  @Value("${" + TRIPLESTORE_MAX_CONCURRENT + ":-1}")
+  private int triplestoreMaxConcurrent;
 
   /**
    * Defines that triplestore indexer is only enabled if the appropriate property is set to "true".
@@ -65,7 +73,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    */
   public String getJmsIndexStream() {
     // Prepend the current broker name
-    return JMS_ENDPOINT_NAME + ":" + jmsIndexStream;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + jmsIndexStream);
   }
 
   /**
@@ -73,7 +81,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    */
   public String getJmsDeleteStream() {
     // Prepend the current broker name
-    return JMS_ENDPOINT_NAME + ":" + jmsDeleteStream;
+    return addConcurrent(JMS_ENDPOINT_NAME + ":" + jmsDeleteStream);
   }
 
   /**
@@ -82,6 +90,17 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
   public String getTriplestoreBaseUrl() {
     // Append "connectionClose=true" to force closing connections immediately
     return triplestoreBaseUrl + (triplestoreBaseUrl.indexOf('?') > -1 ? '&' : '?') +  "connectionClose=true";
+  }
+
+  /**
+   * Utility to avoid passing variables each time.
+   * @param queueString
+   *   The topic/queue string to alter.
+   * @return
+   *   The altered topic/queue string.
+   */
+  private String addConcurrent(final String queueString) {
+    return super.addConcurrent(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
   }
 
   /**

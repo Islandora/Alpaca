@@ -51,4 +51,35 @@ public abstract class PropertyConfig {
   public int getMaxRedeliveries() {
     return maxRedeliveries;
   }
+
+  /**
+   * Utility function to append concurrentConsumer variables.
+   * @param queueString
+   *   The original topic/queue string
+   * @param concurrentConsumers
+   *   The number of concurrent consumers. -1 means no setting.
+   * @param maxConcurrentConsumers
+   *   The max number of concurrent consumers. -1 means no setting.
+   * @return
+   *   The modified topic/queue string.
+   */
+  public String addConcurrent(final String queueString, final int concurrentConsumers,
+                                        final int maxConcurrentConsumers) {
+    final StringBuilder builder = new StringBuilder();
+    if (concurrentConsumers > 0) {
+      builder.append("concurrentConsumers=");
+      builder.append(concurrentConsumers);
+    }
+    if (maxConcurrentConsumers > 0) {
+      if (builder.length() > 0) {
+        builder.append("&");
+      }
+      builder.append("maxConcurrentConsumers=");
+      builder.append(maxConcurrentConsumers);
+    }
+    if (builder.length() > 0) {
+      return queueString + (queueString.contains("?") ? '&' : '?') + builder;
+    }
+    return queueString;
+  }
 }
