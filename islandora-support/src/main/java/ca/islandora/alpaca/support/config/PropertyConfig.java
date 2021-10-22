@@ -53,7 +53,7 @@ public abstract class PropertyConfig {
   }
 
   /**
-   * Utility function to append concurrentConsumer variables.
+   * Utility function to append various JMS options like concurrentConsumer variables.
    * @param queueString
    *   The original topic/queue string
    * @param concurrentConsumers
@@ -63,8 +63,8 @@ public abstract class PropertyConfig {
    * @return
    *   The modified topic/queue string.
    */
-  public String addConcurrent(final String queueString, final int concurrentConsumers,
-                                        final int maxConcurrentConsumers) {
+  public String addJmsOptions(final String queueString, final int concurrentConsumers,
+                              final int maxConcurrentConsumers) {
     final StringBuilder builder = new StringBuilder();
     if (concurrentConsumers > 0) {
       builder.append("concurrentConsumers=");
@@ -81,5 +81,28 @@ public abstract class PropertyConfig {
       return queueString + (queueString.contains("?") ? '&' : '?') + builder;
     }
     return queueString;
+  }
+
+  /**
+   * Utility to add common endpoint options to HTTP endpoints.
+   * @param httpEndpoint
+   *   The http endpoint string.
+   * @return
+   *   The modified http endpoint string.
+   */
+  public String addHttpOptions(final String httpEndpoint) {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(httpEndpoint);
+    // Only append ? or & if there is an endpoint.
+    if (builder.length() > 0) {
+      if (httpEndpoint.contains("?")) {
+        builder.append("&");
+      } else {
+        builder.append("?");
+      }
+    }
+    // Append the common elements.
+    builder.append("connectionClose=true&disableStreamCache=true");
+    return builder.toString();
   }
 }

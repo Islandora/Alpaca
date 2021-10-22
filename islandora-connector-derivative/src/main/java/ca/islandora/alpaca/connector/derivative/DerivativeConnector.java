@@ -76,7 +76,7 @@ public class DerivativeConnector extends RouteBuilder {
         super();
         connectorName = name;
         inputStream = inputSource;
-        outputStream = outputSource + "?connectionClose=true";
+        outputStream = outputSource;
         config = configuration;
     }
 
@@ -119,7 +119,7 @@ public class DerivativeConnector extends RouteBuilder {
             .removeHeaders("*", "Authorization", "Content-Type")
             .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD("${exchangeProperty.event.attachment.content.destinationUri}?connectionClose=true");
+            .toD(config.addHttpOptions("${exchangeProperty.event.attachment.content.destinationUri}"));
     }
 
 }

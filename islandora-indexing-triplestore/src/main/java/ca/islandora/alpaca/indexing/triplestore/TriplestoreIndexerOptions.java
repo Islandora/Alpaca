@@ -88,8 +88,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    * @return the triplestore base url.
    */
   public String getTriplestoreBaseUrl() {
-    // Append "connectionClose=true" to force closing connections immediately
-    return triplestoreBaseUrl + (triplestoreBaseUrl.indexOf('?') > -1 ? '&' : '?') +  "connectionClose=true";
+    return addHttpOptions(triplestoreBaseUrl);
   }
 
   /**
@@ -100,7 +99,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    *   The altered topic/queue string.
    */
   private String addConcurrent(final String queueString) {
-    return super.addConcurrent(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
+    return super.addJmsOptions(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
   }
 
   /**

@@ -73,7 +73,7 @@ public class FcrepoIndexerTest {
             a.mockEndpointsAndSkip("broker:*");
         });
         AdviceWithRouteBuilder.adviceWith(context, nodeSubRoute, a -> {
-            a.mockEndpointsAndSkip("http://localhost?connectionClose=true");
+            a.mockEndpointsAndSkip("http://localhost?connectionClose=true&disableStreamCache=true");
         });
         context.start();
 
@@ -111,7 +111,7 @@ public class FcrepoIndexerTest {
             a.mockEndpointsAndSkip("broker:*");
         });
         AdviceWithRouteBuilder.adviceWith(context, versionSubRoute, a -> {
-            a.mockEndpointsAndSkip("http://localhost?connectionClose=true");
+            a.mockEndpointsAndSkip("http://localhost?connectionClose=true&disableStreamCache=true");
         });
         context.start();
 
@@ -148,7 +148,7 @@ public class FcrepoIndexerTest {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpointsAndSkip(
-                "http://localhost?connectionClose=true"
+                "http://localhost?connectionClose=true&disableStreamCache=true"
             );
         });
         context.start();
@@ -182,7 +182,7 @@ public class FcrepoIndexerTest {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpointsAndSkip(
-                "http://localhost?connectionClose=true"
+                "http://localhost?connectionClose=true&disableStreamCache=true"
             );
         });
         context.start();
@@ -220,7 +220,7 @@ public class FcrepoIndexerTest {
         final String mediaSubRoute = "FcrepoIndexerMediaIndex";
         AdviceWithRouteBuilder.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
         AdviceWithRouteBuilder.adviceWith(context, mediaSubRoute,
-                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true"));
+                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true&disableStreamCache=true"));
 
         context.start();
 
@@ -251,7 +251,7 @@ public class FcrepoIndexerTest {
         final String versionSubRoute = "FcrepoIndexerMediaIndexVersion";
         AdviceWithRouteBuilder.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
         AdviceWithRouteBuilder.adviceWith(context, versionSubRoute,
-                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true"));
+                a -> a.mockEndpointsAndSkip("http://localhost?connectionClose=true&disableStreamCache=true"));
 
         context.start();
 

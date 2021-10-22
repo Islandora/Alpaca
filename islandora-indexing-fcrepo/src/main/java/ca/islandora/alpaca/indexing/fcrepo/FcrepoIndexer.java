@@ -131,7 +131,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .routeId("FcrepoIndexerNodeIndex")
                 .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty" +
                         ".uuid}"))
-                .toD("http://localhost?connectionClose=true");
+                .toD(config.addHttpOptions("http://localhost"));
 
         from("seda:nodeVersionIndex")
                 .routeId("FcrepoIndexerNodeVersion")
@@ -140,7 +140,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
                     .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
                     "node/${exchangeProperty.uuid}/version"))
-                    .toD("http://localhost?connectionClose=true")
+                    .toD(config.addHttpOptions("http://localhost"))
                 .end();
 
         from(config.getNodeDelete())
@@ -173,7 +173,7 @@ public class FcrepoIndexer extends RouteBuilder {
 
                 // Remove the file from Gemini.
                 .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty.uuid}"))
-                .toD("http://localhost?connectionClose=true");
+                .toD(config.addHttpOptions("http://localhost"));
 
         from(config.getMediaIndex())
                 .routeId("FcrepoIndexerMedia")
@@ -215,7 +215,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .routeId("FcrepoIndexerMediaIndex")
                 .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
                         "media/${exchangeProperty.sourceField}"))
-                .toD("http://localhost?connectionClose=true");
+                .toD(config.addHttpOptions("http://localhost"));
 
         from("seda:mediaVersionIndex")
                 .routeId("FcrepoIndexerMediaIndexVersion")
@@ -225,7 +225,7 @@ public class FcrepoIndexer extends RouteBuilder {
                     //pass it to milliner
                     .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
                         "media/${exchangeProperty.sourceField}/version"))
-                    .toD("http://localhost?connectionClose=true")
+                    .toD(config.addHttpOptions("http://localhost"))
                 .end();
 
         from(config.getExternalIndex())
@@ -261,7 +261,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 // Pass it to milliner.
                 .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
                         "external/${exchangeProperty.uuid}"))
-                .toD("http://localhost?connectionClose=true");
+                .toD(config.addHttpOptions("http://localhost"));
 
     }
 }

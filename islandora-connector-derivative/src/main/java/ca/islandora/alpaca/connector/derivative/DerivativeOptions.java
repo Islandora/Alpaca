@@ -99,8 +99,10 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
                 Integer.class, -1);
         try {
           // Add concurrent/max-concurrent
-          final String finalInput = addConcurrent(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
-          camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, output, this));
+          final String finalInput = addJmsOptions(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
+          // Add connectionClose and other http options.
+          final String finalOutput = addHttpOptions(output);
+          camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, finalOutput, this));
         } catch (final Exception e) {
           e.printStackTrace();
         }

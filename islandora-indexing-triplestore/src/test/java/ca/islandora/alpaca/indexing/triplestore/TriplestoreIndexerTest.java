@@ -172,7 +172,7 @@ public class TriplestoreIndexerTest {
                     });
 
             a.mockEndpointsAndSkip(
-                "http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true"
+                "http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true&disableStreamCache=true"
             );
         });
         context.start();
@@ -213,7 +213,8 @@ public class TriplestoreIndexerTest {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpoints("broker:*");
-            a.mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql?connectionClose=true");
+            a.mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql?" +
+                    "connectionClose=true&disableStreamCache=true");
         });
         context.start();
 
