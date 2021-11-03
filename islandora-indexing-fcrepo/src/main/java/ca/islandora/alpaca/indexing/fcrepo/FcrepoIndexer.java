@@ -164,7 +164,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"))
                 .setBody(constant(null))
 
-                // Remove the file from Gemini.
+                // Remove the file from Drupal.
                 .toD(makeMillinerUri("node/${exchangeProperty.uuid}"));
 
         from(config.getMediaIndex())
@@ -201,8 +201,6 @@ public class FcrepoIndexer extends RouteBuilder {
                     .to("seda:mediaIndex", "seda:mediaVersionIndex")
                 .end();
 
-        // Dynamic endpoints (ie. toD() ) use more resources if the dynamic part is specified in the actual toD(). By
-        // sending to the same hostname and passing the URI in the headers we can save those resources.
         from("seda:mediaIndex")
                 .routeId("FcrepoIndexerMediaIndex")
                 .toD(makeMillinerUri("media/${exchangeProperty.sourceField}"));

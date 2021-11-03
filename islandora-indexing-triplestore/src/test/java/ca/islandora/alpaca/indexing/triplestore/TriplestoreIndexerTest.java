@@ -160,7 +160,6 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
-
             // Rig Drupal REST endpoint to return canned jsonld
             a.interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld&connectionClose=true" +
                             "&disableStreamCache=true")
@@ -189,8 +188,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
                 subject + " <http://schema.org/dateModified> \"2017-01-30T14:35:57+00:00\" ."
         );
 
-        final MockEndpoint endpoint = (MockEndpoint) context.
-                getEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
+        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
@@ -212,6 +210,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
     public void testDelete() throws Exception {
         final String route = "IslandoraTriplestoreIndexerDelete";
 
+        context.disableJMX();
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpoints("broker:*");
@@ -220,8 +219,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
         });
         context.start();
 
-        final MockEndpoint endpoint = (MockEndpoint) context
-                .getEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
+        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8080/bigdata/namespace/islandora/sparql");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "POST");
