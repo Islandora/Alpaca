@@ -63,7 +63,7 @@ public abstract class PropertyConfig {
    * @return
    *   The modified topic/queue string.
    */
-  public String addJmsOptions(final String queueString, final int concurrentConsumers,
+  public static String addJmsOptions(final String queueString, final int concurrentConsumers,
                               final int maxConcurrentConsumers) {
     final StringBuilder builder = new StringBuilder();
     if (concurrentConsumers > 0) {
@@ -87,15 +87,17 @@ public abstract class PropertyConfig {
    * Utility to add common endpoint options to HTTP endpoints.
    * @param httpEndpoint
    *   The http endpoint string.
+   * @param forceAmpersand
+   *   If you want to use this function with a dynamic endpoint, this is whether to force an ampersand to start.
    * @return
    *   The modified http endpoint string.
    */
-  public String addHttpOptions(final String httpEndpoint) {
+  public String addHttpOptions(final String httpEndpoint, final boolean forceAmpersand) {
     final StringBuilder builder = new StringBuilder();
     builder.append(httpEndpoint);
     // Only append ? or & if there is an endpoint.
     if (builder.length() > 0) {
-      if (httpEndpoint.contains("?")) {
+      if (httpEndpoint.contains("?") || forceAmpersand) {
         builder.append("&");
       } else {
         builder.append("?");
@@ -104,5 +106,16 @@ public abstract class PropertyConfig {
     // Append the common elements.
     builder.append("connectionClose=true&disableStreamCache=true");
     return builder.toString();
+  }
+
+  /**
+   * Assumes not to forceAmpersand
+   * @param httpEndpoint
+   *   The http endpoint string.
+   * @return
+   *   The modified http endpoint string.
+   */
+  public String addHttpOptions(final String httpEndpoint) {
+    return addHttpOptions(httpEndpoint, false);
   }
 }

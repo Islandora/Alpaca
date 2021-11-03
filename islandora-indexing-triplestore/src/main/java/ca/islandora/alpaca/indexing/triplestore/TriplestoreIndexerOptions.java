@@ -99,7 +99,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    *   The altered topic/queue string.
    */
   private String addConcurrent(final String queueString) {
-    return super.addJmsOptions(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
+    return addJmsOptions(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
   }
 
   /**

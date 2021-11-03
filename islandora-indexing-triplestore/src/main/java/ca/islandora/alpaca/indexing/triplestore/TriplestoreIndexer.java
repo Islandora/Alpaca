@@ -75,7 +75,7 @@ public class TriplestoreIndexer extends RouteBuilder {
               .removeHeaders("*", "Authorization")
               .setHeader(Exchange.HTTP_METHOD, constant("GET"))
               .setBody(simple("${null}"))
-              .toD("${exchangeProperty.jsonld_url}&connectionClose=true")
+              .toD(config.addHttpOptions("${exchangeProperty.jsonld_url}", true))
               .setHeader(FCREPO_URI, simple("${exchangeProperty.subject_url}"))
               .process(new SparqlUpdateProcessor())
               .log(INFO, LOGGER, "Indexing ${exchangeProperty.subject_url} in triplestore")

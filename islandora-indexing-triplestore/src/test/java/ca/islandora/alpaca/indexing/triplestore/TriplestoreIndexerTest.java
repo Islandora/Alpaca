@@ -21,15 +21,11 @@ package ca.islandora.alpaca.indexing.triplestore;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
-import static org.apache.camel.test.junit4.TestSupport.assertIsInstanceOf;
-import static org.apache.camel.test.junit4.TestSupport.assertPredicate;
-import static org.apache.camel.test.junit4.TestSupport.exchangeProperty;
 import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -39,20 +35,19 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
-import org.apache.camel.test.spring.UseAdviceWith;
+import org.apache.camel.test.spring.CamelSpringRunner;
+import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import ca.islandora.alpaca.support.config.ActivemqConfig;
 import ca.islandora.alpaca.support.exceptions.MissingCanonicalUrlException;
@@ -62,11 +57,8 @@ import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
  * @author dannylamb
  */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@UseAdviceWith
-@ContextConfiguration(classes = TriplestoreIndexerTest.ContextConfig.class,
-        loader = AnnotationConfigContextLoader.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-public class TriplestoreIndexerTest {
+@RunWith(CamelSpringRunner.class)
+public class TriplestoreIndexerTest extends CamelSpringTestSupport {
 
     @EndpointInject("mock:result")
     protected MockEndpoint resultEndpoint;
@@ -74,8 +66,15 @@ public class TriplestoreIndexerTest {
     @Produce("direct:start")
     protected ProducerTemplate template;
 
-    @Autowired
-    CamelContext context;
+    @Override
+    public boolean isUseAdviceWith() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseRouteBuilder() {
+        return false;
+    }
 
     @Test
     public void testParseUrl() throws Exception {
@@ -157,11 +156,14 @@ public class TriplestoreIndexerTest {
     public void testIndex() throws Exception {
         final String route = "IslandoraTriplestoreIndexer";
 
+        context.disableJMX();
         AdviceWithRouteBuilder.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
+
             // Rig Drupal REST endpoint to return canned jsonld
-            a.interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld&connectionClose=true")
+            a.interceptSendToEndpoint("http://localhost:8000/node/1?_format=jsonld&connectionClose=true" +
+                            "&disableStreamCache=true")
                     .skipSendToOriginalEndpoint()
                     .process(exchange -> {
                         exchange.getIn().removeHeaders("*");
@@ -242,6 +244,13 @@ public class TriplestoreIndexerTest {
         System.setProperty("triplestore.index.stream", "topic:islandora-indexing-triplestore-index");
         System.setProperty("triplestore.delete.stream", "topic:islandora-indexing-triplestore-delete");
         System.setProperty("triplestore.baseUrl", "http://localhost:8080/bigdata/namespace/islandora/sparql");
+    }
+
+    @Override
+    protected AbstractApplicationContext createApplicationContext() {
+        final var context = new AnnotationConfigApplicationContext();
+        context.register(TriplestoreIndexerTest.ContextConfig.class);
+        return context;
     }
 
     @Configuration

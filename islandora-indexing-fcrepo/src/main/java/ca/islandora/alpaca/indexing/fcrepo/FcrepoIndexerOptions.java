@@ -113,7 +113,7 @@ public class FcrepoIndexerOptions extends PropertyConfig {
    *   The altered topic/queue string.
    */
   private String addConcurrent(final String queueString) {
-    return super.addJmsOptions(queueString, fcrepoConcurrentConsumers, fcrepoMaxConcurrentConsumers);
+    return addJmsOptions(queueString, fcrepoConcurrentConsumers, fcrepoMaxConcurrentConsumers);
   }
 
   /**

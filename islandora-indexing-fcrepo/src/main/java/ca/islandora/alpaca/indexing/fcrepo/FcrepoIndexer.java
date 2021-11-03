@@ -55,7 +55,6 @@ public class FcrepoIndexer extends RouteBuilder {
      */
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
-
     @Override
     public void configure() {
         LOGGER.info("FcrepoIndexer routes starting");
@@ -125,22 +124,16 @@ public class FcrepoIndexer extends RouteBuilder {
                     .to("seda:nodeIndex", "seda:nodeVersionIndex")
                 .end();
 
-        // Dynamic endpoints (ie. toD() ) use more resources if the dynamic part is specified in the actual toD(). By
-        // sending to the same hostname and passing the URI in the headers we can save those resources.
         from("seda:nodeIndex")
                 .routeId("FcrepoIndexerNodeIndex")
-                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty" +
-                        ".uuid}"))
-                .toD(config.addHttpOptions("http://localhost"));
+                .toD(makeMillinerUri("node/${exchangeProperty.uuid}"));
 
         from("seda:nodeVersionIndex")
                 .routeId("FcrepoIndexerNodeVersion")
                 .log(TRACE, LOGGER, "Node indexer version endpoint, isNewVersion is " +
                         "(${exchangeProperty.event.object.isNewVersion}")
                 .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
-                    .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
-                    "node/${exchangeProperty.uuid}/version"))
-                    .toD(config.addHttpOptions("http://localhost"))
+                    .toD(makeMillinerUri("node/${exchangeProperty.uuid}/version"))
                 .end();
 
         from(config.getNodeDelete())
@@ -172,8 +165,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(constant(null))
 
                 // Remove the file from Gemini.
-                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() + "node/${exchangeProperty.uuid}"))
-                .toD(config.addHttpOptions("http://localhost"));
+                .toD(makeMillinerUri("node/${exchangeProperty.uuid}"));
 
         from(config.getMediaIndex())
                 .routeId("FcrepoIndexerMedia")
@@ -213,9 +205,7 @@ public class FcrepoIndexer extends RouteBuilder {
         // sending to the same hostname and passing the URI in the headers we can save those resources.
         from("seda:mediaIndex")
                 .routeId("FcrepoIndexerMediaIndex")
-                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
-                        "media/${exchangeProperty.sourceField}"))
-                .toD(config.addHttpOptions("http://localhost"));
+                .toD(makeMillinerUri("media/${exchangeProperty.sourceField}"));
 
         from("seda:mediaVersionIndex")
                 .routeId("FcrepoIndexerMediaIndexVersion")
@@ -223,9 +213,7 @@ public class FcrepoIndexer extends RouteBuilder {
                         "(${exchangeProperty.event.object.isNewVersion}")
                 .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
                     //pass it to milliner
-                    .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
-                        "media/${exchangeProperty.sourceField}/version"))
-                    .toD(config.addHttpOptions("http://localhost"))
+                    .toD(makeMillinerUri("media/${exchangeProperty.sourceField}/version"))
                 .end();
 
         from(config.getExternalIndex())
@@ -259,9 +247,18 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(constant(null))
 
                 // Pass it to milliner.
-                .setHeader(Exchange.HTTP_URI, simple(config.getMillinerBaseUrl() +
-                        "external/${exchangeProperty.uuid}"))
-                .toD(config.addHttpOptions("http://localhost"));
+                .toD(makeMillinerUri("external/${exchangeProperty.uuid}"));
 
+    }
+
+    /**
+     * Utility to build a milliner URI.
+     * @param uriPart
+     *   The part of the uri after the milliner base uri.
+     * @return
+     *   The full URI.
+     */
+    private String makeMillinerUri(final String uriPart) {
+        return config.addHttpOptions(config.getMillinerBaseUrl() + uriPart);
     }
 }
