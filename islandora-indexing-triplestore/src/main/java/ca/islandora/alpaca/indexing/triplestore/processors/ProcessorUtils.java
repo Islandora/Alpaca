@@ -91,14 +91,10 @@ public final class ProcessorUtils {
         final StringBuilder stmt = new StringBuilder("DELETE WHERE { ");
 
         if (!namedGraph.isEmpty()) {
-            stmt.append("GRAPH <");
-            stmt.append(encode(namedGraph));
-            stmt.append("> { ");
+            stmt.append("GRAPH <").append(encode(namedGraph)).append("> { ");
         }
 
-        stmt.append("<");
-        stmt.append(encode(subject));
-        stmt.append("> ?p ?o ");
+        stmt.append('<').append(encode(subject)).append("> ?p ?o ");
 
         if (!namedGraph.isEmpty()) {
             stmt.append("} ");
@@ -147,7 +143,7 @@ public final class ProcessorUtils {
         try {
             return stream(context.resolvePropertyPlaceholders(property).split(token)).map(String::trim)
                     .filter(val -> !val.isEmpty()).collect(toList());
-        } catch (final Exception ex) {
+        } catch (final IllegalArgumentException ex) {
             LOGGER.debug("No property value found for {}", property);
             return emptyList();
         }

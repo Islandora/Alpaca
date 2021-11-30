@@ -52,6 +52,8 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
   private static final String DERIVATIVE_CONCURRENT_PROPERTY = "concurrent-consumers";
   private static final String DERIVATIVE_MAX_CONCURRENT_PROPERTY = "max-concurrent-consumers";
 
+  private static final int MINIMUM_NUMBER_OF_CAMEL_CONTEXTS = 1;
+
   @Autowired
   private Environment environment;
 
@@ -180,7 +182,7 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
   @Override
   public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
     final String[] names = applicationContext.getBeanNamesForType(CamelContext.class);
-    if (names.length == 1) {
+    if (names.length >= MINIMUM_NUMBER_OF_CAMEL_CONTEXTS) {
       final CamelContext camelContext = applicationContext.getBean(names[0], CamelContext.class);
       processAllServices(camelContext);
     } else {

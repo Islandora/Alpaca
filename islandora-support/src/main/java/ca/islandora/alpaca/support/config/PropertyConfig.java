@@ -72,7 +72,7 @@ public abstract class PropertyConfig {
     }
     if (maxConcurrentConsumers > 0) {
       if (builder.length() > 0) {
-        builder.append("&");
+        builder.append('&');
       }
       builder.append("maxConcurrentConsumers=");
       builder.append(maxConcurrentConsumers);
@@ -93,18 +93,20 @@ public abstract class PropertyConfig {
    *   The modified http endpoint string.
    */
   public String addHttpOptions(final String httpEndpoint, final boolean forceAmpersand) {
-    final StringBuilder builder = new StringBuilder();
+    final String commonElements = "connectionClose=true&disableStreamCache=true";
+    final int bestGuessAtFinalLength = httpEndpoint.length() + commonElements.length() + 1;
+    final StringBuilder builder = new StringBuilder(bestGuessAtFinalLength);
     builder.append(httpEndpoint);
     // Only append ? or & if there is an endpoint.
     if (builder.length() > 0) {
       if (httpEndpoint.contains("?") || forceAmpersand) {
-        builder.append("&");
+        builder.append('&');
       } else {
-        builder.append("?");
+        builder.append('?');
       }
     }
     // Append the common elements.
-    builder.append("connectionClose=true&disableStreamCache=true");
+    builder.append(commonElements);
     return builder.toString();
   }
 

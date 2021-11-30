@@ -165,10 +165,8 @@ public class AS2Object {
             throw e;
         }
         final var filterUrl = Arrays.stream(url).filter(a -> {
-            if (mimetype != null) {
-                if (a.getMediaType() == null || !a.getMediaType().equalsIgnoreCase(mimetype)) {
-                    return false;
-                }
+            if (mimetype != null && (a.getMediaType() == null || !a.getMediaType().equalsIgnoreCase(mimetype))) {
+                return false;
             }
             if (rel != null) {
                 return a.getRel() != null && a.getRel().equalsIgnoreCase(rel);
