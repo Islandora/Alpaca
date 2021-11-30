@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -65,8 +66,10 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
    *
    * @param camelContext
    *   The camel context to add derivative service routes to.
+   * @throws Exception
+   *   When unable to add routes to the camel context.
    */
-  private void processAllServices(final CamelContext camelContext) {
+  private void processAllServices(final CamelContext camelContext) throws Exception {
     if (derivativeSystems != null && !derivativeSystems.isBlank()) {
       final var systemNames = derivativeSystems.contains(",") ?
               Arrays.stream(derivativeSystems.split(",")).filter(o -> !o.isBlank()).map(String::trim)
@@ -90,8 +93,10 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
    *   The current camel context.
    * @param serviceName
    *   The derivative service name.
+   * @throws Exception
+   *   When unable to add routes to the camel context.
    */
-  private void startDerivativeService(final CamelContext camelContext, final String serviceName) {
+  private void startDerivativeService(final CamelContext camelContext, final String serviceName) throws Exception {
       final var input = environment.getProperty(inputProperty(serviceName), "");
       final var output = environment.getProperty(outputProperty(serviceName), "");
       if (!input.isBlank() && !output.isBlank()) {
@@ -99,15 +104,11 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
                 Integer.class, -1);
         final int maxConcurrentConsumers = environment.getProperty(maxConcurrentConsumerProperty(serviceName),
                 Integer.class, -1);
-        try {
-          // Add concurrent/max-concurrent
-          final String finalInput = addJmsOptions(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
-          // Add connectionClose and other http options.
-          final String finalOutput = addHttpOptions(output);
-          camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, finalOutput, this));
-        } catch (final Exception e) {
-          e.printStackTrace();
-        }
+        // Add concurrent/max-concurrent
+        final String finalInput = addJmsOptions(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
+        // Add connectionClose and other http options.
+        final String finalOutput = addHttpOptions(output);
+        camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, finalOutput, this));
       } else {
         final StringBuilder message = new StringBuilder();
         if (input.isBlank()) {
@@ -179,12 +180,20 @@ public class DerivativeOptions extends PropertyConfig implements ApplicationCont
     return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_MAX_CONCURRENT_PROPERTY;
   }
 
+  /**
+   * camelContext.addRoutes throws Exception, which PMD does not like you catching. So we ignore that rule.
+   */
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   @Override
   public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
     final String[] names = applicationContext.getBeanNamesForType(CamelContext.class);
     if (names.length >= MINIMUM_NUMBER_OF_CAMEL_CONTEXTS) {
       final CamelContext camelContext = applicationContext.getBean(names[0], CamelContext.class);
-      processAllServices(camelContext);
+      try {
+        processAllServices(camelContext);
+      } catch (final Exception e) {
+        throw new BeanInitializationException("Failed to add derivative route to Camel Context", e);
+      }
     } else {
       LOGGER.error("No CamelContext found, unable to start derivative routes.");
     }

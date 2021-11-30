@@ -56,6 +56,11 @@ public class FcrepoIndexer extends RouteBuilder {
      */
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
+    /**
+     * PMD likes short methods (less than 100 lines) but that would make this RouteBuilder less clear.
+     * So we are ignoring rule.
+     */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Override
     public void configure() {
         LOGGER.info("FcrepoIndexer routes starting");
