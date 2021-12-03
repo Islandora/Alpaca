@@ -17,9 +17,6 @@
  */
 package ca.islandora.alpaca.indexing.fcrepo;
 
-import static org.apache.camel.language.constant.ConstantLanguage.constant;
-import static org.apache.camel.language.property.ExchangePropertyLanguage.exchangeProperty;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
@@ -49,8 +46,8 @@ public class CommonProcessor implements Processor {
         final AS2Event json = msg.getBody(AS2Event.class);
         exchange.setProperty("fedoraBaseUrl", json.getTarget());
         msg.removeHeaders("*", "Authorization");
-        msg.setHeader(config.getFedoraUriHeader(), exchangeProperty("fedoraBaseUrl"));
-        msg.setBody(constant(null));
+        msg.setHeader(config.getFedoraUriHeader(), exchange.getProperty("fedoraBaseUrl"));
+        msg.setBody(null);
         exchange.setMessage(msg);
     }
 }
