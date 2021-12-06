@@ -55,7 +55,7 @@ subprojects {
         versions = [
             activemq: '5.16.0',
             asmCommons: '5.0.3',
-            camel: '3.5.0',
+            camel: '3.7.6',
             commonsIo: '2.8.0',
             fcrepoCamel: '5.0.0',
             fcrepoCamelToolbox: '5.0.0',

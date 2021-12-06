@@ -26,7 +26,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
@@ -71,7 +71,7 @@ public class DerivativeConnectorTest {
         final String route = "IslandoraConnectorDerivative-testRoutes";
 
         final var context = camelContext.adapt(ModelCamelContext.class);
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
             // Rig Drupal REST endpoint to return canned jsonld

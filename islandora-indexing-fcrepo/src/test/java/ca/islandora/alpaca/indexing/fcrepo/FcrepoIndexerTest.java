@@ -23,7 +23,7 @@ import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ToDynamicDefinition;
@@ -70,10 +70,10 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String nodeSubRoute = "FcrepoIndexerNodeIndex";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a ->
+        AdviceWith.adviceWith(context, route, a ->
             a.replaceFromWith("direct:start")
         );
-        AdviceWithRouteBuilder.adviceWith(context, nodeSubRoute, a ->
+        AdviceWith.adviceWith(context, nodeSubRoute, a ->
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000" +
                     "/milliner/node/${exchangeProperty.uuid}")
         );
@@ -107,10 +107,10 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String versionSubRoute = "FcrepoIndexerNodeVersion";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a ->
+        AdviceWith.adviceWith(context, route, a ->
             a.replaceFromWith("direct:start")
         );
-        AdviceWithRouteBuilder.adviceWith(context, versionSubRoute, a ->
+        AdviceWith.adviceWith(context, versionSubRoute, a ->
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000" +
                     "/milliner/node/${exchangeProperty.uuid}/version")
         );
@@ -141,7 +141,7 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String route = "FcrepoIndexerDeleteNode";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000/milliner/node" +
                     "/${exchangeProperty.uuid}");
@@ -174,7 +174,7 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String route = "FcrepoIndexerExternalFile";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000/milliner/" +
                     "external/${exchangeProperty.uuid}");
@@ -212,10 +212,10 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String mediaSubRoute = "FcrepoIndexerMediaIndex";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a ->
+        AdviceWith.adviceWith(context, route, a ->
             a.replaceFromWith("direct:start")
         );
-        AdviceWithRouteBuilder.adviceWith(context, mediaSubRoute, a->
+        AdviceWith.adviceWith(context, mediaSubRoute, a->
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000/milliner/" +
                     "media/${exchangeProperty.sourceField}")
         );
@@ -250,8 +250,8 @@ public class FcrepoIndexerTest extends CamelSpringTestSupport {
         final String versionSubRoute = "FcrepoIndexerMediaIndexVersion";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
-        AdviceWithRouteBuilder.adviceWith(context, versionSubRoute, a ->
+        AdviceWith.adviceWith(context, route, a -> a.replaceFromWith("direct:start"));
+        AdviceWith.adviceWith(context, versionSubRoute, a ->
             a.weaveByType(ToDynamicDefinition.class).selectIndex(0).replace().toD("mock:localhost:8000/milliner/" +
                     "media/${exchangeProperty.sourceField}/version")
         );

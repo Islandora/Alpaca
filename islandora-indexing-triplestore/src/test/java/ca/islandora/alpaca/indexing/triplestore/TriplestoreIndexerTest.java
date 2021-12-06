@@ -31,7 +31,7 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
@@ -80,7 +80,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
     public void testParseUrl() throws Exception {
         final String route = "IslandoraTriplestoreIndexerParseUrl";
 
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.weaveAddLast().to(resultEndpoint);
         });
@@ -110,7 +110,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
     public void testParseUrlDiesOnNoJsonld() throws Exception {
         final String route = "IslandoraTriplestoreIndexerParseUrl";
 
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.weaveAddLast().to(resultEndpoint);
         });
@@ -133,7 +133,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
     public void testParseUrlDiesOnNoCanonical() throws Exception {
         final String route = "IslandoraTriplestoreIndexerParseUrl";
 
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.weaveAddLast().to(resultEndpoint);
         });
@@ -157,7 +157,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
         final String route = "IslandoraTriplestoreIndexer";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
             // Rig Drupal REST endpoint to return canned jsonld
@@ -211,7 +211,7 @@ public class TriplestoreIndexerTest extends CamelSpringTestSupport {
         final String route = "IslandoraTriplestoreIndexerDelete";
 
         context.disableJMX();
-        AdviceWithRouteBuilder.adviceWith(context, route, a -> {
+        AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
             a.mockEndpoints("broker:*");
             a.mockEndpointsAndSkip("http://localhost:8080/bigdata/namespace/islandora/sparql?" +
