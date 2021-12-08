@@ -50,6 +50,7 @@ public class DerivativeOptions extends PropertyConfig {
   private static final String DERIVATIVE_OUTPUT_PROPERTY = "service.url";
   private static final String DERIVATIVE_CONCURRENT_PROPERTY = "concurrent-consumers";
   private static final String DERIVATIVE_MAX_CONCURRENT_PROPERTY = "max-concurrent-consumers";
+  private static final String DERIVATIVE_ASYNC_CONSUMER = "async-consumer";
 
   @Autowired
   private Environment environment;
@@ -104,8 +105,11 @@ public class DerivativeOptions extends PropertyConfig {
                 Integer.class, -1);
         final int maxConcurrentConsumers = environment.getProperty(maxConcurrentConsumerProperty(serviceName),
                 Integer.class, -1);
+        final boolean asyncConsumer = environment.getProperty(asyncConsumerProperty(serviceName),
+                Boolean.class, false);
         // Add concurrent/max-concurrent
-        final String finalInput = addJmsOptions(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers);
+        final String finalInput = addJmsOptions(addBrokerName(input), concurrentConsumers, maxConcurrentConsumers,
+                asyncConsumer);
         // Add connectionClose and other http options.
         final String finalOutput = addHttpOptions(output);
         camelContext.addRoutes(new DerivativeConnector(serviceName, finalInput, finalOutput, this));
@@ -178,6 +182,15 @@ public class DerivativeOptions extends PropertyConfig {
    */
   private String maxConcurrentConsumerProperty(final String systemName) {
     return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_MAX_CONCURRENT_PROPERTY;
+  }
+
+  /**
+   * Return the expected async-consumer property.
+   * @param systemName the derivative system name
+   * @return the property
+   */
+  private String asyncConsumerProperty(final String systemName) {
+      return DERIVATIVE_PREFIX + "." + systemName + "." + DERIVATIVE_ASYNC_CONSUMER;
   }
 
 }

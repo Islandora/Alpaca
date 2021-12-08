@@ -43,6 +43,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
   private static final String TRIPLESTORE_DELETE_QUEUE = "triplestore.delete.stream";
   private static final String TRIPLESTORE_CONCURRENT = "triplestore.indexer.concurrent-consumers";
   private static final String TRIPLESTORE_MAX_CONCURRENT = "triplestore.indexer.max-concurrent-consumers";
+  private static final String TRIPLESTORE_ASYNC_CONSUMER = "triplestore.indexer.async-consumer";
 
   @Value("${" + TRIPLESTORE_INDEX_QUEUE + ":}")
   private String jmsIndexStream;
@@ -58,6 +59,9 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
 
   @Value("${" + TRIPLESTORE_MAX_CONCURRENT + ":-1}")
   private int triplestoreMaxConcurrent;
+
+  @Value("${" + TRIPLESTORE_ASYNC_CONSUMER + ":false}")
+  private boolean triplestoreAsyncConsumer;
 
   /**
    * Defines that triplestore indexer is only enabled if the appropriate property is set to "true".
@@ -99,7 +103,7 @@ public class TriplestoreIndexerOptions extends PropertyConfig {
    *   The altered topic/queue string.
    */
   private String addConcurrent(final String queueString) {
-    return addJmsOptions(queueString, triplestoreConcurrent, triplestoreMaxConcurrent);
+    return addJmsOptions(queueString, triplestoreConcurrent, triplestoreMaxConcurrent, triplestoreAsyncConsumer);
   }
 
   /**

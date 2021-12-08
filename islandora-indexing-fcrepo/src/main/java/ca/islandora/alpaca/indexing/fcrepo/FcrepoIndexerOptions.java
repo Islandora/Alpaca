@@ -43,6 +43,7 @@ public class FcrepoIndexerOptions extends PropertyConfig {
   private static final String FCREPO_BASE_URI_HEADER_PROPERTY = "fcrepo.indexer.fedoraHeader";
   private static final String FCREPO_INDEXER_CONCURRENT = "fcrepo.indexer.concurrent-consumers";
   private static final String FCREPO_INDEXER_MAX_CONCURRENT = "fcrepo.indexer.max-concurrent-consumers";
+  private static final String FCREPO_INDEXER_ASYNC_CONSUMER = "fcrepo.indexer.async-consumer";
 
   @Value("${" + FCREPO_INDEXER_NODE_INDEX + ":}")
   private String fcrepoNodeIndex;
@@ -67,6 +68,9 @@ public class FcrepoIndexerOptions extends PropertyConfig {
 
   @Value("${" + FCREPO_INDEXER_MAX_CONCURRENT + ":-1}")
   private int fcrepoMaxConcurrentConsumers;
+
+  @Value("${" + FCREPO_INDEXER_ASYNC_CONSUMER + ":false}")
+  private boolean fcrepoAsyncConsumers;
 
   /**
    * Defines that Fedora indexer is only enabled if the appropriate property is set to "true".
@@ -113,7 +117,7 @@ public class FcrepoIndexerOptions extends PropertyConfig {
    *   The altered topic/queue string.
    */
   private String addConcurrent(final String queueString) {
-    return addJmsOptions(queueString, fcrepoConcurrentConsumers, fcrepoMaxConcurrentConsumers);
+    return addJmsOptions(queueString, fcrepoConcurrentConsumers, fcrepoMaxConcurrentConsumers, fcrepoAsyncConsumers);
   }
 
   /**

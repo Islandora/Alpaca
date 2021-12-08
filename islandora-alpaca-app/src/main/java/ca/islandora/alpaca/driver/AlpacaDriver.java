@@ -54,17 +54,21 @@ public class AlpacaDriver implements Callable<Integer> {
             System.setProperty(ALPACA_CONFIG_PROPERTY, configurationFilePath.toFile().getAbsolutePath());
         }
         final var appContext = new AnnotationConfigApplicationContext("ca.islandora.alpaca");
-        appContext.start();
-        LOGGER.info("Alpaca started.");
+        try {
+            appContext.start();
+            LOGGER.info("Alpaca started.");
 
-        while (appContext.isRunning()) {
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException e) {
-                throw new RuntimeException("This should never happen");
+            while (appContext.isRunning()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (final InterruptedException e) {
+                    throw new RuntimeException("This should never happen");
+                }
             }
+            return 0;
+        } finally {
+            appContext.close();
         }
-        return 0;
     }
 
     /**
