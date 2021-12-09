@@ -77,7 +77,6 @@ public class AlpacaDriver implements Callable<Integer> {
     public static void main(final String[] args) {
         final AlpacaDriver driver = new AlpacaDriver();
         final CommandLine cmd = new CommandLine(driver);
-        //cmd.setExecutionExceptionHandler(new AppExceptionHandler(driver));
         cmd.execute(args);
     }
 
