@@ -28,6 +28,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Adds a single authentication header to any request that does not
@@ -36,6 +37,7 @@ import org.apache.http.protocol.HttpContext;
  * @author ajs6f
  *
  */
+@Component
 public class StaticTokenRequestInterceptor implements HttpRequestInterceptor {
 
     /**

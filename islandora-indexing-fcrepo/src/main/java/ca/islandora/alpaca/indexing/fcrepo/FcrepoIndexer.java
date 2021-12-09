@@ -18,44 +18,38 @@
 
 package ca.islandora.alpaca.indexing.fcrepo;
 
+import static org.apache.camel.LoggingLevel.DEBUG;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
-import static org.apache.camel.LoggingLevel.DEBUG;
+import static org.apache.camel.LoggingLevel.TRACE;
+import static org.apache.camel.LoggingLevel.WARN;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.support.event.AS2Event;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
-import org.apache.camel.PropertyInject;
-import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.PredicateBuilder;
-import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
-// import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.islandora.alpaca.support.event.AS2Event;
+import ca.islandora.alpaca.support.exceptions.MissingCanonicalUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonUrlException;
+import ca.islandora.alpaca.support.exceptions.MissingJsonldUrlException;
 
 /**
+ * Camel Route to index Drupal nodes into Fedora.
+ *
  * @author Danny Lamb
+ * @author whikloj
  */
-// @JsonIgnoreProperties(ignoreUnknown = true)
 public class FcrepoIndexer extends RouteBuilder {
 
-    /**
-     * Header to use to pass the Fedora Base URI on.
-     */
-    public final static String FEDORA_HEADER = "X-Islandora-Fedora-Endpoint";
-
-    /**
-     * Maximum attempts to deliver a message.
-     */
-    @PropertyInject("error.maxRedeliveries")
-    private int maxRedeliveries;
-
-    /**
-     * Base URI of the milliner web service.
-     */
-    @PropertyInject("milliner.baseUrl")
-    private String millinerBaseUrl;
+    @Autowired
+    private FcrepoIndexerOptions config;
 
     /**
      * The Logger.
@@ -63,44 +57,17 @@ public class FcrepoIndexer extends RouteBuilder {
     private static final Logger LOGGER = getLogger(FcrepoIndexer.class);
 
     /**
-     * @return  Number of times to retry
+     * PMD likes short methods (less than 100 lines) but that would make this RouteBuilder less clear.
+     * So we are ignoring rule.
      */
-    public int getMaxRedeliveries() {
-        return maxRedeliveries;
-    }
-
-    /**
-     * @param   maxRedeliveries Number of times to retry
-     */
-    public void setMaxRedeliveries(final int maxRedeliveries) {
-        this.maxRedeliveries = maxRedeliveries;
-    }
-
-    /**
-     * @return  Milliner base url
-     */
-    public String getMillinerBaseUrl() {
-        return enforceTrailingSlash(millinerBaseUrl);
-    }
-
-    /**
-     * @param   millinerBaseUrl Milliner base url
-     */
-    public void setMillinerBaseUrl(final String millinerBaseUrl) {
-        this.millinerBaseUrl = millinerBaseUrl;
-    }
-
-    private String enforceTrailingSlash(final String baseUrl) {
-        final String trimmed = baseUrl.trim();
-        return trimmed.endsWith("/") ? trimmed : trimmed + "/";
-    }
-
-
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Override
     public void configure() {
-
+        LOGGER.info("FcrepoIndexer routes starting");
         final Predicate is412 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 412"));
         final Predicate is404 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 404"));
+        final Predicate is410 = PredicateBuilder.toPredicate(simple("${exception.statusCode} == 410"));
+        final Processor commonProcessor = new CommonProcessor(config);
 
         onException(HttpOperationFailedException.class)
                 .onWhen(is412)
@@ -111,49 +78,61 @@ public class FcrepoIndexer extends RouteBuilder {
                         LOGGER,
                         "Received 412 from Milliner, skipping indexing."
                 );
-
+        onException(HttpOperationFailedException.class)
+                .onWhen(is410)
+                .useOriginalMessage()
+                .handled(true)
+                .log(
+                        WARN,
+                        LOGGER,
+                        "Received 410 from Milliner (object has already been deleted), skipping processing."
+                );
+        onException(MissingJsonldUrlException.class)
+                .useOriginalMessage()
+                .handled(true)
+                .log(
+                        WARN,
+                        LOGGER,
+                        "Could not locate the Json Url for the object, skipping processing."
+                );
         onException(Exception.class)
-                .maximumRedeliveries(maxRedeliveries)
+                .maximumRedeliveries(config.getMaxRedeliveries())
                 .log(
                         ERROR,
                         LOGGER,
                         "Error indexing resource in fcrepo: ${exception.message}\n\n${exception.stacktrace}"
                 );
-        from("{{node.stream}}")
-                .routeId("FcrepoIndexerNode")
 
+        from(config.getNodeIndex())
+                .routeId("FcrepoIndexerNode")
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
                 // Extract relevant data from the event.
-                .setProperty("event").simple("${body}")
+                .process(commonProcessor)
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
-                .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.url[2].href}")
-                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .setProperty("jsonldUrl").simple("${exchangeProperty.event.object.getJsonldUrl().href}")
                 .log(DEBUG, LOGGER, "Received Node event for UUID (${exchangeProperty.uuid}), jsonld URL (" +
                         "${exchangeProperty.jsonldUrl}), fedora base URL (${exchangeProperty.fedoraBaseUrl})")
-
                 // Prepare the message.
-                .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonldUrl}"))
-                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
                 .multicast().parallelProcessing()
-                //pass it to milliner
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
-                .choice()
-                        .when()
-                        .simple("${exchangeProperty.event.object.isNewVersion}")
-                                //pass it to milliner
-                                .toD(
-                                        getMillinerBaseUrl() +
-                                        "node/${exchangeProperty.uuid}/version?connectionClose=true"
-                                    ).endChoice();
+                    .to("seda:nodeIndex", "seda:nodeVersionIndex")
+                .end();
 
+        from("seda:nodeIndex")
+                .routeId("FcrepoIndexerNodeIndex")
+                .toD(makeMillinerUri("node/${exchangeProperty.uuid}"));
 
+        from("seda:nodeVersionIndex")
+                .routeId("FcrepoIndexerNodeVersion")
+                .log(TRACE, LOGGER, "Node indexer version endpoint, isNewVersion is " +
+                        "(${exchangeProperty.event.object.isNewVersion}")
+                .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
+                    .toD(makeMillinerUri("node/${exchangeProperty.uuid}/version"))
+                .end();
 
-        from("{{node.delete.stream}}")
+        from(config.getNodeDelete())
                 .routeId("FcrepoIndexerDeleteNode")
                 .onException(HttpOperationFailedException.class)
                         .onWhen(is404)
@@ -167,81 +146,89 @@ public class FcrepoIndexer extends RouteBuilder {
                         .end()
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
                 // Extract relevant data from the event.
-                .setProperty("event").simple("${body}")
+                .process(commonProcessor)
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
-                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
                 .log(DEBUG, LOGGER, "Received Node delete event for UUID (${exchangeProperty.uuid}), fedora base URL" +
                         " (${exchangeProperty.fedoraBaseUrl})")
-
                 // Prepare the message.
-                .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("DELETE"))
-                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
-
                 // Remove the file from Drupal.
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
+                .toD(makeMillinerUri("node/${exchangeProperty.uuid}"));
 
-        from("{{media.stream}}")
+        from(config.getMediaIndex())
                 .routeId("FcrepoIndexerMedia")
-
+                .onException(MissingJsonUrlException.class)
+                    .useOriginalMessage()
+                    .handled(true)
+                    .log(
+                        WARN,
+                        LOGGER,
+                        "Could not locate the Json Url for the media, event could be pre-upload. Skipping processing."
+                    )
+                .end()
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
                 // Extract relevant data from the event.
-                .setProperty("event").simple("${body}")
+                .process(commonProcessor)
                 .setProperty("sourceField").simple("${exchangeProperty.event.attachment.content.sourceField}")
-                .setProperty("jsonUrl").simple("${exchangeProperty.event.object.url[1].href}")
-                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .setProperty("jsonUrl").simple("${exchangeProperty.event.object.getJsonUrl().href}")
                 .log(DEBUG, LOGGER, "Received Media event for sourceField (${exchangeProperty.sourceField}), jsonld" +
                         " URL (${exchangeProperty.jsonUrl}), fedora Base URL (${exchangeProperty.fedoraBaseUrl})")
-
                 // Prepare the message.
-                .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.jsonUrl}"))
-                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
+                .multicast().parallelProcessing()
+                    .to("seda:mediaIndex", "seda:mediaVersionIndex")
+                .end();
 
-                // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}?connectionClose=true")
-                .choice()
-                        .when()
-                        .simple("${exchangeProperty.event.object.isNewVersion}")
-                                .setHeader("Content-Location", simple(
-                                        "${exchangeProperty.jsonUrl}"))
+        from("seda:mediaIndex")
+                .routeId("FcrepoIndexerMediaIndex")
+                .toD(makeMillinerUri("media/${exchangeProperty.sourceField}"));
 
-                                //pass it to milliner
-                                .toD(
-                                        getMillinerBaseUrl() +
-                                        "media/${exchangeProperty.sourceField}/version?connectionClose=true"
-                                    ).endChoice();
+        from("seda:mediaVersionIndex")
+                .routeId("FcrepoIndexerMediaIndexVersion")
+                .log(TRACE, LOGGER, "Media indexer version endpoint, isNewVersion is " +
+                        "(${exchangeProperty.event.object.isNewVersion}")
+                .filter(simple("${exchangeProperty.event.object.isNewVersion}"))
+                    //pass it to milliner
+                    .toD(makeMillinerUri("media/${exchangeProperty.sourceField}/version"))
+                .end();
 
-        from("{{file.external.stream}}")
+        from(config.getExternalIndex())
                 .routeId("FcrepoIndexerExternalFile")
-
+                .onException(MissingCanonicalUrlException.class)
+                    .useOriginalMessage()
+                    .handled(true)
+                    .log(
+                            ERROR,
+                            LOGGER,
+                            "Unable to index external file to Fedora, missing the Drupal URL."
+                    )
+                    .end()
                 // Parse the event into a POJO.
                 .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
                 // Extract relevant data from the event.
-                .setProperty("event").simple("${body}")
+                .process(commonProcessor)
                 .setProperty("uuid").simple("${exchangeProperty.event.object.id.replaceAll(\"urn:uuid:\",\"\")}")
-                .setProperty("drupal").simple("${exchangeProperty.event.object.url[0].href}")
-                .setProperty("fedoraBaseUrl").simple("${exchangeProperty.event.target}")
+                .setProperty("drupal").simple("${exchangeProperty.event.object.getCanonicalUrl().href}")
                 .log(DEBUG, LOGGER, "Received File external event for UUID (${exchangeProperty.uuid}), drupal URL " +
                         "(${exchangeProperty.drupal}), fedora base URL (${exchangeProperty.fedoraBaseUrl})")
-
                 // Prepare the message.
-                .removeHeaders("*", "Authorization")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Location", simple("${exchangeProperty.drupal}"))
-                .setHeader(FEDORA_HEADER, exchangeProperty("fedoraBaseUrl"))
-                .setBody(simple("${null}"))
-
                 // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "external/${exchangeProperty.uuid}?connectionClose=true");
+                .toD(makeMillinerUri("external/${exchangeProperty.uuid}"));
+    }
 
+    /**
+     * Utility to build a milliner URI.
+     * @param uriPart
+     *   The part of the uri after the milliner base uri.
+     * @return
+     *   The full URI.
+     */
+    private String makeMillinerUri(final String uriPart) {
+        return config.addHttpOptions(config.getMillinerBaseUrl() + uriPart);
     }
 }

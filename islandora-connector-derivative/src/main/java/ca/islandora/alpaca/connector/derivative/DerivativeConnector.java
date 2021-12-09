@@ -18,14 +18,16 @@
 
 package ca.islandora.alpaca.connector.derivative;
 
+import static org.apache.camel.LoggingLevel.DEBUG;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import ca.islandora.alpaca.support.event.AS2Event;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.Exchange;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
+
+import ca.islandora.alpaca.support.event.AS2Event;
 
 /**
  * @author dhlamb
@@ -37,21 +39,66 @@ public class DerivativeConnector extends RouteBuilder {
      */
     private static final Logger LOGGER = getLogger(DerivativeConnector.class);
 
+    /**
+     * Input source.
+     */
+    private final String inputStream;
+
+    /**
+     * Output target.
+     */
+    private final String outputStream;
+
+    /**
+     * The name of this connector instance
+     */
+    private final String connectorName;
+
+    /**
+     * The common derivative configuration.
+     */
+    private DerivativeOptions config;
+
+    /**
+     * Basic constructor
+     *
+     * @param name
+     *   The derivative connector name.
+     * @param inputSource
+     *   The input stream name.
+     * @param outputSource
+     *   The output target name.
+     * @param configuration
+     *   The common configuration options.
+     */
+    public DerivativeConnector(final String name, final String inputSource, final String outputSource,
+                               final DerivativeOptions configuration) {
+        super();
+        connectorName = name;
+        inputStream = inputSource;
+        outputStream = outputSource;
+        config = configuration;
+    }
+
     @Override
     public void configure() {
+        LOGGER.info("DerivativeConnector (" + connectorName + ") routes starting");
+
         // Global exception handler for the indexer.
         // Just logs after retrying X number of times.
         onException(Exception.class)
-            .maximumRedeliveries("{{error.maxRedeliveries}}")
+            .maximumRedeliveries(config.getMaxRedeliveries())
             .log(
                 ERROR,
                 LOGGER,
-                "Error connecting generating derivative with {{derivative.service.url}}: " +
+                "(" + connectorName + ") Error connecting generating derivative with " + outputStream + ": " +
                 "${exception.message}\n\n${exception.stacktrace}"
             );
 
-        from("{{in.stream}}")
-            .routeId("IslandoraConnectorDerivative")
+        from(inputStream)
+            .routeId("IslandoraConnectorDerivative-" + connectorName)
+
+            .log(DEBUG, LOGGER, "Received message on IslandoraConnectorDerivative-" + connectorName)
 
             // Parse the event into a POJO.
             .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
@@ -66,13 +113,13 @@ public class DerivativeConnector extends RouteBuilder {
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
             .setBody(simple("${null}"))
-            .to("{{derivative.service.url}}?connectionClose=true")
+            .to(outputStream)
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
             .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD("${exchangeProperty.event.attachment.content.destinationUri}?connectionClose=true");
+            .toD(config.addHttpOptions("${exchangeProperty.event.attachment.content.destinationUri}"));
     }
 
 }

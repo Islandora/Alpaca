@@ -18,68 +18,79 @@
 
 package ca.islandora.alpaca.connector.derivative;
 
-import org.apache.camel.EndpointInject;
+import static org.apache.camel.Exchange.CONTENT_TYPE;
+import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.apache.camel.model.ModelCamelContext;
+import org.apache.camel.spring.javaconfig.CamelConfiguration;
+import org.apache.camel.test.spring.UseAdviceWith;
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import static org.apache.camel.Exchange.CONTENT_TYPE;
-import static org.apache.camel.util.ObjectHelper.loadResourceAsStream;
+import ca.islandora.alpaca.support.config.ActivemqConfig;
 
 /**
  * @author dannylamb
+ * @author whikloj
  */
-public class DerivativeConnectorTest extends CamelBlueprintTestSupport {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@UseAdviceWith
+@ContextConfiguration(classes = DerivativeConnectorTest.ContextConfig.class,
+        loader = AnnotationConfigContextLoader.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+public class DerivativeConnectorTest {
 
-    @EndpointInject(uri = "mock:result")
-    protected MockEndpoint resultEndpoint;
+    private static final Logger LOGGER = getLogger(DerivativeConnectorTest.class);
 
-    @Produce(uri = "direct:start")
+    @Produce("direct:start")
     protected ProducerTemplate template;
 
-    @Override
-    public boolean isUseAdviceWith() {
-        return true;
-    }
-
-    @Override
-    public boolean isUseRouteBuilder() {
-        return false;
-    }
-
-    @Override
-    protected String getBlueprintDescriptor() {
-        return "/OSGI-INF/blueprint/blueprint-test.xml";
-    }
+    @Autowired
+    CamelContext camelContext;
 
     @Test
     public void testDerivativeConnector() throws Exception {
-        final String route = "IslandoraConnectorDerivative";
-        context.getRouteDefinition(route).adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    replaceFromWith("direct:start");
+        final String route = "IslandoraConnectorDerivative-testRoutes";
 
-                    // Rig Drupal REST endpoint to return canned jsonld
-                    interceptSendToEndpoint("http://example.org/derivative/convert?connectionClose=true")
-                            .skipSendToOriginalEndpoint()
-                            .process(exchange -> {
-                                exchange.getIn().removeHeaders("*", "Authorization");
-                                exchange.getIn().setHeader("Content-Type", "image/jpeg");
-                                exchange.getIn().setBody("SOME DERIVATIVE", String.class);
-                            });
+        final var context = camelContext.adapt(ModelCamelContext.class);
+        AdviceWith.adviceWith(context, route, a -> {
+            a.replaceFromWith("direct:start");
 
-                    mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?connectionClose=true");
-                }
+            // Rig Drupal REST endpoint to return canned jsonld
+            a.interceptSendToEndpoint("http://example.org/derivative/convert?connectionClose=true&" +
+                            "disableStreamCache=true")
+                    .skipSendToOriginalEndpoint()
+                    .process(exchange -> {
+                        exchange.getIn().removeHeaders("*", "Authorization");
+                        exchange.getIn().setHeader("Content-Type", "image/jpeg");
+                        exchange.getIn().setBody("SOME DERIVATIVE", String.class);
+                    });
+
+            a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?connectionClose=true&" +
+                    "disableStreamCache=true");
         });
         context.start();
 
-        final MockEndpoint endpoint = getMockEndpoint("mock:http:localhost:8000/node/2/media/image/3");
+        final MockEndpoint endpoint = (MockEndpoint) context
+                .getEndpoint("mock:http:localhost:8000/node/2/media/image/3");
 
         endpoint.expectedMessageCount(1);
         endpoint.expectedHeaderReceived(Exchange.HTTP_METHOD, "PUT");
@@ -92,7 +103,24 @@ public class DerivativeConnectorTest extends CamelBlueprintTestSupport {
                 exchange.getIn().setHeader("Authorization", "Bearer islandora");
         });
 
-        assertMockEndpointsSatisfied();
+        endpoint.assertIsSatisfied();
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("derivative.systems.installed", "testRoutes");
+        System.setProperty("derivative.testRoutes.enabled", "true");
+        System.setProperty("derivative.testRoutes.in.stream", "topic:input");
+        System.setProperty("derivative.testRoutes.service.url", "http://example.org/derivative/convert");
+        System.setProperty("error.maxRedeliveries", "1");
+    }
+
+    @Configuration
+    @ComponentScan(basePackageClasses = {DerivativeOptions.class, ActivemqConfig.class},
+            useDefaultFilters = false,
+            includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                    classes = {DerivativeOptions.class, ActivemqConfig.class}))
+    static class ContextConfig extends CamelConfiguration {
+
+    }
 }

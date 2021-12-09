@@ -19,18 +19,19 @@
 package ca.islandora.alpaca.http.client;
 
 import static ca.islandora.alpaca.http.client.StaticTokenRequestInterceptor.AUTH_HEADER;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
-import org.junit.Assert;
 import org.junit.Test;
+
 
 /**
  * @author ajs6f
  *
  */
-public class StaticTokenRequestInterceptorTest extends Assert {
+public class StaticTokenRequestInterceptorTest {
 
     @Test
     public void shouldInjectHeaderWhenNoAuthHeadersPresent() {
@@ -39,7 +40,7 @@ public class StaticTokenRequestInterceptorTest extends Assert {
         testInterceptor.process(request, null);
         final Header[] authHeaders = request.getHeaders(AUTH_HEADER);
         assertEquals("Should only be one auth header!", 1, authHeaders.length);
-        assertEquals("Wrong value for header!", "Bearer testToken", authHeaders[0].getValue());
+        assertEquals( "Wrong value for header!", "Bearer testToken", authHeaders[0].getValue());
     }
 
     @Test
@@ -51,6 +52,6 @@ public class StaticTokenRequestInterceptorTest extends Assert {
         testInterceptor.process(request, null);
         final Header[] authHeaders = request.getHeaders(AUTH_HEADER);
         assertEquals("Should only be one auth header!", 1, authHeaders.length);
-        assertEquals("Wrong value for header!", "fake header", authHeaders[0].getValue());
+        assertEquals( "Wrong value for header!", "fake header", authHeaders[0].getValue());
     }
 }

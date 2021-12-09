@@ -1,0 +1,20 @@
+description = 'Islandora Alpaca Supporting Libraries'
+
+dependencies {
+    implementation "javax.inject:javax.inject:${versions.javaxInject}"
+    implementation "javax.jms:javax.jms-api:${versions.javaxJms}"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
+    implementation "org.apache.camel:camel-activemq:${versions.camel}"
+    implementation "org.apache.camel:camel-core:${versions.camel}"
+    implementation "org.apache.camel:camel-http:${versions.camel}"
+    implementation "org.apache.camel:camel-spring-javaconfig:${versions.camel}"
+    implementation "org.springframework:spring-context:${versions.spring}"
+    implementation "org.slf4j:slf4j-api:${versions.slf4j}"
+
+    testImplementation "org.apache.camel:camel-test-spring:${versions.camel}"
+    testImplementation "junit:junit:${versions.junit4}"
+}
+
+jar {
+    enabled = true
+}
