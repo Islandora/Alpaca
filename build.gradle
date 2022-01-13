@@ -198,7 +198,7 @@ subprojects {
     }
 
     signing {
-        required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
+        required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("publish") }
         sign publishing.publications.shadow
     }
 
