@@ -1,0 +1,9 @@
+ca.islandora.alpaca.connector.derivative
+ca.islandora.alpaca.driver
+ca.islandora.alpaca.http.client
+ca.islandora.alpaca.indexing.fcrepo
+ca.islandora.alpaca.indexing.triplestore
+ca.islandora.alpaca.indexing.triplestore.processors
+ca.islandora.alpaca.support.config
+ca.islandora.alpaca.support.event
+ca.islandora.alpaca.support.exceptions
