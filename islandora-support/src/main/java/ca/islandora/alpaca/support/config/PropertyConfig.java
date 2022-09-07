@@ -17,6 +17,9 @@
  */
 package ca.islandora.alpaca.support.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -32,6 +35,7 @@ import org.springframework.context.annotation.PropertySources;
 })
 public abstract class PropertyConfig {
 
+  private static final Logger LOGGER = getLogger(PropertyConfig.class);
   public static final String ALPACA_CONFIG_PROPERTY = "alpaca.config";
   public static final String ALPACA_HOME_PROPERTY = "alpaca.home";
   public static final String ALPACA_DEFAULT_HOME = "alpaca-home-directory";
@@ -109,6 +113,7 @@ public abstract class PropertyConfig {
         .append(asyncConsumers);
     }
     if (builder.length() > 0) {
+      LOGGER.trace("addJmsOptions returning builder {}", builder);
       return queueString + (queueString.contains("?") ? '&' : '?') + builder;
     }
     return queueString;
@@ -138,6 +143,7 @@ public abstract class PropertyConfig {
     }
     // Append the common elements.
     builder.append(commonElements);
+    LOGGER.trace("addHttpOptions returning {}", builder);
     return builder.toString();
   }
 

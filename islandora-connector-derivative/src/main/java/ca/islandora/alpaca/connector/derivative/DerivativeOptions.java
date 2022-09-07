@@ -64,8 +64,6 @@ public class DerivativeOptions extends PropertyConfig {
   /**
    * Register additional beans for derivative routes.
    *
-   * @param camelContext
-   *   The camel context to add derivative service routes to.
    * @throws Exception
    *   When unable to add routes to the camel context.
    */
@@ -90,8 +88,6 @@ public class DerivativeOptions extends PropertyConfig {
   /**
    * Attempt to start the routes and add them to the camel context.
    *
-   * @param camelContext
-   *   The current camel context.
    * @param serviceName
    *   The derivative service name.
    * @throws Exception
