@@ -56,7 +56,7 @@ public class HttpConfigurerTest {
     private CamelContext context;
 
     /**
-     * Insure that the default RequestConfig for the HttpComponent carries the timeout values specified in the
+     * Ensure that the default RequestConfig for the HttpComponent carries the timeout values specified in the
      * blueprint xml.
      *
      * Note that the RequestConfig and RequestConfigConfigurer are difficult to test with mocking frameworks such as

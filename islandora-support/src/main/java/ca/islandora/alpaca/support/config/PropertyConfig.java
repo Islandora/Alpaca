@@ -41,15 +41,35 @@ public abstract class PropertyConfig {
   // static endpoint name for activemq connection
   protected static final String JMS_ENDPOINT_NAME = "broker";
   protected static final String MAX_REDELIVERIES_PROPERTY = "error.maxRedeliveries";
+  protected static final String ADDITIONAL_HTTP_OPTIONS = "http.additional_options";
 
   @Value("${" + MAX_REDELIVERIES_PROPERTY + ":5}")
   private int maxRedeliveries;
+
+  @Value("${" + ADDITIONAL_HTTP_OPTIONS + ":}")
+  private String additionalHttpOptions;
 
   /**
    * @return the error.maxRedeliveries amount.
    */
   public int getMaxRedeliveries() {
     return maxRedeliveries;
+  }
+
+  /**
+   * @return the additional http options with a preceding & if non-empty, otherwise blank string.
+   */
+  private String getAdditionalHttpOptions() {
+    final String returnOptions;
+    if (!additionalHttpOptions.isEmpty()) {
+      if (additionalHttpOptions.startsWith("&") || additionalHttpOptions.startsWith("?")) {
+        returnOptions = additionalHttpOptions.substring(1);
+      } else {
+        returnOptions = additionalHttpOptions;
+      }
+      return "&" + returnOptions;
+    }
+    return "";
   }
 
   /**
@@ -104,7 +124,7 @@ public abstract class PropertyConfig {
    *   The modified http endpoint string.
    */
   public String addHttpOptions(final String httpEndpoint, final boolean forceAmpersand) {
-    final String commonElements = "connectionClose=true&disableStreamCache=true";
+    final String commonElements = "connectionClose=true&disableStreamCache=true" + getAdditionalHttpOptions();
     final int bestGuessAtFinalLength = httpEndpoint.length() + commonElements.length() + 1;
     final StringBuilder builder = new StringBuilder(bestGuessAtFinalLength);
     builder.append(httpEndpoint);
