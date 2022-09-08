@@ -17,6 +17,12 @@
  */
 package ca.islandora.alpaca.support.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -32,6 +38,7 @@ import org.springframework.context.annotation.PropertySources;
 })
 public abstract class PropertyConfig {
 
+  private static final Logger LOGGER = getLogger(PropertyConfig.class);
   public static final String ALPACA_CONFIG_PROPERTY = "alpaca.config";
   public static final String ALPACA_HOME_PROPERTY = "alpaca.home";
   public static final String ALPACA_DEFAULT_HOME = "alpaca-home-directory";
@@ -41,9 +48,13 @@ public abstract class PropertyConfig {
   // static endpoint name for activemq connection
   protected static final String JMS_ENDPOINT_NAME = "broker";
   protected static final String MAX_REDELIVERIES_PROPERTY = "error.maxRedeliveries";
+  protected static final String ADDITIONAL_HTTP_OPTIONS = "http.additional_options";
 
   @Value("${" + MAX_REDELIVERIES_PROPERTY + ":5}")
   private int maxRedeliveries;
+
+  @Value("#{'${" + ADDITIONAL_HTTP_OPTIONS + ":}'.split(',')}")
+  private List<String> additionalHttpOptions;
 
   /**
    * @return the error.maxRedeliveries amount.
@@ -89,6 +100,7 @@ public abstract class PropertyConfig {
         .append(asyncConsumers);
     }
     if (builder.length() > 0) {
+      LOGGER.trace("addJmsOptions returning builder {}", builder);
       return queueString + (queueString.contains("?") ? '&' : '?') + builder;
     }
     return queueString;
@@ -104,7 +116,18 @@ public abstract class PropertyConfig {
    *   The modified http endpoint string.
    */
   public String addHttpOptions(final String httpEndpoint, final boolean forceAmpersand) {
-    final String commonElements = "connectionClose=true&disableStreamCache=true";
+    // Filter any empty values.
+    final List<String> elementSet =
+            additionalHttpOptions.stream().filter(i -> !i.isEmpty()).map(String::trim).collect(Collectors.toList());
+    if (elementSet.stream().noneMatch(t -> t.startsWith("connectionClose="))) {
+      // If the user defined connectionClose=anything, we don't add this default, otherwise we do.
+      elementSet.add("connectionClose=true");
+    }
+    if (elementSet.stream().noneMatch(t -> t.startsWith("disableStreamCache="))) {
+      // If the user defined disableStreamCache=anything, we don't add this default, otherwise we do.
+      elementSet.add("disableStreamCache=true");
+    }
+    final String commonElements = String.join("&", elementSet);
     final int bestGuessAtFinalLength = httpEndpoint.length() + commonElements.length() + 1;
     final StringBuilder builder = new StringBuilder(bestGuessAtFinalLength);
     builder.append(httpEndpoint);
@@ -118,6 +141,7 @@ public abstract class PropertyConfig {
     }
     // Append the common elements.
     builder.append(commonElements);
+    LOGGER.trace("addHttpOptions returning {}", builder);
     return builder.toString();
   }
 

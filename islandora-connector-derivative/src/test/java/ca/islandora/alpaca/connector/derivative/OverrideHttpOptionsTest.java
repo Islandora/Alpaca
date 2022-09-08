@@ -28,35 +28,30 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import ca.islandora.alpaca.support.config.ActivemqConfig;
-
 /**
- * @author dannylamb
+ * Test overriding one of the default options.
  * @author whikloj
+ * @since 2.2.0
  */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @UseAdviceWith
 @ContextConfiguration(classes = DerivativeConnectorTest.ContextConfig.class,
         loader = AnnotationConfigContextLoader.class)
-@TestPropertySource("/test1.properties")
+@TestPropertySource("/test-override.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
-public class DerivativeConnectorTest {
+public class OverrideHttpOptionsTest {
 
     private static final Logger LOGGER = getLogger(DerivativeConnectorTest.class);
 
@@ -67,16 +62,16 @@ public class DerivativeConnectorTest {
     CamelContext camelContext;
 
     @Test
-    public void testDerivativeConnector() throws Exception {
-        final String route = "IslandoraConnectorDerivative-testRoutes";
+    public void testDerivativeConnectorWithOverride() throws Exception {
+        final String route = "IslandoraConnectorDerivative-testRoutesWithOverride";
 
         final var context = camelContext.adapt(ModelCamelContext.class);
         AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
             // Rig Drupal REST endpoint to return canned jsonld
-            a.interceptSendToEndpoint("http://example.org/derivative/convert?connectionClose=true&" +
-                            "disableStreamCache=true")
+            a.interceptSendToEndpoint("http://example.org/derivative/other?specialProp=true&" +
+                            "disableStreamCache=false&connectionClose=true")
                     .skipSendToOriginalEndpoint()
                     .process(exchange -> {
                         exchange.getIn().removeHeaders("*", "Authorization");
@@ -84,8 +79,8 @@ public class DerivativeConnectorTest {
                         exchange.getIn().setBody("SOME DERIVATIVE", String.class);
                     });
 
-            a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?connectionClose=true&" +
-                    "disableStreamCache=true");
+            a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?specialProp=true&" +
+                    "disableStreamCache=false&connectionClose=true");
         });
         context.start();
 
@@ -104,13 +99,5 @@ public class DerivativeConnectorTest {
         });
 
         endpoint.assertIsSatisfied();
-    }
-
-    @Configuration
-    @ComponentScan(basePackageClasses = {DerivativeOptions.class, ActivemqConfig.class},
-            useDefaultFilters = false,
-            includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                    classes = {DerivativeOptions.class, ActivemqConfig.class}))
-    static class ContextConfig extends CamelConfiguration {
     }
 }

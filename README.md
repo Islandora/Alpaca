@@ -228,6 +228,24 @@ socket.timeout=-1
 
 The default for all three is `-1` which indicates no timeout.
 
+### Alter HTTP options
+
+By default, Alpaca uses two settings for the HTTP component, these are
+* disableStreamCache=true
+* connectionClose=true
+
+If you want to send additional [configuration parameters](https://camel.apache.org/components/3.18.x/http-component.html#_query_parameters) or alter the existing defaults. You can 
+add them as a comma separated list of key=value pairs.
+
+For example
+```shell
+http.additional_options=authMethod=Basic,authUsername=Jim,authPassword=1234
+```
+
+These will be added to ALL http endpoint requests.
+
+**Note**: We are currently running Camel 3.7.6, some configuration parameters on the above linked page might not be supported.
+
 ## Deploying/Running
 
 You can see the options by passing the `-h|--help` flag
