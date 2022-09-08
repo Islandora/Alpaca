@@ -19,6 +19,9 @@ package ca.islandora.alpaca.support.config;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -50,30 +53,14 @@ public abstract class PropertyConfig {
   @Value("${" + MAX_REDELIVERIES_PROPERTY + ":5}")
   private int maxRedeliveries;
 
-  @Value("${" + ADDITIONAL_HTTP_OPTIONS + ":}")
-  private String additionalHttpOptions;
+  @Value("#{'${" + ADDITIONAL_HTTP_OPTIONS + ":}'.split(',')}")
+  private List<String> additionalHttpOptions;
 
   /**
    * @return the error.maxRedeliveries amount.
    */
   public int getMaxRedeliveries() {
     return maxRedeliveries;
-  }
-
-  /**
-   * @return the additional http options with a preceding & if non-empty, otherwise blank string.
-   */
-  private String getAdditionalHttpOptions() {
-    final String returnOptions;
-    if (!additionalHttpOptions.isEmpty()) {
-      if (additionalHttpOptions.startsWith("&") || additionalHttpOptions.startsWith("?")) {
-        returnOptions = additionalHttpOptions.substring(1);
-      } else {
-        returnOptions = additionalHttpOptions;
-      }
-      return "&" + returnOptions;
-    }
-    return "";
   }
 
   /**
@@ -129,7 +116,18 @@ public abstract class PropertyConfig {
    *   The modified http endpoint string.
    */
   public String addHttpOptions(final String httpEndpoint, final boolean forceAmpersand) {
-    final String commonElements = "connectionClose=true&disableStreamCache=true" + getAdditionalHttpOptions();
+    // Filter any empty values.
+    final List<String> elementSet =
+            additionalHttpOptions.stream().filter(i -> !i.isEmpty()).map(String::trim).collect(Collectors.toList());
+    if (elementSet.stream().noneMatch(t -> t.startsWith("connectionClose="))) {
+      // If the user defined connectionClose=anything, we don't add this default, otherwise we do.
+      elementSet.add("connectionClose=true");
+    }
+    if (elementSet.stream().noneMatch(t -> t.startsWith("disableStreamCache="))) {
+      // If the user defined disableStreamCache=anything, we don't add this default, otherwise we do.
+      elementSet.add("disableStreamCache=true");
+    }
+    final String commonElements = String.join("&", elementSet);
     final int bestGuessAtFinalLength = httpEndpoint.length() + commonElements.length() + 1;
     final StringBuilder builder = new StringBuilder(bestGuessAtFinalLength);
     builder.append(httpEndpoint);

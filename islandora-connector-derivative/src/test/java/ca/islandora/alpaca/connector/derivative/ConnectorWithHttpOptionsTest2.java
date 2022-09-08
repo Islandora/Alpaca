@@ -70,8 +70,8 @@ public class ConnectorWithHttpOptionsTest2 {
             a.replaceFromWith("direct:start");
 
             // Rig Drupal REST endpoint to return canned jsonld
-            a.interceptSendToEndpoint("http://example.org/derivative/other?connectionClose=true&" +
-                            "disableStreamCache=true&specialProp=true&otherProp=91")
+            a.interceptSendToEndpoint("http://example.org/derivative/other?specialProp=true&otherProp=91" +
+                            "&connectionClose=true&disableStreamCache=true")
                     .skipSendToOriginalEndpoint()
                     .process(exchange -> {
                         exchange.getIn().removeHeaders("*", "Authorization");
@@ -79,8 +79,8 @@ public class ConnectorWithHttpOptionsTest2 {
                         exchange.getIn().setBody("SOME DERIVATIVE", String.class);
                     });
 
-            a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?connectionClose=true&" +
-                    "disableStreamCache=true&specialProp=true&otherProp=91");
+            a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?specialProp=true&otherProp=91" +
+                    "&connectionClose=true&disableStreamCache=true");
         });
         context.start();
 

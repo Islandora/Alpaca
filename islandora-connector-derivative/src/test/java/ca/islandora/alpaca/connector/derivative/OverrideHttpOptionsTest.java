@@ -41,7 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 /**
- * Test of connector with the additional http options added.
+ * Test overriding one of the default options.
  * @author whikloj
  * @since 2.2.0
  */
@@ -49,9 +49,9 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 @UseAdviceWith
 @ContextConfiguration(classes = DerivativeConnectorTest.ContextConfig.class,
         loader = AnnotationConfigContextLoader.class)
-@TestPropertySource("/test2.properties")
+@TestPropertySource("/test-override.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ConnectorWithHttpOptionsTest {
+public class OverrideHttpOptionsTest {
 
     private static final Logger LOGGER = getLogger(DerivativeConnectorTest.class);
 
@@ -62,16 +62,16 @@ public class ConnectorWithHttpOptionsTest {
     CamelContext camelContext;
 
     @Test
-    public void testDerivativeConnectorWithOptions() throws Exception {
-        final String route = "IslandoraConnectorDerivative-testRoutesWithOptions";
+    public void testDerivativeConnectorWithOverride() throws Exception {
+        final String route = "IslandoraConnectorDerivative-testRoutesWithOverride";
 
         final var context = camelContext.adapt(ModelCamelContext.class);
         AdviceWith.adviceWith(context, route, a -> {
             a.replaceFromWith("direct:start");
 
             // Rig Drupal REST endpoint to return canned jsonld
-            a.interceptSendToEndpoint("http://example.org/derivative/other?specialProp=true&connectionClose=true&" +
-                            "disableStreamCache=true")
+            a.interceptSendToEndpoint("http://example.org/derivative/other?specialProp=true&" +
+                            "disableStreamCache=false&connectionClose=true")
                     .skipSendToOriginalEndpoint()
                     .process(exchange -> {
                         exchange.getIn().removeHeaders("*", "Authorization");
@@ -80,7 +80,7 @@ public class ConnectorWithHttpOptionsTest {
                     });
 
             a.mockEndpointsAndSkip("http://localhost:8000/node/2/media/image/3?specialProp=true&" +
-                    "connectionClose=true&disableStreamCache=true");
+                    "disableStreamCache=false&connectionClose=true");
         });
         context.start();
 
