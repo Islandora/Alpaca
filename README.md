@@ -2,7 +2,7 @@
 [![Build Status](https://github.com/islandora/Alpaca/actions/workflows/build-2.x.yml/badge.svg)](https://github.com/Islandora/Alpaca/actions)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
-[![codecov](https://codecov.io/gh/Islandora/Alpaca/branch/1.x/graphs/badge.svg)](https://codecov.io/gh/Islandora/Alpaca)
+[![codecov](https://codecov.io/gh/Islandora/Alpaca/branch/2.x/graphs/badge.svg)](https://app.codecov.io/gh/Islandora/Alpaca/tree/2.x)
 
 ## Introduction
 
