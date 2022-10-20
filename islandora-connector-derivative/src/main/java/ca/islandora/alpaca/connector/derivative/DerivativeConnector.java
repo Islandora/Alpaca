@@ -64,6 +64,7 @@ public class DerivativeConnector extends RouteBuilder {
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
             .setHeader("Accept", simple("${exchangeProperty.event.attachment.content.mimetype}"))
             .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
+            .setHeader("X-Islandora-Input-Args", simple("${exchangeProperty.event.attachment.content.inputargs}"))
             .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
             .setBody(simple("${null}"))
             .to("{{derivative.service.url}}?connectionClose=true")

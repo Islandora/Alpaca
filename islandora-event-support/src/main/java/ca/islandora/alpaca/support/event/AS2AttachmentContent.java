@@ -52,6 +52,10 @@ public class AS2AttachmentContent {
      */
     private String args;
     /**
+     * Arguments to pass to derivative connector, ie. "-density 144".
+     */
+    private String inputargs;
+    /**
      * Path to attachment file, ie. public://2019-11/2-Thumbnail Image.jpg.
      */
     private String fileUploadUri;
@@ -142,6 +146,21 @@ public class AS2AttachmentContent {
      */
     public void setArgs(final String args) {
         this.args = args;
+    }
+
+    /**
+     * @return  inputargs
+     */
+    @JsonProperty("inputargs")
+    public String getInputargs() {
+        return inputargs;
+    }
+
+    /**
+     * @param   inputargs    inputargs
+     */
+    public void setInputargs(final String inputargs) {
+        this.inputargs = inputargs;
     }
 
     /**
