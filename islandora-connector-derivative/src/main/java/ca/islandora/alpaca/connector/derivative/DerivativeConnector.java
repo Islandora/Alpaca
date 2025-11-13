@@ -100,26 +100,35 @@ public class DerivativeConnector extends RouteBuilder {
 
             .log(DEBUG, LOGGER, "Received message on IslandoraConnectorDerivative-" + connectorName)
 
-            // Parse the event into a POJO.
-            .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
-            // Stash the event on the exchange.
+            // Stash the original JSON body on the exchange.
             .setProperty("event").simple("${body}")
+
+            // Parse the event into a POJO for property extraction.
+            .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+            .setProperty("eventPojo").simple("${body}")
 
             // Make the Crayfish request.
             .removeHeaders("*", "Authorization")
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-            .setHeader("Accept", simple("${exchangeProperty.event.attachment.content.mimetype}"))
-            .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
-            .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
+            .process(exchange -> {
+            final String jsonEvent = exchange.getProperty("event", String.class);
+            if (jsonEvent != null) {
+                final String b64 = java.util.Base64.getEncoder()
+                .encodeToString(jsonEvent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                exchange.getIn().setHeader("X-Islandora-Event", b64);
+            }
+            })
+            .setHeader("Accept", simple("${exchangeProperty.eventPojo.attachment.content.mimetype}"))
+            .setHeader("X-Islandora-Args", simple("${exchangeProperty.eventPojo.attachment.content.args}"))
+            .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.eventPojo.attachment.content.sourceUri}"))
             .setBody(simple("${null}"))
             .to(outputStream)
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
-            .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
+            .setHeader("Content-Location", simple("${exchangeProperty.eventPojo.attachment.content.fileUploadUri}"))
             .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD(config.addHttpOptions("${exchangeProperty.event.attachment.content.destinationUri}"));
+            .toD(config.addHttpOptions("${exchangeProperty.eventPojo.attachment.content.destinationUri}"));
     }
 
 }
