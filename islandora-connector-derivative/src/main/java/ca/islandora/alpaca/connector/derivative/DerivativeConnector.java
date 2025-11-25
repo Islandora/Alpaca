@@ -112,23 +112,54 @@ public class DerivativeConnector extends RouteBuilder {
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
             .process(exchange -> {
             final String jsonEvent = exchange.getProperty("event", String.class);
-            if (jsonEvent != null) {
-                final String b64 = java.util.Base64.getEncoder()
-                .encodeToString(jsonEvent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                exchange.getIn().setHeader("X-Islandora-Event", b64);
-            }
+                if (jsonEvent != null) {
+                    final String b64 = java.util.Base64.getEncoder()
+                    .encodeToString(jsonEvent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    exchange.getIn().setHeader("X-Islandora-Event", b64);
+                }
             })
-            .setHeader("Accept", simple("${exchangeProperty.eventPojo.attachment.content.mimetype}"))
-            .setHeader("X-Islandora-Args", simple("${exchangeProperty.eventPojo.attachment.content.args}"))
-            .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.eventPojo.attachment.content.sourceUri}"))
+            .process(exchange -> {
+            final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
+                if (event != null && event.getAttachment() != null
+                    && event.getAttachment().getContent() != null) {
+
+                    final var content = event.getAttachment().getContent();
+                    if (content.getMimetype() != null) {
+                        exchange.getIn().setHeader("Accept", content.getMimetype());
+                    }
+                    if (content.getArgs() != null) {
+                        exchange.getIn().setHeader("X-Islandora-Args", content.getArgs());
+                    }
+                    if (content.getSourceUri() != null) {
+                        exchange.getIn().setHeader("Apix-Ldp-Resource", content.getSourceUri());
+                    }
+
+                }
+            })
             .setBody(simple("${null}"))
             .to(outputStream)
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
-            .setHeader("Content-Location", simple("${exchangeProperty.eventPojo.attachment.content.fileUploadUri}"))
-            .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD(config.addHttpOptions("${exchangeProperty.eventPojo.attachment.content.destinationUri}"));
+            .process(exchange -> {
+                final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
+                final boolean shouldPut = event != null && event.getAttachment() != null
+                    && event.getAttachment().getContent() != null;
+                exchange.setProperty("shouldPutMedia", shouldPut);
+
+                if (shouldPut) {
+                    final var content = event.getAttachment().getContent();
+                    if (content.getFileUploadUri() != null) {
+                        exchange.getIn().setHeader("Content-Location", content.getFileUploadUri());
+                    }
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+                }
+            })
+            .choice()
+                .when(simple("${exchangeProperty.shouldPutMedia} == true"))
+                    .toD(config.addHttpOptions(
+                        "${exchangeProperty.eventPojo.attachment.content.destinationUri}"))
+            .end();
     }
 
 }
