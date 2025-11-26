@@ -111,7 +111,7 @@ public class DerivativeConnector extends RouteBuilder {
             .removeHeaders("*", "Authorization")
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
             .process(exchange -> {
-            final String jsonEvent = exchange.getProperty("event", String.class);
+                final String jsonEvent = exchange.getProperty("event", String.class);
                 if (jsonEvent != null) {
                     final String b64 = java.util.Base64.getEncoder()
                     .encodeToString(jsonEvent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
