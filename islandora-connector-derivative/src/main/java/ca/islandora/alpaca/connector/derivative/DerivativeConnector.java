@@ -119,7 +119,7 @@ public class DerivativeConnector extends RouteBuilder {
                 }
             })
             .process(exchange -> {
-            final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
+                final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
                 if (event != null && event.getAttachment() != null
                     && event.getAttachment().getContent() != null) {
 
