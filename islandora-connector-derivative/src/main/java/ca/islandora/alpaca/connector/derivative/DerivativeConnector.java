@@ -100,26 +100,66 @@ public class DerivativeConnector extends RouteBuilder {
 
             .log(DEBUG, LOGGER, "Received message on IslandoraConnectorDerivative-" + connectorName)
 
-            // Parse the event into a POJO.
-            .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
-
-            // Stash the event on the exchange.
+            // Stash the original JSON body on the exchange.
             .setProperty("event").simple("${body}")
+
+            // Parse the event into a POJO for property extraction.
+            .unmarshal().json(JsonLibrary.Jackson, AS2Event.class)
+            .setProperty("eventPojo").simple("${body}")
 
             // Make the Crayfish request.
             .removeHeaders("*", "Authorization")
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-            .setHeader("Accept", simple("${exchangeProperty.event.attachment.content.mimetype}"))
-            .setHeader("X-Islandora-Args", simple("${exchangeProperty.event.attachment.content.args}"))
-            .setHeader("Apix-Ldp-Resource", simple("${exchangeProperty.event.attachment.content.sourceUri}"))
+            .process(exchange -> {
+                final String jsonEvent = exchange.getProperty("event", String.class);
+                if (jsonEvent != null) {
+                    final String b64 = java.util.Base64.getEncoder()
+                    .encodeToString(jsonEvent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    exchange.getIn().setHeader("X-Islandora-Event", b64);
+                }
+            })
+            .process(exchange -> {
+                final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
+                if (event != null && event.getAttachment() != null
+                    && event.getAttachment().getContent() != null) {
+
+                    final var content = event.getAttachment().getContent();
+                    if (content.getMimetype() != null) {
+                        exchange.getIn().setHeader("Accept", content.getMimetype());
+                    }
+                    if (content.getArgs() != null) {
+                        exchange.getIn().setHeader("X-Islandora-Args", content.getArgs());
+                    }
+                    if (content.getSourceUri() != null) {
+                        exchange.getIn().setHeader("Apix-Ldp-Resource", content.getSourceUri());
+                    }
+
+                }
+            })
             .setBody(simple("${null}"))
             .to(outputStream)
 
             // PUT the media.
             .removeHeaders("*", "Authorization", "Content-Type")
-            .setHeader("Content-Location", simple("${exchangeProperty.event.attachment.content.fileUploadUri}"))
-            .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-            .toD(config.addHttpOptions("${exchangeProperty.event.attachment.content.destinationUri}"));
+            .process(exchange -> {
+                final AS2Event event = exchange.getProperty("eventPojo", AS2Event.class);
+                final boolean shouldPut = event != null && event.getAttachment() != null
+                    && event.getAttachment().getContent() != null;
+                exchange.setProperty("shouldPutMedia", shouldPut);
+
+                if (shouldPut) {
+                    final var content = event.getAttachment().getContent();
+                    if (content.getFileUploadUri() != null) {
+                        exchange.getIn().setHeader("Content-Location", content.getFileUploadUri());
+                    }
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+                }
+            })
+            .choice()
+                .when(simple("${exchangeProperty.shouldPutMedia} == true"))
+                    .toD(config.addHttpOptions(
+                        "${exchangeProperty.eventPojo.attachment.content.destinationUri}"))
+            .end();
     }
 
 }
